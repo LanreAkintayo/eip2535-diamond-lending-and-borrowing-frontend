@@ -13,6 +13,7 @@ import { Web3Modal } from "@web3modal/react";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { polygonMumbai } from "wagmi/chains";
 import { ToastContainer } from 'react-toastify';
+import DefiProvider from './providers/DefiProvider';
 
 // 1. Get projectID at https://cloud.walletconnect.com
 if (!process.env.REACT_APP_PROJECT_ID) {
@@ -45,12 +46,14 @@ const ethereumClient = new EthereumClient(wagmiConfig, chains);
 root.render(
   <React.StrictMode>
     <WalletProvider>
-      <WagmiConfig config={wagmiConfig}>
-        <App />
-      </WagmiConfig>
+      <DefiProvider>
+        <WagmiConfig config={wagmiConfig}>
+          <App />
+        </WagmiConfig>
 
-      <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
-      <ToastContainer />
+        <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
+        <ToastContainer />
+      </DefiProvider>
     </WalletProvider>
   </React.StrictMode>
 );
