@@ -14,7 +14,17 @@ export default function Layout({
   const { signerAddress, loadChainId, loadSignerAddress, chainId } =
     useWallet();
 
-  const { loadUserSupplies } = useDefi();
+  const {
+    loadUserSupplies,
+    loadUserBorrows,
+    loadHealthFactor,
+    loadUserTotalCollateralInUsd,
+    loadUserTotalBorrowedInUsd,
+    loadBorrowPower,
+    loadMaxLTV,
+    loadCurrentLTV,
+    loadLiquidationThresholdWeighted,
+  } = useDefi();
 
   const { isConnected } = useAccount();
 
@@ -40,7 +50,18 @@ export default function Layout({
   useEffect(() => {
     const loadDefi = async () => {
       if (signerAddress) {
+        const userBorrows = await loadUserBorrows(signerAddress);
         await loadUserSupplies(signerAddress);
+
+        await loadHealthFactor(signerAddress);
+        await loadUserTotalCollateralInUsd(signerAddress);
+        await loadUserTotalBorrowedInUsd(signerAddress);
+        await loadBorrowPower(signerAddress);
+        await loadMaxLTV(signerAddress);
+        await loadCurrentLTV(signerAddress);
+        await loadLiquidationThresholdWeighted(signerAddress);
+
+
       }
     };
 

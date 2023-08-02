@@ -13,5 +13,11 @@ module.exports = {
       ...defaultTheme.screens,
     },
   },
+  fontFamily: {
+    sans: ["Lilita One", "cursive"],
+    sans2: ["Open Sans", "sans-serif"],
+      // // logo: ['Rampart One', "cursive"]
+    logo: ['Germania One', 'cursive']
+    },
   plugins: [],
 }

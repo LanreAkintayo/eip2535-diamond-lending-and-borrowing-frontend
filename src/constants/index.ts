@@ -5,9 +5,9 @@ import getterAbi from "./getterAbi.json"
 
 export const DEPLOYER = "0xec2B1547294a4dd62C0aE651aEb01493f8e4cD74"
 
-const diamondAddress = "0x9594Ef2c7A6dC691fF453933F405b13367520275";
-const larAddress = "0xB7C83CEbcc61986434A787B237B9A6973d650c65";
-const getterAddress = "0xe2804bDDd8C1401abAC0C74467a0B6ED529f50f8";
+const diamondAddress = "0x0f5c299fcb70BC3D03bBcE3B3f7996f55260d7F4";
+const larAddress = "0xf872320EfA2Eb96E212a01c4790D5B4E07f621c8";
+const getterAddress = "0x71B1775E18EA508770a55B719Ed5814068d03c9F";
 
 
 export {diamondAddress, larAddress, getterAddress, diamondAbi, erc20Abi, getterAbi}

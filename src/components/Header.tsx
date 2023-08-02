@@ -61,7 +61,7 @@ export default function Header() {
   const location = useLocation();
   const currentUrl = location.pathname;
 
-  console.log("Current url: ", currentUrl);
+  // console.log("Current url: ", currentUrl);
 
   useEffect(() => {
     console.log("There is a change in the id", chainId);
