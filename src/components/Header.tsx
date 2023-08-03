@@ -15,8 +15,6 @@ import { FaBars, FaTimes } from "react-icons/fa";
 import useWallet from "../hooks/useWallet";
 import { useLocation, Link, NavLink } from "react-router-dom";
 
-// import { useMoralis, useWeb3Contract, useChain } from "react-moralis";
-
 const useMediaQuery = (width: number) => {
   const [targetReached, setTargetReached] = useState(false);
 
@@ -76,11 +74,7 @@ export default function Header() {
   };
 
   return (
-    <div
-      className={`fixed bg-black bg-gradient-to-r from-[#0D1321] via-[#0D1321] to-[#11264d]  z-50 top-0 left-0 ss:${
-        true ? "h-30" : "h-20"
-      } h-30 w-screen `}
-    >
+    <div className={`fixed z-50 top-0 left-0 w-screen `}>
       {/* Navbar */}
 
       {!collapsed && isBreakpoint && (
@@ -115,9 +109,9 @@ export default function Header() {
 
       <nav className="flex items-center flex-col ss:flex-row w-full justify-between ss:px-2 py-2 sm:px-4 sm:py-4 h-full">
         <p className="font-logo text-xl text-white sm:text-3xl self-start ss:self-auto">
-          <span className="text-amber-600">{"<"}L</span>arry
-          <span className="text-amber-600">C</span>odes
-          <span className="text-amber-600">{"/>"}</span>
+          <span className="text-[#1282A2]">{"<"}L</span>arry
+          <span className="text-[#1282A2]">C</span>odes
+          <span className="text-[#1282A2]">{"/>"}</span>
         </p>
         <div className="flex justify-center items-center w-80 rounded-full py-4">
           {!isBreakpoint && (
@@ -125,7 +119,7 @@ export default function Header() {
               <Link
                 to="/"
                 className={`w-full text-white font-semibold ${
-                  currentUrl == "/" && "border-b-2 border-amber-600"
+                  currentUrl == "/" && "border border-gray-400 px-5 rounded-full px-2"
                 } hover:text-amber-600`}
               >
                 Home

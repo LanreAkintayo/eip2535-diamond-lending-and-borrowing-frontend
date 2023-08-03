@@ -12,12 +12,16 @@ module.exports = {
       "ssm": '486px',
       ...defaultTheme.screens,
     },
-  },
-  fontFamily: {
-    sans: ["Lilita One", "cursive"],
-    sans2: ["Open Sans", "sans-serif"],
-      // // logo: ['Rampart One', "cursive"]
+    fontFamily: {
+    sans: ["Open Sans", "sans-serif"],
     logo: ['Germania One', 'cursive']
     },
+      extend: {
+      gradientColorStops: {
+        'custom-gradient': 'rgba(2,0,36,1) 0%, rgba(9,9,121,1) 20%, rgba(62,53,67,1) 92%',
+      },
+    },
+  },
+  
   plugins: [],
 }

@@ -69,8 +69,10 @@ export default function Layout({
   }, [signerAddress]);
 
   return (
-    <div className="bg-light-100 dark:bg-dark-100 flex min-h-screen flex-col">
-      <Header />
+    <div className="bg-gradient-to-tr from-slate-900 to-gray-900 dark:bg-dark-100 flex min-h-screen flex-col">
+      <div className="">
+        <Header />
+      </div>
       <Outlet />
     </div>
   );

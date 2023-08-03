@@ -1,3 +1,4 @@
+import YourBorrows from "../components/YourBorrows";
 import useWallet from "../hooks/useWallet";
 
 export default function HomePage() {
@@ -8,7 +9,7 @@ export default function HomePage() {
   
   return (
     <>
-      <div className="text-red-500">This is the home page</div>
+      <YourBorrows />
     </>
   );
 }

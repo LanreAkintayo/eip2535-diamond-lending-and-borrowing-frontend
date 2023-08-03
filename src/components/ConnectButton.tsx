@@ -39,9 +39,9 @@ export default function ConnectButton() {
       <button
         onClick={onClick}
         disabled={loading}
-        className="rounded-md bg-amber-600 text-white w-40 p-2 mr-3"
+        className="rounded-full bg-indigo-900 text-white w-40 p-2 mr-3"
       >
-        {loading ? 'Loading...' : 'Connect Wallet'}
+        {loading ? "Loading..." : "Connect Wallet"}
       </button>
     </div>
   );
