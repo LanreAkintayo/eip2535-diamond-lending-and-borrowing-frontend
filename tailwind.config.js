@@ -13,7 +13,7 @@ module.exports = {
       ...defaultTheme.screens,
     },
     fontFamily: {
-    sans: ["Open Sans", "sans-serif"],
+    sans: ["Nunito", "sans-serif"],
     logo: ['Germania One', 'cursive']
     },
       extend: {
@@ -23,5 +23,7 @@ module.exports = {
     },
   },
   
-  plugins: [],
+   plugins: [
+    require("tailwind-scrollbar-hide")
+  ],
 }

@@ -19,13 +19,27 @@ import {
 
 import { erc20ABI } from "wagmi";
 import { appSettings } from "../constants/settings";
-import { diamondAddress, getterAbi } from "../constants";
-import { BorrowedToken, SuppliedToken } from "../types";
+import {
+  addressToImage,
+  diamondAddress,
+  erc20Abi,
+  getterAbi,
+} from "../constants";
+import {
+  DetailedBorrowedToken,
+  ContractSuppliedToken,
+  DetailedSuppliedToken,
+  ContractBorrowedToken,
+  SupplyAsset,
+  TokenDetails,
+  TokenData,
+} from "../types";
 // import { appSettings } from "@/constants/settings";
 
 const defaultDefiState = {
   userSupplies: null,
   userBorrows: null,
+  supplyAssets: null,
   healthFactor: null,
   userTotalCollateralInUsd: null,
   userTotalBorrowedInUsd: null,
@@ -39,8 +53,9 @@ const defiReducer = (
   state: any,
   action: {
     type: string;
-    userSupplies?: SuppliedToken[];
-    userBorrows?: BorrowedToken[];
+    userSupplies?: DetailedSuppliedToken[];
+    userBorrows?: DetailedBorrowedToken[];
+    supplyAssets?: SupplyAsset[];
     healthFactor?: bigint;
     userTotalCollateralInUsd?: bigint;
     userTotalBorrowedInUsd?: bigint;
@@ -60,6 +75,12 @@ const defiReducer = (
     return {
       ...state,
       userBorrows: action.userBorrows,
+    };
+  }
+  if (action.type === "SUPPLY_ASSETS") {
+    return {
+      ...state,
+      supplyAssets: action.supplyAssets,
     };
   }
 
@@ -121,13 +142,51 @@ const DefiProvider = (props: any) => {
       abi: getterAbi,
       functionName: "getAllSupplies",
       args: [signerAddress],
-    })) as SuppliedToken[];
+    })) as ContractSuppliedToken[];
+
+    const detailedSupplies = userSupplies.map(
+      async (eachSupply: ContractSuppliedToken) => {
+        const tokenAddress = eachSupply.tokenAddress;
+        const tokenName = (await readContract({
+          address: tokenAddress as `0x${string}`,
+          abi: erc20ABI,
+          functionName: "name",
+        })) as string;
+
+        const decimals = await readContract({
+          address: tokenAddress as `0x${string}`,
+          abi: erc20ABI,
+          functionName: "decimals",
+        });
+
+        const amountSuppliedInUsd = (await readContract({
+          address: diamondAddress as `0x${string}`,
+          abi: getterAbi,
+          functionName: "getUsdEquivalence",
+          args: [eachSupply.tokenAddress, eachSupply.amountSupplied],
+        })) as bigint;
+
+        const tokenImage = addressToImage[tokenAddress];
+
+        return {
+          ...eachSupply,
+          tokenName,
+          tokenImage,
+          decimals,
+          amountSuppliedInUsd,
+        };
+      }
+    );
+
+    const resolvedSupplies = (await Promise.all(
+      detailedSupplies
+    )) as DetailedSuppliedToken[];
 
     dispatchDefiAction({
       type: "USER_SUPPLIES",
-      userSupplies: userSupplies,
+      userSupplies: resolvedSupplies,
     });
-    return userSupplies;
+    return resolvedSupplies;
   };
   const loadUserBorrowsHandler = async (signerAddress: string) => {
     const userBorrows = (await readContract({
@@ -135,15 +194,120 @@ const DefiProvider = (props: any) => {
       abi: getterAbi,
       functionName: "getAllBorrows",
       args: [signerAddress],
-    })) as BorrowedToken[];
-      
-    //   console.log("User borrowssss::::::: ", userBorrows)
+    })) as ContractBorrowedToken[];
+
+    const detailedBorrows = userBorrows.map(
+      async (eachBorrow: ContractBorrowedToken) => {
+        const tokenAddress = eachBorrow.tokenAddress;
+        const tokenName = (await readContract({
+          address: tokenAddress as `0x${string}`,
+          abi: erc20ABI,
+          functionName: "name",
+        })) as string;
+
+        const decimals = await readContract({
+          address: tokenAddress as `0x${string}`,
+          abi: erc20ABI,
+          functionName: "decimals",
+        });
+
+        const amountBorrowedInUsd = (await readContract({
+          address: diamondAddress as `0x${string}`,
+          abi: getterAbi,
+          functionName: "getUsdEquivalence",
+          args: [eachBorrow.tokenAddress, eachBorrow.amountBorrowed],
+        })) as bigint;
+
+        const tokenImage = addressToImage[tokenAddress];
+
+        return {
+          ...eachBorrow,
+          tokenName,
+          tokenImage,
+          decimals,
+          amountBorrowedInUsd,
+        };
+      }
+    );
+
+    const resolvedBorrows = (await Promise.all(
+      detailedBorrows
+    )) as DetailedBorrowedToken[];
 
     dispatchDefiAction({
       type: "USER_BORROWS",
-      userBorrows: userBorrows,
+      userBorrows: resolvedBorrows,
     });
-    return userBorrows;
+    return resolvedBorrows;
+  };
+  const loadSupplyAssetsHandler = async (signerAddress: string) => {
+    // let supplyAssets;
+
+    const supportedTokens = (await readContract({
+      address: diamondAddress as `0x${string}`,
+      abi: getterAbi,
+      functionName: "getAllSupportedTokens",
+    })) as string[];
+
+    console.log("Supported tokens:", supportedTokens);
+    const supplyAssets = supportedTokens.map(async (tokenAddress: string) => {
+      const tokenName = (await readContract({
+        address: tokenAddress as `0x${string}`,
+        abi: erc20ABI,
+        functionName: "name",
+      })) as string;
+
+      const decimals = await readContract({
+        address: tokenAddress as `0x${string}`,
+        abi: erc20ABI,
+        functionName: "decimals",
+      });
+
+      const walletBalance = await readContract({
+        address: tokenAddress as `0x${string}`,
+        abi: erc20ABI,
+        functionName: "balanceOf",
+        args: [signerAddress as `0x${string}`],
+      });
+
+      const tokenImage = addressToImage[tokenAddress];
+
+      const walletBalanceInUsd = (await readContract({
+        address: diamondAddress as `0x${string}`,
+        abi: getterAbi,
+        functionName: "getUsdEquivalence",
+        args: [tokenAddress, walletBalance],
+      })) as bigint;
+
+      const tokenDetails = (await readContract({
+        address: diamondAddress as `0x${string}`,
+        abi: getterAbi,
+        functionName: "getTokenDetails",
+        args: [tokenAddress],
+      })) as TokenDetails;
+
+      const asset = {
+        tokenName,
+        tokenAddress,
+        tokenImage,
+        decimals,
+        walletBalance,
+        walletBalanceInUsd,
+        supplyStableRate: tokenDetails.supplyStableRate,
+      };
+
+      return asset;
+    });
+
+    const resolvedSupplyAssets = (await Promise.all(
+      supplyAssets
+    )) as SupplyAsset[];
+
+    dispatchDefiAction({
+      type: "SUPPLY_ASSETS",
+      supplyAssets: resolvedSupplyAssets,
+    });
+    return resolvedSupplyAssets;
   };
   const loadHealthFactorHandler = async (signerAddress: string) => {
     const healthFactor = (await readContract({
@@ -180,7 +344,6 @@ const DefiProvider = (props: any) => {
       functionName: "getUserTotalBorrowedInUsd",
       args: [signerAddress],
     })) as bigint;
-      
 
     dispatchDefiAction({
       type: "USER_TOTAL_BORROWED_IN_USD",
@@ -247,9 +410,107 @@ const DefiProvider = (props: any) => {
     return liquidationThresholdWeighted;
   };
 
+  const getTokenData = async (
+    signerAddress: string,
+    tokenAddress: string
+  ): Promise<TokenData> => {
+    /*
+    reserveSize,
+    availableLiquidity,
+    utilizationRate,
+    oraclePrice,
+    maxLTV,
+    liquidationThreshold,
+    liquidationPenalty,
+    supplyStableRate,
+    borrowStableRate,
+    walletBalance,
+    walletBalanceInUsd,
+    availableToBorrowInUsd
+    tokenAvailableToBorrow
+    
+    */
+
+    const tokenName = await readContract({
+      address: tokenAddress as `0x${string}`,
+      abi: erc20ABI,
+      functionName: "name",
+    });
+
+    const tokenImage = addressToImage[tokenAddress];
+
+    const decimals = await readContract({
+      address: tokenAddress as `0x${string}`,
+      abi: erc20ABI,
+      functionName: "decimals",
+    });
+
+    const oraclePrice = (await readContract({
+      address: diamondAddress,
+      abi: getterAbi,
+      functionName: "getUsdEquivalence",
+      args: [tokenAddress, 1 * 10 ** decimals],
+    })) as bigint;
+
+      const tokenDetails = (await readContract({
+        address: diamondAddress as `0x${string}`,
+        abi: getterAbi,
+        functionName: "getTokenDetails",
+        args: [tokenAddress],
+      })) as TokenDetails;
+    
+
+    const walletBalance = await readContract({
+      address: tokenAddress as `0x${string}`,
+      abi: erc20ABI,
+      functionName: "balanceOf",
+      args: [signerAddress as `0x${string}`],
+    });
+
+    const walletBalanceInUsd = (await readContract({
+      address: diamondAddress as `0x${string}`,
+      abi: getterAbi,
+      functionName: "getUsdEquivalence",
+      args: [tokenAddress, walletBalance],
+    })) as bigint;
+
+    const availableToBorrowInUsd = (await readContract({
+      address: diamondAddress as `0x${string}`,
+      abi: getterAbi,
+      functionName: "getMaxAvailableToBorrowInUsd",
+      args: [signerAddress],
+    })) as bigint;
+
+    const availableToBorrow = (await readContract({
+      address: diamondAddress as `0x${string}`,
+      abi: getterAbi,
+      functionName: "convertUsdToToken",
+      args: [tokenAddress, availableToBorrowInUsd],
+    })) as bigint;
+
+
+    return {
+      tokenName,
+      tokenAddress,
+      tokenImage,
+      decimals,
+      oraclePrice,
+      maxLTV: tokenDetails.loanToValue,
+      liquidationThreshold: tokenDetails.liquidationThreshold,
+      liquidationPenalty: tokenDetails.liquidationPenalty,
+      supplyStableRate: tokenDetails.supplyStableRate,
+      borrowStableRate:tokenDetails.borrowStableRate,
+      walletBalance,
+      walletBalanceInUsd,
+      availableToBorrow,
+      availableToBorrowInUsd
+    }
+  };
+
   const defiContext = {
     userSupplies: defiState.userSupplies,
     userBorrows: defiState.userBorrows,
+    supplyAssets: defiState.supplyAssets,
     healthFactor: defiState.healthFactor,
     userTotalCollateralInUsd: defiState.userTotalCollateralInUsd,
     userTotalBorrowedInUsd: defiState.userTotalBorrowedInUsd,
@@ -259,6 +520,7 @@ const DefiProvider = (props: any) => {
     liquidationThresholdWeighted: defiState.liquidationThresholdWeighted,
     loadUserSupplies: loadUserSuppliesHandler,
     loadUserBorrows: loadUserBorrowsHandler,
+    loadSupplyAssets: loadSupplyAssetsHandler,
     loadHealthFactor: loadHealthFactorHandler,
     loadUserTotalCollateralInUsd: loadUserTotalCollateralInUsdHandler,
     loadUserTotalBorrowedInUsd: loadUserTotalBorrowedInUsdHandler,
@@ -266,6 +528,7 @@ const DefiProvider = (props: any) => {
     loadMaxLTV: loadMaxLTVHandler,
     loadCurrentLTV: loadCurrentLTVHandler,
     loadLiquidationThresholdWeighted: loadLiquidationThresholdWeightedHandler,
+    getTokenData
   };
 
   return (

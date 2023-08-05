@@ -321,6 +321,57 @@
         "internalType": "address",
         "name": "tokenAddress",
         "type": "address"
+      }
+    ],
+    "name": "getTokenDetails",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "tokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint32",
+            "name": "liquidationThreshold",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "loanToValue",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "borrowStableRate",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "supplyStableRate",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "liquidationPenalty",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct Token",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
       },
       {
         "internalType": "uint256",

@@ -1,21 +1,19 @@
-// import { todp } from "@utils/helpfulScripts";
+// import { todp } from "@utils/todp";
 import { useState } from "react";
+import Skeleton from "./Skeleton";
+import SupplyRow from "./SupplyRow";
 import useDefi from "../hooks/useDefi";
 import { inCurrencyFormat } from "../utils/helper";
-import BorrowRow from "./BorrowRow";
-import Skeleton from "./Skeleton";
-import { DetailedBorrowedToken } from "../types";
+import { DetailedSuppliedToken } from "../types";
 
-interface IYourBorrows {
-  tokens: DetailedBorrowedToken[];
+interface IYourSupply {
+  tokens: DetailedSuppliedToken[];
 }
-export default function YourBorrows({ tokens }: IYourBorrows) {
-  const [selectedTokenToRepay, setSelectedTokenToRepay] = useState(null);
-  const [selectedTokenToBorrow, setSelectedTokenToBorrow] = useState(null);
-  const { userTotalBorrowedInUsd, borrowPower } = useDefi();
 
-
-  const formattedBorrowPower = borrowPower ? Number(borrowPower) / 10000 : 0;
+export default function YourSupply({ tokens }: IYourSupply) {
+  const [selectedTokenToSupply, setSelectedTokenToSupply] = useState(null);
+  const [selectedTokenToWithdraw, setSelectedTokenToWithdraw] = useState(null);
+  const { userTotalCollateralInUsd } = useDefi();
 
   return (
     <div className="text-white">
@@ -23,8 +21,8 @@ export default function YourBorrows({ tokens }: IYourBorrows) {
         <div className="rounded-t mb-0 px-4 py-3 ">
           <div className="flex flex-wrap items-center">
             <div className="relative w-full px-4 max-w-full">
-              <h3 className="font-bold text-lg">Your Borrows</h3>
-              {Number(userTotalBorrowedInUsd) != 0 && (
+              <h3 className="font-bold text-lg">Your Supplies</h3>
+              {Number(userTotalCollateralInUsd) != 0 && (
                 <div className="mt-4 flex">
                   <div className="border border-slate-600 rounded-md font-normal px-2">
                     <p className="text-gray-400">
@@ -32,16 +30,19 @@ export default function YourBorrows({ tokens }: IYourBorrows) {
                       <span className="font-normal text-gray-300">
                         $
                         {inCurrencyFormat(
-                          Number(userTotalBorrowedInUsd) / 10 ** 18
+                          Number(userTotalCollateralInUsd) / 10 ** 18
                         )}
                       </span>
                     </p>
                   </div>
                   <div className="ml-5 border border-slate-600 rounded-md font-normal px-2">
                     <p className="text-gray-400">
-                      Borrow power used{" "}
+                      Collateral {"  "}
                       <span className="font-normal text-gray-300">
-                       {formattedBorrowPower}%
+                        $
+                        {inCurrencyFormat(
+                          Number(userTotalCollateralInUsd) / 10 ** 18
+                        )}
                       </span>
                     </p>
                   </div>
@@ -75,26 +76,26 @@ export default function YourBorrows({ tokens }: IYourBorrows) {
               {!tokens && <Skeleton />}
               {tokens?.map((token: any) => {
                 return (
-                  <BorrowRow
+                  <SupplyRow
                     key={token.tokenAddress}
                     token={token}
-                    Repay={() => {
+                    Withdraw={() => {
                       return (
                         <button
-                          onClick={() => setSelectedTokenToRepay(token)}
-                          className="bg-gray-300 text-gray-700  px-4 text-base p-2 rounded-md"
+                          onClick={() => setSelectedTokenToWithdraw(token)}
+                          className="bg-gray-300 text-gray-700 text-base p-2 rounded-md"
                         >
-                          Repay
+                          Withdraw
                         </button>
                       );
                     }}
-                    Borrow={() => {
+                    Supply={() => {
                       return (
                         <button
-                          onClick={() => setSelectedTokenToBorrow(token)}
-                          className="ml-2 border border-gray-400 bg-slate-800 px-4 text-base font-medium p-2 rounded-md"
+                          onClick={() => setSelectedTokenToSupply(token)}
+                          className="ml-2 border border-gray-400 bg-slate-800 text-base font-medium p-2 px-4 rounded-md"
                         >
-                          Borrow
+                          Supply
                         </button>
                       );
                     }}

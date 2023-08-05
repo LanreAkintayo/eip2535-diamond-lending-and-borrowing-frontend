@@ -4,6 +4,7 @@ import Layout from "./pages/Layout";
 import HomePage from "./pages/HomePage";
 import NotFound from "./components/NotFound";
 import Dashboard from "./pages/Dashboard";
+import ReserveOverview from "./pages/ReserveOverview";
 
 
 
@@ -16,6 +17,7 @@ function App() {
         <Route element={<Layout />}>
           <Route index path="/" element={<HomePage />} />
           <Route index path="/dashboard" element={<Dashboard />} />
+          <Route path="/reserve_overview/:slug" element={<ReserveOverview />} />
           <Route path="/*" element={<NotFound />} />
         </Route>
       </Routes>

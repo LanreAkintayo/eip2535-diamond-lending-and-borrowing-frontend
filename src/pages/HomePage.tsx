@@ -9,7 +9,7 @@ export default function HomePage() {
   
   return (
     <>
-      <YourBorrows />
+      {/* <YourBorrows /> */}
     </>
   );
 }

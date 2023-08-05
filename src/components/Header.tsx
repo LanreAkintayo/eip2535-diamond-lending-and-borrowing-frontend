@@ -74,7 +74,9 @@ export default function Header() {
   };
 
   return (
-    <div className={`fixed z-50 top-0 left-0 w-screen `}>
+    <div
+      className={`fixed z-50 bg-gradient-to-tr from-slate-900 to-gray-900 top-0 left-0 w-screen `}
+    >
       {/* Navbar */}
 
       {!collapsed && isBreakpoint && (
@@ -87,12 +89,12 @@ export default function Header() {
               <FaTimes />
             </div>
             <Menu className="">
-              <div className="text-xl text-white hover:text-amber-600">
+              <div className="text-xl text-white hover:text-orange-600">
                 <MenuItem>
                   component={<Link to="/" />}
                   <p
                     className={`text-[16px] text-white ${
-                      currentUrl == "/" && "border-b-2 border-amber-600"
+                      currentUrl == "/" && "border-b-2 border-orange-600"
                     }`}
                   >
                     Home
@@ -109,9 +111,9 @@ export default function Header() {
 
       <nav className="flex items-center flex-col ss:flex-row w-full justify-between ss:px-2 py-2 sm:px-4 sm:py-4 h-full">
         <p className="font-logo text-xl text-white sm:text-3xl self-start ss:self-auto">
-          <span className="text-[#1282A2]">{"<"}L</span>arry
-          <span className="text-[#1282A2]">C</span>odes
-          <span className="text-[#1282A2]">{"/>"}</span>
+          <span className="text-orange-700">{"<"}L</span>arry
+          <span className="text-orange-700">C</span>odes
+          <span className="text-orange-700">{"/>"}</span>
         </p>
         <div className="flex justify-center items-center w-80 rounded-full py-4">
           {!isBreakpoint && (
@@ -119,16 +121,17 @@ export default function Header() {
               <Link
                 to="/"
                 className={`w-full text-white font-semibold ${
-                  currentUrl == "/" && "border border-gray-400 px-5 rounded-full px-2"
-                } hover:text-amber-600`}
+                  currentUrl == "/" &&
+                  "border border-gray-400 px-5 rounded-full"
+                } hover:text-orange-600`}
               >
                 Home
               </Link>
               <Link
                 to="/dashboard"
                 className={`ml-3 text-white font-semibold ${
-                  currentUrl == "/dashboard" && "border-b-2 border-amber-600"
-                } hover:text-amber-600`}
+                  currentUrl == "/dashboard" && "border-b-2 border-orange-700"
+                } hover:text-orange-600`}
               >
                 Dashboard
               </Link>
@@ -140,7 +143,7 @@ export default function Header() {
             <WalletConnect />
             {chainId && chainId != supportedChainId && (
               <button
-                className="text-amber-600 text-sm my-2 cursor-pointer bg-amber-100 rounded-lg p-2 px-2"
+                className="text-orange-600 text-sm my-2 cursor-pointer bg-orange-100 rounded-lg p-2 px-2"
                 onClick={async () => {
                   try {
                     // const chainIds = await window.ethereum.request({ method: 'eth_chainId' });
@@ -173,10 +176,10 @@ export default function Header() {
           </div>
           {isBreakpoint && (
             <div
-              className="text-white rounded-full hover:text-amber-500 cursor-pointer"
+              className="text-white rounded-full hover:text-orange-500 cursor-pointer"
               onClick={handleSidebar}
             >
-              <FaBars className="ml-3 w-9 h-9 bg-amber-500 rounded-full text-black p-2" />
+              <FaBars className="ml-3 w-9 h-9 bg-orange-500 rounded-full text-black p-2" />
             </div>
           )}
         </div>

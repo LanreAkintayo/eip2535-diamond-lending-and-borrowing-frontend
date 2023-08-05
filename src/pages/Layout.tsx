@@ -24,6 +24,7 @@ export default function Layout({
     loadMaxLTV,
     loadCurrentLTV,
     loadLiquidationThresholdWeighted,
+    loadSupplyAssets,
   } = useDefi();
 
   const { isConnected } = useAccount();
@@ -50,9 +51,8 @@ export default function Layout({
   useEffect(() => {
     const loadDefi = async () => {
       if (signerAddress) {
-        const userBorrows = await loadUserBorrows(signerAddress);
+        await loadUserBorrows(signerAddress);
         await loadUserSupplies(signerAddress);
-
         await loadHealthFactor(signerAddress);
         await loadUserTotalCollateralInUsd(signerAddress);
         await loadUserTotalBorrowedInUsd(signerAddress);
@@ -60,8 +60,15 @@ export default function Layout({
         await loadMaxLTV(signerAddress);
         await loadCurrentLTV(signerAddress);
         await loadLiquidationThresholdWeighted(signerAddress);
+      }
+    };
 
-
+    loadDefi();
+  }, [signerAddress]);
+  useEffect(() => {
+    const loadDefi = async () => {
+      if (signerAddress) {
+        await loadSupplyAssets(signerAddress);
       }
     };
 
@@ -69,7 +76,7 @@ export default function Layout({
   }, [signerAddress]);
 
   return (
-    <div className="bg-gradient-to-tr from-slate-900 to-gray-900 dark:bg-dark-100 flex min-h-screen flex-col">
+    <div className="bg-gray-800 h-full dark:bg-dark-100 flex min-h-screen flex-col">
       <div className="">
         <Header />
       </div>
