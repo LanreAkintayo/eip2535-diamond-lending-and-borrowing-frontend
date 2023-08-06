@@ -39,9 +39,10 @@ export default function Dashboard2() {
     maxLTV,
     currentLTV,
     supplyAssets,
+    borrowAssets
   } = useDefi();
 
-  console.log("Supply Assets: ", supplyAssets);
+  console.log("Borrow Assets: ", borrowAssets);
 
   const formattedHealthFactor = healthFactor ? Number(healthFactor) / 10000 : 0;
   let healthFactorColor = "text-white";
@@ -196,74 +197,9 @@ export default function Dashboard2() {
                     <div className="w-full xl:w-6/12  xl:mb-0 px-2">
                       <SupplyAssets tokens={supplyAssets!} />
                     </div>
-                    <div className="w-full xl:w-6/12 px-2">
-                      {/* <BorrowAssets tokens={tokensForBorrow.data}>
-                          {(token) => {
-                            return (
-                              <RowBorrowAsset
-                                token={token}
-                                key={token.tokenAddress}
-                                balance={yourSupplies.data?.yourBalance}
-                                Borrow={() => {
-                                  return (
-                                    <button
-                                      onClick={() => {
-                                        setSelectedTokenToBorrow(token);
-                                      }}
-                                      className="bg-gray-700 text-base text-white p-2 rounded-md"
-                                    >
-                                      Borrow
-                                    </button>
-                                  );
-                                }}
-                                Details={() => {
-                                  return (
-                                    <Link
-                                      href={{
-                                        pathname: `/reserve-overview/${token.name}`,
-                                        query: {
-                                          ...token,
-                                          availableAmountInContract:
-                                            JSON.stringify(
-                                              token.availableAmountInContract
-                                            ),
-                                          image: JSON.stringify(token.image),
-                                          totalBorrowedInContract:
-                                            JSON.stringify(
-                                              token.totalBorrowedInContract
-                                            ),
-                                          totalSuppliedInContract:
-                                            JSON.stringify(
-                                              token.totalSuppliedInContract
-                                            ),
-                                          userTokenBorrowedAmount:
-                                            JSON.stringify(
-                                              token.userTokenBorrowedAmount
-                                            ),
-                                          userTokenLentAmount: JSON.stringify(
-                                            token.userTokenLentAmount
-                                          ),
-                                          walletBalance: JSON.stringify(
-                                            token.walletBalance
-                                          ),
-                                          userTotalSupplyBalance:
-                                            yourSupplies.data?.yourBalance,
-                                        },
-                                        // the data
-                                      }}
-                                      as={`/reserve-overview/${token.name}`}
-                                    >
-                                      <a className="ml-2 border border-gray-400 text-base font-medium text-gray-800 p-2 rounded-md">
-                                        {" "}
-                                        Details
-                                      </a>
-                                    </Link>
-                                  );
-                                }}
-                              />
-                            );
-                          }}
-                        </BorrowAssets> */}
+                      <div className="w-full xl:w-6/12 px-2">
+                        <BorrowAssets tokens={borrowAssets!} />
+                    
                     </div>
                   </div>
 

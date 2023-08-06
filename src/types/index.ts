@@ -54,6 +54,30 @@ export type SupplyAsset = {
   supplyStableRate: bigint;
 };
 
+export type BorrowAsset = {
+  tokenName: string;
+  tokenAddress: string;
+  tokenImage: string;
+  decimals: number;
+  oraclePrice: bigint | string;
+  maxLTV: bigint | string;
+  liquidationThreshold: bigint | string;
+  liquidationPenalty: bigint | string;
+  supplyStableRate: bigint | string;
+  borrowStableRate: bigint | string;
+  walletBalance: bigint | string;
+  walletBalanceInUsd: bigint | string;
+  availableToBorrowInUsd: bigint | string;
+  availableToBorrow: bigint | string;
+  totalSupplied: bigint | string;
+  totalSuppliedInUsd: bigint | string;
+  totalBorrowed: bigint | string;
+  totalBorrowedInUsd: bigint | string;
+  availableLiquidity: bigint | string;
+  availableLiquidityInUsd: bigint | string;
+  utilizationRate: bigint | string;
+};
+
 export type TokenDetails = {
   tokenAddress: string;
   liquidationThreshold: bigint;
@@ -68,22 +92,22 @@ export type TokenData = {
   tokenAddress: string;
   tokenImage: string;
   decimals: number;
-  oraclePrice: bigint;
-  maxLTV: bigint;
-  liquidationThreshold: bigint;
-  liquidationPenalty: bigint;
-  supplyStableRate: bigint;
-  borrowStableRate: bigint;
-  walletBalance: bigint;
-  walletBalanceInUsd: bigint;
-  availableToBorrowInUsd: bigint;
-  availableToBorrow: bigint;
-  totalSupplied: bigint;
-  totalSuppliedInUsd: bigint;
-  totalBorrowed: bigint;
-  totalBorrowedInUsd: bigint;
-  availableLiquidity: bigint;
-  availableLiquidityInUsd: bigint;
-  utilizationRate: bigint;
+  oraclePrice: bigint | string;
+  maxLTV: bigint | string;
+  liquidationThreshold: bigint | string;
+  liquidationPenalty: bigint | string;
+  supplyStableRate: bigint | string;
+  borrowStableRate: bigint | string;
+  walletBalance: bigint | string;
+  walletBalanceInUsd: bigint | string;
+  availableToBorrowInUsd: bigint | string;
+  availableToBorrow: bigint | string;
+  totalSupplied: bigint | string;
+  totalSuppliedInUsd: bigint | string;
+  totalBorrowed: bigint | string;
+  totalBorrowedInUsd: bigint | string;
+  availableLiquidity: bigint | string;
+  availableLiquidityInUsd: bigint | string;
+  utilizationRate: bigint | string;
 
 }

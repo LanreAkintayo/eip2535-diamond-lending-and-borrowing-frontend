@@ -25,6 +25,7 @@ export default function Layout({
     loadCurrentLTV,
     loadLiquidationThresholdWeighted,
     loadSupplyAssets,
+    loadBorrowAssets
   } = useDefi();
 
   const { isConnected } = useAccount();
@@ -65,6 +66,17 @@ export default function Layout({
 
     loadDefi();
   }, [signerAddress]);
+
+  useEffect(() => {
+    const loadDefi = async () => {
+      if (signerAddress) {
+        await loadBorrowAssets(signerAddress);
+      }
+    };
+
+    loadDefi();
+  }, [signerAddress]);
+
   useEffect(() => {
     const loadDefi = async () => {
       if (signerAddress) {

@@ -12,6 +12,8 @@ import OverviewSkeleton from "../components/OverviewSkeleton";
 
 export default function ReserveOverview() {
   const { slug: tokenAddress } = useParams();
+  const { state } = useLocation();
+  // const { tokenData: tokenDataJson } = state;
 
   const { signerAddress } = useWallet();
   const { getTokenData } = useDefi();
@@ -21,9 +23,14 @@ export default function ReserveOverview() {
   useEffect(() => {
     const loadTokenData = async () => {
       if (signerAddress && tokenAddress) {
-        const tokenData = await getTokenData(signerAddress, tokenAddress);
-        if (tokenData) {
-          setToken(tokenData!);
+        if (state.tokenData) {
+          const parsedTokenData = JSON.parse(state.tokenData) as TokenData;
+          setToken(parsedTokenData);
+        } else {
+          const tokenData = await getTokenData(signerAddress, tokenAddress);
+          if (tokenData) {
+            setToken(tokenData!);
+          }
         }
       }
     };
@@ -52,7 +59,6 @@ export default function ReserveOverview() {
 
   const yourSupplies = {};
   const yourBorrows = {};
-
 
   const web3 = {};
   const contract = {};

@@ -80,10 +80,8 @@ export default function Header() {
     <div
       className={`fixed z-50 bg-gradient-to-tr from-slate-900 to-gray-900 top-0 left-0 w-screen `}
     >
-      {/* Navbar */}
-
       {!collapsed && isBreakpoint && (
-        <div className={`z-50 h-screen ${!collapsed && "fixed  inset-0"}`}>
+        <div className={`z-50 h-screen ${!collapsed && "fixed inset-0"}`}>
           <Sidebar collapsedWidth="0px" collapsed={collapsed}>
             <div
               className="px-4 pt-4 w-full flex justify-end cursor-pointer "
@@ -112,7 +110,7 @@ export default function Header() {
         </div>
       )}
 
-      <nav className="flex items-center flex-col ss:flex-row w-full justify-between ss:px-2 py-2 sm:px-4 sm:py-4 h-full">
+      <nav className="flex items-center flex-col ss:flex-row w-full justify-between ss:px-2 py-2 sm:px-4 h-full">
         <p className="font-logo text-xl text-white sm:text-3xl self-start ss:self-auto">
           <span className="text-orange-700">{"<"}L</span>arry
           <span className="text-orange-700">C</span>odes
