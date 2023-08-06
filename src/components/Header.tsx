@@ -57,6 +57,9 @@ export default function Header() {
 
   const { chainId } = useWallet();
   const location = useLocation();
+
+  // console.log("Location: ", location)
+
   const currentUrl = location.pathname;
 
   // console.log("Current url: ", currentUrl);

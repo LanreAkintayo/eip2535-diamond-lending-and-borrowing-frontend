@@ -179,8 +179,6 @@ export default function Dashboard2() {
                           {formattedHealthFactor}
                         </p>
                       </div>
-
-                      <div></div>
                     </div>
                   </div>
                 </div>

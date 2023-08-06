@@ -1,16 +1,18 @@
 import ReserveStatus from "../components/ReserveStatus";
 import TokenInfo from "../components/TokenInfo";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, Link } from "react-router-dom";
 import useDefi from "../hooks/useDefi";
 import useWallet from "../hooks/useWallet";
 import { useEffect, useState } from "react";
 import { TokenData } from "../types";
 import { inCurrencyFormat } from "../utils/helper";
+import { GoArrowLeft } from "react-icons/go";
+import { IMAGES } from "../constants";
+import OverviewSkeleton from "../components/OverviewSkeleton";
 
 export default function ReserveOverview() {
   const { slug: tokenAddress } = useParams();
 
-  // const {signerAddress}
   const { signerAddress } = useWallet();
   const { getTokenData } = useDefi();
 
@@ -29,11 +31,10 @@ export default function ReserveOverview() {
     loadTokenData();
   }, [signerAddress, tokenAddress]);
 
-  console.log("Token data: ", token);
-
   let fTotalSuppliedInUsd;
   let fAvailableLiquidityInUsd;
   let fUtilizationRate;
+  let fOraclePrice;
 
   if (token) {
     fTotalSuppliedInUsd = inCurrencyFormat(
@@ -42,138 +43,93 @@ export default function ReserveOverview() {
     fAvailableLiquidityInUsd = inCurrencyFormat(
       Number(token.availableLiquidityInUsd) / 10 ** token.decimals
     );
-    fUtilizationRate = Number(token.utilizationRate);
+    fUtilizationRate = Number(token.utilizationRate) / 100;
+
+    fOraclePrice = inCurrencyFormat(
+      Number(token.oraclePrice) / 10 ** token.decimals
+    );
   }
 
-  // const {getTok}
   const yourSupplies = {};
   const yourBorrows = {};
 
-  // const {}
 
-  //   const token = {};
   const web3 = {};
   const contract = {};
   const account = "";
 
   let actualAvailable;
-  let actualAvailableInDollars;
-
-  //   let userTotalAmountAvailableForBorrowInDollars =
-  //     token.userTotalAmountAvailableForBorrowInDollars;
-
-  //   const tokenEquivalent =
-  //     0.999 *
-  //     (userTotalAmountAvailableForBorrowInDollars /
-  //       parseFloat(token.oneTokenToDollar));
-
-  //   const tokenAvailableInContract = parseFloat(
-  //     token.availableAmountInContract.amount
-  //   );
-  //   const tokenAvailableInContractInDollars = convertToDollar(
-  //     token,
-  //     tokenAvailableInContract
-  //   );
-
-  //   if (tokenAvailableInContract >= tokenEquivalent) {
-  //     actualAvailable = tokenEquivalent;
-  //     actualAvailableInDollars = convertToDollar(token, actualAvailable);
-  //   } else {
-  //     actualAvailable = tokenAvailableInContract;
-  //     actualAvailableInDollars = tokenAvailableInContractInDollars;
-  //   }
 
   return (
     <div className="">
-      {token && (
-        <div className="bg-gradient-to-tr from-slate-900 to-gray-900 h-[320px]">
-          <div className="relative md:pt-32 pb-32 pt-12">
-            <div className="md:px-10 mx-auto w-full">
-              <div>
-                {/* Card stats */}
-                <div className="flex flex-wrap">
-                  <div className="w-full px-2">
-                    <div className="relative flex sm:flex-row sm:mt-0 mt-6 flex-col xl:w-5/12 min-w-0 p-3 rounded mb-6 xl:mb-0 ">
-                      <div className="flex items-center">
-                        {true && (
-                          <img
-                            src={token.tokenImage}
-                            width={40}
-                            height={40}
-                            //   layout="fixed"
-                            className="card-img-top"
-                            alt="coinimage"
-                          />
-                          // <div>This is the image</div>
-                        )}
+      {token ? (
+        <div className="">
+          <div className="md:pt-28 bg-gradient-to-tr from-slate-900 to-gray-900 h-[320px] px-8">
+            <div className="w-full flex flex-col justify-center">
+              <div className="flex items-center">
+                <Link
+                  to="/dashboard"
+                  className="mx-2 w-[100px] h-8 bg-slate-700 flex items-center text-white rounded-md justify-center hover:bg-gray-800"
+                >
+                  <GoArrowLeft />
+                  <p className="ml-2">Go back</p>
+                </Link>
 
-                        <div className="text-2xl sm:text-4xl text- ml-2 text-white font-bold">
-                          {token.tokenName}
-                        </div>
-                      </div>
-                      <div className="flex">
-                        <div className="flex pt-2 sm:ml-6 items-center">
-                          <div className=" h-9">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-10 w-910"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="white"
-                              strokeWidth={1}
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
-                              />
-                            </svg>
-                          </div>
-                          <div className=" ml-2">
-                            <div className="text-sm text-white">
-                              Reserve Size:{" "}
-                              <div className="font-bold text-xl">${fTotalSuppliedInUsd }</div>
-                            </div>
-                          </div>
-                        </div>
+                <div className="flex items-center justify-center">
+                  <img
+                    src={IMAGES.MATIC}
+                    width={32}
+                    height={28}
+                    // layout="fixed"
+                    className="card-img-top"
+                    alt="coinimage"
+                  />
+                  <p className="text-2xl text-white ml-2">Polygon Market</p>
+                </div>
+              </div>
+              <div className="flex mt-4">
+                <div className="flex items-center justify-center ">
+                  <img
+                    src={token.tokenImage}
+                    width={40}
+                    height={40}
+                    className="card-img-top"
+                    alt="coinimage"
+                  />
 
-                        <div className="flex pt-2 ml-6 items-center">
-                          <div className=" h-9">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-9 w-9"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="white"
-                              strokeWidth={2}
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"
-                              />
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"
-                              />
-                            </svg>
-                          </div>
-                          <div className=" ml-2">
-                            <div className="text-sm text-white">
-                              Available Liquidity:{" "}
-                              <div className="font-bold text-xl">${fAvailableLiquidityInUsd}</div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                  <p className="text-2xl sm:text-4xl text- ml-2 text-white font-bold">
+                    {token.tokenName}
+                  </p>
+                </div>
+
+                <div className="text-sm text-gray-400 ml-12">
+                  <p>Reserve Size</p>
+                  <div className="font-bold text-2xl text-white">
+                    ${fTotalSuppliedInUsd}
+                  </div>
+                </div>
+                <div className="ml-10 text-sm text-gray-400">
+                  <p>Available Liquidity</p>
+                  <div className="font-bold text-2xl text-white">
+                    ${fAvailableLiquidityInUsd}
+                  </div>
+                </div>
+                <div className="ml-10 text-sm text-gray-400">
+                  <p>Utilization Rate</p>
+                  <div className="font-bold text-2xl text-white">
+                    {fUtilizationRate}%
+                  </div>
+                </div>
+                <div className="ml-10 text-sm text-gray-400">
+                  <p>Oracle price</p>
+                  <div className="font-bold text-2xl text-white">
+                    ${fOraclePrice}
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="px-2 md:px-10 mx-auto w-full -mt-24">
+          <div className="px-2 md:px-10 mx-auto w-full -mt-20">
             <div className="flex flex-wrap mt-4">
               <div className="w-full xl:w-8/12 mb-5 xl:mb-0 px-2">
                 <ReserveStatus token={token} />
@@ -196,6 +152,8 @@ export default function ReserveOverview() {
             {/* <Footer /> */}
           </div>
         </div>
+      ) : (
+        <OverviewSkeleton />
       )}
 
       {/* <ModalBorrow /> */}

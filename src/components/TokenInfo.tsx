@@ -3,7 +3,7 @@ import ModalBorrow from "./ModalBorrow";
 import ModalSupply from "./ModalSupply";
 import { TokenData } from "../types";
 import { inCurrencyFormat, todp } from "../utils/helper";
-
+import { TfiWallet } from "react-icons/tfi";
 
 interface ITokenInfo {
   token: TokenData;
@@ -23,19 +23,27 @@ export default function TokenInfo({
   yourSupplies,
   yourBorrows,
 }: ITokenInfo) {
+  const formattedWalletBalance = inCurrencyFormat(
+    Number(token.walletBalance) / 10 ** token.decimals
+  );
+  const formattedWalletBalanceInUsd = inCurrencyFormat(
+    Number(token.walletBalanceInUsd) / 10 ** token.decimals
+  );
+  const formattedAvailableToBorrow = inCurrencyFormat(
+    Number(token.availableToBorrow) / 10 ** 18
+  );
+  const formattedAvailableToBorrowInUsd = inCurrencyFormat(
+    Number(token.availableToBorrowInUsd) / 10 ** 18
+  );
 
-  const formattedWalletBalance = inCurrencyFormat(Number(token.walletBalance) / 10** token.decimals)
-  const formattedWalletBalanceInUsd = inCurrencyFormat(Number(token.walletBalanceInUsd) / 10 ** token.decimals)
-  const formattedAvailableToBorrow = inCurrencyFormat(Number(token.availableToBorrow) / 10 ** 18)
-  const formattedAvailableToBorrowInUsd = inCurrencyFormat(Number(token.availableToBorrowInUsd) / 10 ** 18)
-  
   //  const formattedAmountSupplied = inCurrencyFormat(Number(token.amountSupplied) / 10** token.decimals)
   // const formattedAmountSuppliedInUsd = inCurrencyFormat(Number(token.amountSuppliedInUsd) / 10 ** token.decimals)
   // const formattedStableRate = Number(token.supplyStableRate) / 100
 
-
-  const [selectedTokenToSupply, setSelectedTokenToSupply] = useState<TokenData | null>();
-  const [selectedTokenToBorrow, setSelectedTokenToBorrow] = useState<TokenData | null>();
+  const [selectedTokenToSupply, setSelectedTokenToSupply] =
+    useState<TokenData | null>();
+  const [selectedTokenToBorrow, setSelectedTokenToBorrow] =
+    useState<TokenData | null>();
 
   const [supplyError, setSupplyError] = useState(null);
   const [supplyResult, setSupplyResult] = useState(null);
@@ -107,7 +115,7 @@ export default function TokenInfo({
   };
 
   const addTokenToMetamask = async (token: any) => {
-    alert("Add token to metamask")
+    alert("Add token to metamask");
     // const tokenAddress = token.tokenAddress;
     // const tokenSymbol = token.name;
     // const tokenDecimals = token.decimals;
@@ -139,7 +147,7 @@ export default function TokenInfo({
   };
 
   const addLAR = async (token: any) => {
-    alert("Add LAR")
+    alert("Add LAR");
     // const larToken = new web3.eth.Contract(
     //   ERC20.abi,
     //   map[NETWORK_ID]["LARToken"][0]
@@ -176,96 +184,65 @@ export default function TokenInfo({
   };
 
   return (
-    <div className="relative flex flex-col min-w-0 break-words px-4 border border-slate-700 text-white bg-gray-800  w-full mb-6 shadow-lg rounded">
-      <div className="rounded-t mb-0 py-3 border-0">
-        <div className="flex flex-wrap">
-          <div className="relative w-full  max-w-full">
-            <p className="font-bold text-lg">Your Info</p>
-          </div>
-          <div className="relative w-full px-4 max-w-full flex-grow flex-1 text-right"></div>
-        </div>
-      </div>
+    <div className="flex flex-col p-4 break-words px-4 border border-slate-700 text-white bg-gray-800  w-full mb-6 shadow-lg rounded">
+      <p className="font-bold text-lg">Your Info</p>
 
-      <div className="block w-full overflow-x-auto ">
-        <div className="flex sm:flex-row flex-col mb-8 pb-2  border-gray-300">
-          <div className="flex w-full flex-col">
-            <div className="flex w-full my-8 justify-between">
-              <p className="w-7/12 text-gray-500 text-sm sm:text-base">
-                Wallet Balance
+      <div className="divide-y divide-slate-700">
+        <div className="mt-8 flex items-center">
+          <div className="w-8 h-8 flex items-center justify-center bg-gray-700 border border-slate-400 rounded-md">
+            <TfiWallet />
+          </div>
+          <div className="ml-3">
+            <p className="text-gray-400 font-medium text-base">
+              Wallet Balance
+            </p>
+            <p className="text-xl font-bold">
+              {formattedWalletBalance} {token.tokenName}
+            </p>
+          </div>
+        </div>
+
+        <div className="my-5 py-5">
+          <div className="flex items-center">
+            <div className="w-9/12">
+              <p className="text-gray-400 font-medium text-sm">
+                Available to supply
               </p>
-              <div className="w-5/12 flex flex-col">
-                <p className="font-medium text-sm sm:text-base">
-                  {formattedWalletBalance} {token.tokenName}
-                </p>
-                <p className="font-medium text-gray-500 text-sm">
-                  ${formattedWalletBalanceInUsd}
-                </p>
-              </div>
-            </div>
-            <div className="flex w-full justify-between">
-              <p className="w-7/12 text-gray-500 text-sm sm:text-base">
-                Available to Supply
+              <p className="text-xl font-bold">
+                {" "}
+                {formattedWalletBalance} {token.tokenName}
               </p>
-              <div className="w-5/12">
-                <p className="font-medium text-sm sm:text-base">
-                  {formattedWalletBalance} {token.tokenName}
-                </p>
-                <p className="font-medium text-gray-500 text-sm">
-                  ${formattedWalletBalanceInUsd}
-                </p>
-              </div>
+              <p className="text-gray-400 font-medium text-base">${formattedWalletBalanceInUsd}</p>
             </div>
-            <div className="mt-8 flex w-full">
-              <p className="w-7/12 text-gray-500 text-sm sm:text-base">
-                Available to Borrow
-              </p>
-              <div className="flex flex-col w-5/12">
-                <p className="font-medium text-sm sm:text-base">
-                  {formattedAvailableToBorrow} {token.tokenName}
-                </p>
-                <p className="font-medium text-gray-500 text-sm">
-                  ${formattedAvailableToBorrowInUsd}
-                </p>
-              </div>
-            </div>
-            <div className="flex w-full pt-8">
+            <div className="w-3/12">
               <button
                 onClick={() => setSelectedTokenToSupply(token)}
-                className="bg-gray-300 text-gray-800 p-2 rounded-md text-base"
+                className="bg-gray-300 text-gray-800 rounded-md px-4 text-base p-2 font-bold "
               >
                 Supply
               </button>
+            </div>
+          </div>
+          <div className=" mt-5 flex items-center">
+            <div className="w-9/12">
+              <p className="text-gray-400 font-medium text-sm">
+                Available to Borrow
+              </p>
+              <p className="text-xl font-bold">
+                {" "}
+                {formattedAvailableToBorrow} {token.tokenName}
+              </p>
+              <p className="text-gray-400 font-medium text-base">
+                ${formattedAvailableToBorrowInUsd}
+              </p>
+            </div>
+            <div className="w-3/12">
               <button
-                onClick={() => setSelectedTokenToBorrow(token)}
-                className="bg-gray-300 text-gray-800 ml-2 p-2 rounded-md text-base"
+                onClick={() => setSelectedTokenToSupply(token)}
+                className="bg-gray-300 text-gray-800 rounded-md px-4 text-base p-2 font-bold "
               >
                 Borrow
               </button>
-            </div>
-
-            <div className="flex justify-center text-center sm:block sm:p-0 mt-2">
-              {selectedTokenToSupply && (
-                <ModalSupply
-                  token={selectedTokenToSupply}
-                  supplyError={supplyError}
-                  supplyResult={supplyResult}
-                  addLAR={addLAR}
-                  closeModal={handleCloseModal}
-                  onSupply={supplyToken}
-                />
-              )}
-
-              {selectedTokenToBorrow && (
-                <ModalBorrow
-                  token={selectedTokenToBorrow}
-                  closeModal={handleCloseModal}
-                  balance={yourSupplies.data?.yourBalance}
-                  onBorrow={borrowToken}
-                  borrowingError={borrowingError}
-                  borrowingResult={borrowingResult}
-                  addBorrowedToken={addTokenToMetamask}
-                />
-              )}
             </div>
           </div>
         </div>

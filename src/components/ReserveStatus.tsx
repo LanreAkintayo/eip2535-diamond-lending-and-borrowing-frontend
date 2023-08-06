@@ -3,6 +3,8 @@ import { inCurrencyFormat } from "../utils/helper";
 
 export default function ReserveStatus({ token }: { token: TokenData }) {
   const formattedMaxLTV = Number(token.maxLTV) / 100;
+  const formattedLiquidationThreshold = Number(token.liquidationThreshold) / 100;
+  const formattedLiquidationPenalty = Number(token.liquidationPenalty) / 100;
   const formattedBorrowStableRate = Number(token.borrowStableRate) / 100;
   const formattedSupplyStableRate = Number(token.supplyStableRate) / 100;
   const fTotalSuppliedInUsd = inCurrencyFormat(
@@ -27,8 +29,8 @@ export default function ReserveStatus({ token }: { token: TokenData }) {
 
       <div className="block w-full overflow-x-auto ">
         <div className="flex sm:flex-row flex-col border mb-8 pb-8 border-r-0 border-l-0 border-t-0 border-slate-700">
-          <div className="font-medium text-lg w-6/12 mb-2">Supply Info</div>
-          <div className="flex flex-col">
+          <div className="font-medium text-lg w-4/12 mb-2">Supply Info</div>
+          <div className="flex flex-col w-8/12">
             <div className="flex mt-3 sm:mt-0">
               <div>
                 <p className="font-medium text-gray-500 text-sm ">
@@ -36,26 +38,47 @@ export default function ReserveStatus({ token }: { token: TokenData }) {
                 </p>
                 <p className="font-medium text-lg">${fTotalSuppliedInUsd}</p>
               </div>
-              <div className="ml-4">
-                <p className="font-medium text-gray-500 text-sm">APY </p>
+              <div className="ml-6">
+                <p className="font-medium text-gray-500 text-sm">APY Stable</p>
                 <p className="font-medium sm:text-lg">
                   {formattedSupplyStableRate}%
                 </p>
               </div>
             </div>
-            <div className=" my-3 px-2 rounded-md">
-              <div className="">Collateral Usage: ✔️ Can be collateral</div>
-              <div className="mt-2">
-                <span className="text-sm">MAX LTV</span>{" "}
-                <span className="font-medium">{formattedMaxLTV}%</span>
+            <div className=" my-3 rounded-md">
+              <div className="">
+                Collateral Usage: ✔️{" "}
+                <span className="text-green-500 font-medium">
+                  Can be collateral
+                </span>
+              </div>
+              <div className="flex mt-2">
+                <div className="w-[150px] h-[55px] flex flex-col items-left border border-slate-600 p-1 rounded-md">
+                  <p className="text-[13px] text-gray-400 font-medium">
+                    Max LTV
+                  </p>
+                  <p className="font-medium">{formattedMaxLTV}%</p>
+                </div>
+                <div className="mx-3 w-[150px] h-[55px] flex flex-col items-left border border-slate-600 p-1 rounded-md">
+                  <p className="text-[13px] text-gray-400 font-medium">
+                    Liquidation Threshold
+                  </p>
+                  <p className="font-medium">{formattedLiquidationThreshold}%</p>
+                </div>
+                <div className="w-[150px] h-[55px] flex flex-col items-left border border-slate-600 p-1 rounded-md">
+                  <p className="text-[13px] text-gray-400 font-medium">
+                    Liquidation Penalty
+                  </p>
+                  <p className="font-medium">{formattedLiquidationPenalty}%</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         <div className="flex sm:flex-row flex-col my-2 pb-8 ">
-          <div className="font-medium text-lg w-6/12">Borrow Info</div>
-          <div className="flex flex-col">
+          <div className="font-medium text-lg w-4/12">Borrow Info</div>
+          <div className="flex flex-col w-8/12">
             <div className="flex mt-3 sm:mt-0">
               <div>
                 <p className="font-medium text-gray-500 text-sm ">
@@ -63,7 +86,7 @@ export default function ReserveStatus({ token }: { token: TokenData }) {
                 </p>
                 <p className="font-medium text-lg">${fTotalBorrowedInUsd}</p>
               </div>
-              <div className="ml-4">
+              <div className="ml-6">
                 <p className="font-medium text-gray-500 text-sm">APY Stable </p>
                 <p className="font-medium sm:text-lg">
                   {formattedBorrowStableRate}%
@@ -75,29 +98,4 @@ export default function ReserveStatus({ token }: { token: TokenData }) {
       </div>
     </div>
   );
-}
-
-{
-  /* <table className="items-center w-full bg-transparent border-collapse">
-<thead>
-  <tr>
-    <th className="px-4 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs  border-t-0 border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-      Assets
-    </th>
-    <th className="px-4 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs  border-t-0 border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-      Available
-    </th>
-    <th className="px-4 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs  border-t-0 border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-      APY, variable
-    </th>
-    <th className="px-4 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs  border-t-0 border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-      APY, stable
-    </th>
-    <th className="px-4 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs  border-t-0 border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"></th>
-  </tr>
-</thead>
-<tbody>
- 
-</tbody>
-</table> */
 }

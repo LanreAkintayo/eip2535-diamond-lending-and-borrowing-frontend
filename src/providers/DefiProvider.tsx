@@ -249,7 +249,7 @@ const DefiProvider = (props: any) => {
       functionName: "getAllSupportedTokens",
     })) as string[];
 
-    console.log("Supported tokens:", supportedTokens);
+    // console.log("Supported tokens:", supportedTokens);
     const supplyAssets = supportedTokens.map(async (tokenAddress: string) => {
       const tokenName = (await readContract({
         address: tokenAddress as `0x${string}`,
