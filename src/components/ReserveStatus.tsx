@@ -1,9 +1,16 @@
 import { TokenData } from "../types";
+import { inCurrencyFormat } from "../utils/helper";
 
 export default function ReserveStatus({ token }: { token: TokenData }) {
-  const formattedMaxLTV = Number(token.maxLTV) / 100
-  const formattedBorrowStableRate = Number(token.borrowStableRate) / 100
-  const formattedSupplyStableRate = Number(token.supplyStableRate) / 100
+  const formattedMaxLTV = Number(token.maxLTV) / 100;
+  const formattedBorrowStableRate = Number(token.borrowStableRate) / 100;
+  const formattedSupplyStableRate = Number(token.supplyStableRate) / 100;
+  const fTotalSuppliedInUsd = inCurrencyFormat(
+    Number(token.totalSuppliedInUsd) / 10 ** token.decimals
+  );
+  const fTotalBorrowedInUsd = inCurrencyFormat(
+    Number(token.totalBorrowedInUsd) / 10 ** token.decimals
+  );
 
   return (
     <div className="relative flex flex-col min-w-0 break-words px-4 border border-slate-700 text-white bg-gray-800 w-full mb-6 shadow-lg rounded">
@@ -27,7 +34,7 @@ export default function ReserveStatus({ token }: { token: TokenData }) {
                 <p className="font-medium text-gray-500 text-sm ">
                   Total Supplied
                 </p>
-                <p className="font-medium text-lg">$45,000</p>
+                <p className="font-medium text-lg">${fTotalSuppliedInUsd}</p>
               </div>
               <div className="ml-4">
                 <p className="font-medium text-gray-500 text-sm">APY </p>
@@ -54,7 +61,7 @@ export default function ReserveStatus({ token }: { token: TokenData }) {
                 <p className="font-medium text-gray-500 text-sm ">
                   Total Borrowed
                 </p>
-                <p className="font-medium text-lg">$6,000</p>
+                <p className="font-medium text-lg">${fTotalBorrowedInUsd}</p>
               </div>
               <div className="ml-4">
                 <p className="font-medium text-gray-500 text-sm">APY Stable </p>

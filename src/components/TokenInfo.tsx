@@ -26,8 +26,8 @@ export default function TokenInfo({
 
   const formattedWalletBalance = inCurrencyFormat(Number(token.walletBalance) / 10** token.decimals)
   const formattedWalletBalanceInUsd = inCurrencyFormat(Number(token.walletBalanceInUsd) / 10 ** token.decimals)
-  const formattedAvailableToBorrow = inCurrencyFormat(Number(token.availableToBorrow) / 10 ** token.decimals)
-  const formattedAvailableToBorrowInUsd = inCurrencyFormat(Number(token.availableToBorrowInUsd) / 10 ** token.decimals)
+  const formattedAvailableToBorrow = inCurrencyFormat(Number(token.availableToBorrow) / 10 ** 18)
+  const formattedAvailableToBorrowInUsd = inCurrencyFormat(Number(token.availableToBorrowInUsd) / 10 ** 18)
   
   //  const formattedAmountSupplied = inCurrencyFormat(Number(token.amountSupplied) / 10** token.decimals)
   // const formattedAmountSuppliedInUsd = inCurrencyFormat(Number(token.amountSuppliedInUsd) / 10 ** token.decimals)
@@ -189,45 +189,55 @@ export default function TokenInfo({
       <div className="block w-full overflow-x-auto ">
         <div className="flex sm:flex-row flex-col mb-8 pb-2  border-gray-300">
           <div className="flex w-full flex-col">
-            <div className="flex w-full py-8 justify-between">
-              <p className="text-gray-500 text-sm sm:text-base">
+            <div className="flex w-full my-8 justify-between">
+              <p className="w-7/12 text-gray-500 text-sm sm:text-base">
                 Wallet Balance
               </p>
-              <div className="flex flex-col">
+              <div className="w-5/12 flex flex-col">
                 <p className="font-medium text-sm sm:text-base">
                   {formattedWalletBalance} {token.tokenName}
                 </p>
                 <p className="font-medium text-gray-500 text-sm">
-                  {formattedWalletBalanceInUsd}
+                  ${formattedWalletBalanceInUsd}
                 </p>
               </div>
             </div>
             <div className="flex w-full justify-between">
-              <p className="text-gray-500 text-sm sm:text-base">
+              <p className="w-7/12 text-gray-500 text-sm sm:text-base">
                 Available to Supply
               </p>
-              <p className="font-medium text-sm sm:text-base">
-                {formattedWalletBalance} {token.tokenName}
-              </p>
+              <div className="w-5/12">
+                <p className="font-medium text-sm sm:text-base">
+                  {formattedWalletBalance} {token.tokenName}
+                </p>
+                <p className="font-medium text-gray-500 text-sm">
+                  ${formattedWalletBalanceInUsd}
+                </p>
+              </div>
             </div>
-            <div className="flex w-full py-2 justify-between">
-              <p className="text-gray-500 text-sm sm:text-base">
+            <div className="mt-8 flex w-full">
+              <p className="w-7/12 text-gray-500 text-sm sm:text-base">
                 Available to Borrow
               </p>
-              <p className="font-medium text-sm sm:text-base">
-                {formattedAvailableToBorrow} {token.tokenName}
-              </p>
+              <div className="flex flex-col w-5/12">
+                <p className="font-medium text-sm sm:text-base">
+                  {formattedAvailableToBorrow} {token.tokenName}
+                </p>
+                <p className="font-medium text-gray-500 text-sm">
+                  ${formattedAvailableToBorrowInUsd}
+                </p>
+              </div>
             </div>
             <div className="flex w-full pt-8">
               <button
                 onClick={() => setSelectedTokenToSupply(token)}
-                className="bg-gray-800 text-white p-2 rounded-md text-base"
+                className="bg-gray-300 text-gray-800 p-2 rounded-md text-base"
               >
                 Supply
               </button>
               <button
                 onClick={() => setSelectedTokenToBorrow(token)}
-                className="bg-gray-800 text-white ml-2 p-2 rounded-md text-base"
+                className="bg-gray-300 text-gray-800 ml-2 p-2 rounded-md text-base"
               >
                 Borrow
               </button>

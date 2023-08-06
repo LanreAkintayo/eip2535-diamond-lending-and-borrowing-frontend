@@ -488,6 +488,41 @@ const DefiProvider = (props: any) => {
       args: [tokenAddress, availableToBorrowInUsd],
     })) as bigint;
 
+    const totalSupplied = (await readContract({
+      address: diamondAddress as `0x${string}`,
+      abi: getterAbi,
+      functionName: "getTokenTotalSupplied",
+      args: [tokenAddress],
+    })) as bigint;
+    
+    const totalSuppliedInUsd = (await readContract({
+      address: diamondAddress as `0x${string}`,
+      abi: getterAbi,
+      functionName: "getUsdEquivalence",
+      args: [tokenAddress, totalSupplied],
+    })) as bigint;
+
+    const totalBorrowed = (await readContract({
+      address: diamondAddress as `0x${string}`,
+      abi: getterAbi,
+      functionName: "getTokenTotalBorrowed",
+      args: [tokenAddress],
+    })) as bigint;
+
+    const totalBorrowedInUsd = (await readContract({
+      address: diamondAddress as `0x${string}`,
+      abi: getterAbi,
+      functionName: "getUsdEquivalence",
+      args: [tokenAddress, totalBorrowed],
+    })) as bigint;
+
+    const availableLiquidity = totalSupplied - totalBorrowed;
+    const availableLiquidityInUsd = totalSuppliedInUsd - totalBorrowedInUsd;
+
+    const utilizationRate = (totalBorrowed * BigInt(10000) )/ totalSupplied
+
+    
+
 
     return {
       tokenName,
@@ -503,7 +538,14 @@ const DefiProvider = (props: any) => {
       walletBalance,
       walletBalanceInUsd,
       availableToBorrow,
-      availableToBorrowInUsd
+      availableToBorrowInUsd,
+      totalSupplied,
+      totalSuppliedInUsd,
+      totalBorrowed,
+      totalBorrowedInUsd,
+      availableLiquidity,
+      availableLiquidityInUsd,
+      utilizationRate
     }
   };
 

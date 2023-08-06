@@ -78,4 +78,12 @@ export type TokenData = {
   walletBalanceInUsd: bigint;
   availableToBorrowInUsd: bigint;
   availableToBorrow: bigint;
+  totalSupplied: bigint;
+  totalSuppliedInUsd: bigint;
+  totalBorrowed: bigint;
+  totalBorrowedInUsd: bigint;
+  availableLiquidity: bigint;
+  availableLiquidityInUsd: bigint;
+  utilizationRate: bigint;
+
 }

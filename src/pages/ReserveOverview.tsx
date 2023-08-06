@@ -5,6 +5,7 @@ import useDefi from "../hooks/useDefi";
 import useWallet from "../hooks/useWallet";
 import { useEffect, useState } from "react";
 import { TokenData } from "../types";
+import { inCurrencyFormat } from "../utils/helper";
 
 export default function ReserveOverview() {
   const { slug: tokenAddress } = useParams();
@@ -23,12 +24,26 @@ export default function ReserveOverview() {
           setToken(tokenData!);
         }
       }
-      };
-      
-      loadTokenData()
+    };
+
+    loadTokenData();
   }, [signerAddress, tokenAddress]);
 
   console.log("Token data: ", token);
+
+  let fTotalSuppliedInUsd;
+  let fAvailableLiquidityInUsd;
+  let fUtilizationRate;
+
+  if (token) {
+    fTotalSuppliedInUsd = inCurrencyFormat(
+      Number(token.totalSuppliedInUsd) / 10 ** token.decimals
+    );
+    fAvailableLiquidityInUsd = inCurrencyFormat(
+      Number(token.availableLiquidityInUsd) / 10 ** token.decimals
+    );
+    fUtilizationRate = Number(token.utilizationRate);
+  }
 
   // const {getTok}
   const yourSupplies = {};
@@ -36,7 +51,7 @@ export default function ReserveOverview() {
 
   // const {}
 
-//   const token = {};
+  //   const token = {};
   const web3 = {};
   const contract = {};
   const account = "";
@@ -117,7 +132,7 @@ export default function ReserveOverview() {
                           <div className=" ml-2">
                             <div className="text-sm text-white">
                               Reserve Size:{" "}
-                              <div className="font-bold text-xl">$50,000</div>
+                              <div className="font-bold text-xl">${fTotalSuppliedInUsd }</div>
                             </div>
                           </div>
                         </div>
@@ -147,7 +162,7 @@ export default function ReserveOverview() {
                           <div className=" ml-2">
                             <div className="text-sm text-white">
                               Available Liquidity:{" "}
-                              <div className="font-bold text-xl">$20,000</div>
+                              <div className="font-bold text-xl">${fAvailableLiquidityInUsd}</div>
                             </div>
                           </div>
                         </div>
@@ -158,7 +173,7 @@ export default function ReserveOverview() {
               </div>
             </div>
           </div>
-          <div className="px-2 md:px-10 mx-auto w-full -m-24">
+          <div className="px-2 md:px-10 mx-auto w-full -mt-24">
             <div className="flex flex-wrap mt-4">
               <div className="w-full xl:w-8/12 mb-5 xl:mb-0 px-2">
                 <ReserveStatus token={token} />

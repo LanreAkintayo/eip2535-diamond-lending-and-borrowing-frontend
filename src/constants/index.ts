@@ -4,9 +4,9 @@ import getterAbi from "./getterAbi.json";
 
 export const DEPLOYER = "0xec2B1547294a4dd62C0aE651aEb01493f8e4cD74";
 
-const diamondAddress = "0x0f5c299fcb70BC3D03bBcE3B3f7996f55260d7F4";
-const larAddress = "0xf872320EfA2Eb96E212a01c4790D5B4E07f621c8";
-const getterAddress = "0x71B1775E18EA508770a55B719Ed5814068d03c9F";
+const diamondAddress = "0x9c4FAB0B2ee9204dA5968f7F9CD0a8178a89716F";
+const larAddress = "0x4E7932E2eAC5C473ae6460298AEd32C3F344cBAE";
+const getterAddress = "0xEEd3a4E4b30104365BEfFFbe3dC6BA4695AE51e1";
 
 export const IMAGES = {
   DAI: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSllrF9PNBf88kIx9USP5g73XDYjkMyRBaDig&usqp=CAU",
@@ -15,7 +15,7 @@ export const IMAGES = {
   FAU: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5qUPi3Ar2dQZ2m9K5opr_h9QaQz4_G5HVYA&usqp=CAU",
   LAR: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqZs8PLHRLaGd4QfIvOYmCg30svx5dHp0y6A&usqp=CAU",
   WMATIC: "https://staging.aave.com/icons/tokens/wmatic.svg",
-  MATIC: "https://staging.aave.com/icons/tokens/matic.svg",
+  MATIC: "https://staging.aave.com/icons/tokens/matic.svg ",
 };
 
 export const dai = "0xF14f9596430931E177469715c591513308244e8F"; // 18
