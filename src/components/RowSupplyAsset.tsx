@@ -28,7 +28,7 @@ export default function RowSupplyAsset({ token, Supply, Details }: IRowSupplyAss
     <>
       <tr>
         <th className="border-t-0 px-4 border border-slate-700 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
-          <div className="flex items-center">
+          <div className="flex items-center mr-3">
             <img
               src={token.tokenImage}
               width={30}

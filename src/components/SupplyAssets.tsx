@@ -5,12 +5,17 @@ import RowSupplyAsset from "./RowSupplyAsset";
 import Skeleton from "./Skeleton";
 import SupplyRow from "./SupplyRow";
 import { replacer } from "../utils/helper";
+import ModalSupply from "./ModalSupply";
 
 interface IsupplyAsset {
   tokens: TokenData[];
 }
 export default function SupplyAssets({ tokens }: IsupplyAsset) {
   const [selectedTokenToSupply, setSelectedTokenToSupply] = useState(null);
+
+  const handleCloseModal = () => {
+    setSelectedTokenToSupply(null);
+  };
 
   return (
     <div className=" flex flex-col min-w-0 break-words bg-gray-800 border border-slate-700 text-white w-full mb-6 shadow-lg rounded">
@@ -37,7 +42,7 @@ export default function SupplyAssets({ tokens }: IsupplyAsset) {
                 APY
               </th>
               <th className="px-4 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-slate-600 py-3 text-xs  border-t-0 border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-                Can be collateral
+                Is collateral
               </th>
               <th className="px-4 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-slate-600 py-3 text-xs  border-t-0 border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"></th>
             </tr>
@@ -45,7 +50,6 @@ export default function SupplyAssets({ tokens }: IsupplyAsset) {
           <tbody>
             {!tokens && <Skeleton />}
             {tokens?.map((token: any) => {
-              
               return (
                 <RowSupplyAsset
                   token={token}
@@ -78,6 +82,15 @@ export default function SupplyAssets({ tokens }: IsupplyAsset) {
             })}
           </tbody>
         </table>
+
+        <div className="justify-center items-center text-center sm:block sm:p-0 mt-2">
+          {selectedTokenToSupply && (
+            <ModalSupply
+              token={selectedTokenToSupply}
+              closeModal={handleCloseModal}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

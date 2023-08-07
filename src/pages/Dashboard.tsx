@@ -242,18 +242,7 @@ export default function Dashboard2() {
       )}
 
       <div className="flex justify-center text-center sm:block sm:p-0 mt-2">
-        {/* {selectedTokenToSupply && (
-          <ModalSupply
-            token={selectedTokenToSupply}
-            supplyError={supplyError}
-            supplyResult={supplyResult}
-            transactionHash={transactionHash}
-            addLAR={addLAR}
-            newSupply={newSupply}
-            closeModal={handleCloseModal}
-            onSupply={supplyToken}
-          />
-        )}
+        {/* 
 
         {selectedTokenToBorrow && (
           <ModalBorrow

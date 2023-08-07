@@ -78,7 +78,7 @@ export default function Header() {
 
   return (
     <div
-      className={`fixed z-50 bg-gradient-to-tr from-slate-900 to-gray-900 top-0 left-0 w-screen `}
+      className={`fixed z-10 bg-gradient-to-tr from-slate-900 to-gray-900 top-0 left-0 w-screen `}
     >
       {!collapsed && isBreakpoint && (
         <div className={`z-50 h-screen ${!collapsed && "fixed inset-0"}`}>
