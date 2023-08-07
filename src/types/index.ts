@@ -20,6 +20,7 @@ export type DetailedSuppliedToken = {
   tokenName: string;
   tokenImage: string;
   decimals: number;
+  liquidationThreshold: bigint | string
 };
 
 export type ContractBorrowedToken = {

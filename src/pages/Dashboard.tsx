@@ -42,7 +42,7 @@ export default function Dashboard2() {
     borrowAssets
   } = useDefi();
 
-  console.log("Borrow Assets: ", borrowAssets);
+  // console.log("Borrow Assets: ", borrowAssets);
 
   const formattedHealthFactor = healthFactor ? Number(healthFactor) / 10000 : 0;
   let healthFactorColor = "text-white";

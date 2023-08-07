@@ -1,9 +1,33 @@
 import correct from "@assets/correct.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BorderLayout from "./BorderLayout";
 import { TokenData } from "../types";
 import { GiCheckMark } from "react-icons/gi";
-import { inCurrencyFormat } from "../utils/helper";
+import { getLatestHealthFactor, inCurrencyFormat } from "../utils/helper";
+import {
+  IMAGES,
+  diamondAbi,
+  diamondAddress,
+  erc20Abi,
+  erc20PermitAbi,
+  getterAbi,
+  types,
+} from "../constants";
+import useWallet from "../hooks/useWallet";
+import { Signature, ethers } from "ethers";
+import { erc20ABI } from "wagmi";
+import {
+  readContract,
+  signTypedData,
+  prepareWriteContract,
+  writeContract,
+  waitForTransaction,
+} from "@wagmi/core";
+import { getEthersProvider } from "../ethers";
+import { getEthersSigner } from "../ethersSigner";
+import { TfiWallet } from "react-icons/tfi";
+import { ClipLoader } from "react-spinners";
+import useDefi from "../hooks/useDefi";
 
 interface IModalSupply {
   token: TokenData;
@@ -13,12 +37,184 @@ interface IModalSupply {
 export default function ModalSupply({ token, closeModal }: IModalSupply) {
   const [value, setValue] = useState("");
   const [valueInUsd, setValueInUsd] = useState("0.00");
+  const [deadline, setDeadline] = useState(0);
+  const [sig, setSig] = useState<Signature>();
+
+  const { signerAddress, chainId } = useWallet();
+  const {
+    loadHealthFactor,
+    loadSupplyAssets,
+    loadUserSupplies,
+    loadUserTotalCollateralInUsd,
+    healthFactor,
+    userSupplies,
+    userTotalCollateralInUsd,
+    userTotalBorrowedInUsd,
+    liquidationThresholdWeighted,
+    
+  } = useDefi();
 
   const [transactionHash, setTransactionHash] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const [isApproving, setIsApproving] = useState(false);
+  const [approveText, setApproveText] = useState(
+    `Approve ${token.tokenName} to continue`
+  );
+  const [hasApproved, setHasApproved] = useState(true);
+
+  const [isSupplying, setIsSupplying] = useState(false);
+  const [supplyText, setSupplyText] = useState(`Supply ${token.tokenName}`);
+
+  const [isSuccess, setIsSuccess] = useState(false);
+
   const addLAR = (token: TokenData) => {
     alert("Add LAR token");
+  };
+
+  useEffect(() => {
+    console.log(
+      "UserTotalCollateralInUsd in the modal: ",
+      userTotalCollateralInUsd
+    );
+    console.log(
+      "UserTotalBorrowedInUsd in the modal: ",
+      userTotalBorrowedInUsd
+    );
+    console.log(
+      "liquidationThresholdWeited in the modal: ",
+      liquidationThresholdWeighted
+    );
+
+    console.log("Health factor: ", healthFactor)
+  }, [
+    userTotalCollateralInUsd,
+    userTotalBorrowedInUsd,
+    liquidationThresholdWeighted,
+    healthFactor
+  ]);
+  const updateSupply = async () => {
+    await loadHealthFactor(signerAddress);
+    await loadSupplyAssets(signerAddress);
+    await loadUserSupplies(signerAddress);
+    await loadUserTotalCollateralInUsd(signerAddress);
+  };
+
+  const approveToken = async () => {
+    setIsApproving(true);
+    setApproveText(`Approving ${token.tokenName}`);
+    const parsedValue = BigInt(Number(value) * 10 ** token.decimals);
+
+    console.log("Parsed value: ", parsedValue);
+    try {
+      const nonce = (await readContract({
+        address: token.tokenAddress as `0x${string}`,
+        abi: erc20PermitAbi,
+        functionName: "nonces",
+        args: [signerAddress],
+      })) as bigint;
+
+      console.log("Nonce: ", nonce);
+
+      const domain = {
+        name: token.tokenName,
+        version: "1",
+        chainId: 80001,
+        verifyingContract: token.tokenAddress as `0x${string}`,
+      };
+
+      // Expire after 60 minutes
+      const deadline = Math.floor(Date.now() / 1000) + 3600;
+      setDeadline(deadline);
+      // const value = ethers.parseUnits("5", 18);
+
+      const message = {
+        owner: signerAddress,
+        spender: diamondAddress,
+        value: parsedValue,
+        nonce: nonce,
+        deadline,
+      };
+
+      const signature = await signTypedData({
+        domain,
+        message,
+        primaryType: "Permit",
+        types,
+      });
+
+      console.log("Signature: ", signature);
+
+      const sig = ethers.Signature.from(signature);
+      console.log("Splitted signature: ", sig);
+      setSig(sig);
+
+      const recovered = ethers.verifyTypedData(domain, types, message, sig);
+
+      console.log("Recovered: ", recovered);
+      setIsApproving(false);
+      setApproveText(`Approve ${token.tokenName}`);
+      setHasApproved(true);
+    } catch (error) {
+      setIsApproving(false);
+      setApproveText(`Approve ${token.tokenName}`);
+      console.log("Failed to approve");
+    }
+  };
+
+  const supplyTokenWithPermit = async () => {
+    console.log("We are here");
+
+    if (!sig) {
+      console.log("Approve the token first");
+    } else {
+      setIsSupplying(true);
+      setSupplyText(`Supplying ${token.tokenName}`);
+      const parsedValue = BigInt(Number(value) * 10 ** token.decimals);
+      console.log("We are now here");
+      console.log("We are inside try block");
+      try {
+        const supplyRequest = await prepareWriteContract({
+          address: diamondAddress as `0x${string}`,
+          abi: diamondAbi,
+          functionName: "supplyWithPermit",
+          args: [
+            token.tokenAddress,
+            parsedValue,
+            deadline,
+            sig?.v,
+            sig?.r,
+            sig?.s,
+          ],
+        });
+
+        const { hash } = await writeContract(supplyRequest);
+
+        const supplyReceipt = await waitForTransaction({
+          hash,
+        });
+
+        console.log("Receipt: ", supplyReceipt);
+        if (supplyReceipt.status == "success") {
+          console.log("Supplied");
+          setIsSuccess(true);
+          await updateSupply();
+
+          // await
+          // await loadAllWalletTokens(signerAddress)
+        } else {
+          console.log("Failure");
+          console.log("Failed to Supply");
+        }
+
+        setIsSupplying(false);
+        setSupplyText(`Supply ${token.tokenName}`);
+      } catch (error) {
+        console.log("Error: ", error);
+        setIsSupplying(false);
+        setSupplyText(`Supply ${token.tokenName}`);
+      }
+    }
   };
 
   return (
@@ -64,30 +260,33 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
                   </div> */}
       </div>
       {/* <!-- Modal body --> */}
-      {transactionHash ? (
+      {isSuccess ? (
         <div className="w-full max-w-md pt-1 space-y-3">
           <div className="flex flex-col justify-center items-center">
-            {/* <img
-              src={correct}
-              width={60}
-              height={60}
-              // layout="fixed"
-              className="card-img-top"
-              alt="coinimage"
-            /> */}
-            <GiCheckMark />
+            <GiCheckMark className="w-10 h-10 rounded-full text-green-200 bg-green-800 p-2" />
 
             <div className="font-bold mt-4">All Done!</div>
             <p>
               You Supplied {value} {token?.tokenName}
             </p>
-            <button
-              onClick={() => addLAR(token)}
-              className="p-1 border my-3 border-gray-800 text-sm font-medium rounded-md"
-            >
-              {" "}
-              + Add LAR to the Wallet
-            </button>
+            <div className="p-4 border my-3 space-y-2 border-slate-700 rounded-md flex items-center justify-center flex-col">
+              <img
+                src="./LAR.png"
+                width={40}
+                height={40}
+                // layout="fixed"
+                className="card-img-top"
+                alt="coinimage"
+              />
+              <p>Add LAR to wallet to track your balance</p>
+              <button
+                onClick={() => addLAR(token)}
+                className="bg-slate-700 p-2 flex space-x-2 items-center rounded-md text-base font-medium "
+              >
+                <TfiWallet />
+                <p>Add to wallet</p>
+              </button>
+            </div>
 
             <button
               onClick={() => {
@@ -96,7 +295,7 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
                   "_blank"
                 );
               }}
-              className="text-sm self-end pr-3 mt-3 text-gray-500 "
+              className="text-sm self-end pr-3 mt-3 text-gray-400 "
             >
               Review tx details
             </button>
@@ -107,10 +306,11 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
                   setValue("");
                   setValueInUsd("0.00");
                   closeModal();
+                  setIsSuccess(false);
                 }}
                 data-modal-toggle="small-modal"
                 type="button"
-                className="text-white w-full bg-gray-800  hover:bg-gray-900 hover:text-white rounded-md p-3"
+                className="text-white w-full bg-gray-700  hover:bg-gray-900 hover:text-white rounded-md p-3"
               >
                 <div className="flex justify-center ">Ok, Close.</div>
                 {/*  */}
@@ -119,121 +319,195 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
           </div>
         </div>
       ) : (
-        <div className="p-6 w-full pt-1 space-y-3">
-          <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-            Amount
-          </p>
-          <div className="flex flex-col items-center border rounded-md p-2 border-slate-700">
-            <div className="w-full flex items-center">
-              <input
-                onChange={async (event) => {
-                  const walletBalance =
-                    Number(token.walletBalance) / 10 ** token.decimals;
-                  const walletBalanceInUsd = inCurrencyFormat(
-                    Number(token.walletBalanceInUsd) / 10 ** token.decimals
-                  );
-
-                  const { value } = event.target;
-                  // if (isNaN(value)) {
-                  //   return;
-                  // }
-
-                  console.log("Value: ", Number(value));
-                  console.log("Wallet balance: ", walletBalance);
-
-                  console.log("Token.walletBalance: ", token.walletBalance);
-                  if (Number(value) >= walletBalance) {
-                    setValue(walletBalance.toString());
-                    setValueInUsd(walletBalanceInUsd);
-                    return;
-                  }
-
-                  let usableValue = "0.00";
-
-                  if (value) {
-                    usableValue = inCurrencyFormat(
-                      parseFloat(value) *
-                        (Number(token.oraclePrice) / 10 ** token.decimals)
-                    );
-                  }
-
-                  setValueInUsd(usableValue);
-                  setValue(value);
-                }}
-                value={value}
-                type="text"
-                name="text"
-                id="text"
-                placeholder="0.00"
-                className="bg-slate-800 w-80 block pl-2 p-1 font-medium sm:text-lg focus:outline-none rounded-md"
-              />
-
-              <img
-                src={token.tokenImage}
-                width={30}
-                height={30}
-                // layout="fixed"
-                className="ml-2 card-img-top"
-                alt="coinimage"
-              />
-
-              <p className="font-medium text-lg ml-2">{token.tokenName}</p>
-            </div>
-
-            <div className="w-full justify-between flex items-center">
-              <p className="pl-2 pt-0 mt-0 font-medium text-sm text-gray-400">
-                ${valueInUsd}
-              </p>
-              <div className="flex items-center">
-                <p className="font-bold text-sm text-gray-500 ">
-                  Balance:{" "}
-                  {inCurrencyFormat(
-                    Number(token.walletBalance) / 10 ** token.decimals
-                  )}
-                </p>
-                <button
-                  onClick={() => {
-                    const formattedValueInUsd = inCurrencyFormat(
+        <div>
+          <div className="p-6 w-full pt-1 space-y-3">
+            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+              Amount
+            </p>
+            <div className="flex flex-col items-center border rounded-md p-2 border-slate-700">
+              <div className="w-full flex items-center">
+                <input
+                  onChange={async (event) => {
+                    setHasApproved(false);
+                    const walletBalance =
+                      Number(token.walletBalance) / 10 ** token.decimals;
+                    const walletBalanceInUsd = inCurrencyFormat(
                       Number(token.walletBalanceInUsd) / 10 ** token.decimals
                     );
-                    setValue(
-                      (Number(token.walletBalance) / 10 ** token.decimals).toString()
+
+                    const { value } = event.target;
+                    // if (isNaN(value)) {
+                    //   return;
+                    // }
+
+                    const latestHealthFactor = await getLatestHealthFactor(
+                      userSupplies,
+                      token,
+                      Number(value),
+                      userTotalCollateralInUsd,
+                      userTotalBorrowedInUsd,
+                      liquidationThresholdWeighted
                     );
-                    setValueInUsd(formattedValueInUsd);
+
+                    console.log("Latest Health factor: ", latestHealthFactor);
+
+                    console.log("Value: ", Number(value));
+                    // console.log("Wallet balance: ", walletBalance);
+
+                    // console.log("Token.walletBalance: ", token.walletBalance);
+                    if (Number(value) >= walletBalance) {
+                      setValue(walletBalance.toString());
+                      setValueInUsd(walletBalanceInUsd);
+                      return;
+                    }
+
+                    let usableValue = "0.00";
+
+                    if (value) {
+                      usableValue = inCurrencyFormat(
+                        parseFloat(value) *
+                          (Number(token.oraclePrice) / 10 ** token.decimals)
+                      );
+                    }
+
+                    setValueInUsd(usableValue);
+                    setValue(value);
                   }}
-                  className="font-medium ml-2 text-gray-6 00 text-sm"
-                >
-                  MAX
-                </button>
+                  value={value}
+                  type="text"
+                  name="text"
+                  id="text"
+                  placeholder="0.00"
+                  className="bg-slate-800 w-80 block pl-2 p-1 font-medium sm:text-lg focus:outline-none rounded-md"
+                />
+
+                <img
+                  src={token.tokenImage}
+                  width={30}
+                  height={30}
+                  // layout="fixed"
+                  className="ml-2 card-img-top"
+                  alt="coinimage"
+                />
+
+                <p className="font-medium text-lg ml-2">{token.tokenName}</p>
+              </div>
+
+              <div className="w-full justify-between flex items-center">
+                <p className="pl-2 pt-0 mt-0 font-medium text-sm text-gray-400">
+                  ${valueInUsd}
+                </p>
+                <div className="flex items-center">
+                  <p className="font-bold text-sm text-gray-500 ">
+                    Balance:{" "}
+                    {inCurrencyFormat(
+                      Number(token.walletBalance) / 10 ** token.decimals
+                    )}
+                  </p>
+                  <button
+                    onClick={() => {
+                      const formattedValueInUsd = inCurrencyFormat(
+                        Number(token.walletBalanceInUsd) / 10 ** token.decimals
+                      );
+                      setValue(
+                        (
+                          Number(token.walletBalance) /
+                          10 ** token.decimals
+                        ).toString()
+                      );
+                      setValueInUsd(formattedValueInUsd);
+                    }}
+                    className="font-medium ml-2 text-gray-6 00 text-sm"
+                  >
+                    MAX
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* {supplyError && (
+            {/* {supplyError && (
             <div className="text-red-600 text-sm mt-5 bg-red-200 border overflow-auto scrollbar-hide rounded-md p-2 border-red-200 font-medium">
               {supplyError.message}
             </div>
           )} */}
 
-          {/* <!-- Modal footer --> */}
-          <div className="flex w-full items-center p-6 px-0 space-x-2 rounded-b border-gray-200 dark:border-gray-600">
+            {/* <!-- Modal footer --> */}
+          </div>
+          <div className="p-6 w-full pt-1 space-y-2">
+            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+              Transaction Overview
+            </p>
+            <div className="flex flex-col items-center border rounded-md px-2 py-3 border-slate-700 space-y-5">
+              <div className=" px-2 flex w-full justify-between items-center">
+                <p>Supply APY</p>
+                <p>{Number(token.supplyStableRate) / 100}%</p>
+              </div>
+              <div className=" px-2 flex w-full justify-between items-center">
+                <p>Collateralization</p>
+                <p className="text-green-500">Enabled</p>
+              </div>
+              <div className=" px-2 flex w-full justify-between items-center">
+                <p>Health Factor</p>
+                <p>{Number(healthFactor) / 10000}</p>
+              </div>
+            </div>
+
+            {/* {supplyError && (
+            <div className="text-red-600 text-sm mt-5 bg-red-200 border overflow-auto scrollbar-hide rounded-md p-2 border-red-200 font-medium">
+              {supplyError.message}
+            </div>
+          )} */}
+
+            {/* <!-- Modal footer --> */}
+          </div>
+
+          <div className="pb-8 mx-3 flex flex-col justify-center items-center space-y-2 rounded-b border-gray-200 dark:border-gray-600">
+            {!hasApproved && (
+              <button
+                // disabled={!!!value}
+                onClick={approveToken}
+                data-modal-toggle="small-modal"
+                type="button"
+                className={`${
+                  isApproving
+                    ? "bg-gray-600 cursor-wait"
+                    : "bg-gray-600 hover:bg-gray-600 "
+                } w-full mx-4 text-white hover:text-white rounded-md p-2`}
+              >
+                {isApproving ? (
+                  <div className="flex w-full justify-center space-x-4 items-center">
+                    <ClipLoader color="#fff" loading={true} size={30} />
+                    <p className="ml-2">{approveText}</p>
+                  </div>
+                ) : (
+                  <div className="flex w-full items-center">
+                    <p className="w-full">{approveText}</p>
+                  </div>
+                )}
+                {/*  */}
+              </button>
+            )}
             <button
-              // disabled={!!!value}
-              // onClick={() => onSupply(token, value)}
+              disabled={isSupplying || !hasApproved}
+              onClick={supplyTokenWithPermit}
               data-modal-toggle="small-modal"
               type="button"
               className={`${
-                isLoading
-                  ? "bg-gray-500 cursor-wait"
-                  : "bg-gray-800 hover:bg-gray-900 "
-              }text-white w-full hover:text-white rounded-md p-2`}
+                isSupplying
+                  ? "bg-gray-600 cursor-wait"
+                  : "bg-gray-700 hover:bg-gray-700 "
+              } w-full mx-4 text-white hover:text-white rounded-md p-2`}
             >
-              <div className="flex justify-center ">
-                {/* <LoadingSpinerComponent
-                  buttonText={`Supply ${token?.name}`}
-                  loadingMessage={`Supplying ${token?.name}`}
-                /> */}
-              </div>
+              {isSupplying ? (
+                <div className="flex w-full justify-center space-x-4 items-center">
+                  <ClipLoader color="#fff" loading={true} size={30} />
+                  <p className="ml-2">{supplyText}</p>
+                </div>
+              ) : (
+                <div className="flex w-full items-center">
+                  <p className="w-full">{supplyText}</p>
+                </div>
+              )}
               {/*  */}
             </button>
           </div>

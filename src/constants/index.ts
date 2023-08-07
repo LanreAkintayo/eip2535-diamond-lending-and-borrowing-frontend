@@ -1,6 +1,7 @@
 import diamondAbi from "./diamondAbi.json";
 import erc20Abi from "./erc20Abi.json";
 import getterAbi from "./getterAbi.json";
+import erc20PermitAbi from "./erc20PermitAbi.json";
 
 export const DEPLOYER = "0xec2B1547294a4dd62C0aE651aEb01493f8e4cD74";
 
@@ -34,6 +35,32 @@ export const addressToImage: { [key: string]: string } = {
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqZs8PLHRLaGd4QfIvOYmCg30svx5dHp0y6A&usqp=CAU",
 };
 
+// set the Permit type parameters
+export const types = {
+  Permit: [
+    {
+      name: "owner",
+      type: "address",
+    },
+    {
+      name: "spender",
+      type: "address",
+    },
+    {
+      name: "value",
+      type: "uint256",
+    },
+    {
+      name: "nonce",
+      type: "uint256",
+    },
+    {
+      name: "deadline",
+      type: "uint256",
+    },
+  ],
+};
+
 export {
   diamondAddress,
   larAddress,
@@ -41,6 +68,53 @@ export {
   diamondAbi,
   erc20Abi,
   getterAbi,
+  erc20PermitAbi,
 };
 
 export const supportedChainId = 80001;
+
+// const types = {
+//   Person: [
+//     { name: "name", type: "string" },
+//     { name: "wallet", type: "address" },
+//   ],
+//   Mail: [
+//     { name: "from", type: "Person" },
+//     { name: "to", type: "Person" },
+//     { name: "contents", type: "string" },
+//   ],
+// } as const;
+
+// const types2 = {
+//   Mail: [
+//     { name: "owner", type: "string" },
+//     { name: "spender", type: "string" },
+//     { name: "value", type: "string" },
+//     { name: "nonce", type: "string" },
+//     {name: "deadline", type: "number"}
+//   ]
+// }
+
+
+
+
+
+// const message = {
+//   from: {
+//     name: "Cow",
+//     wallet: "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826",
+//   },
+//   to: {
+//     name: "Bob",
+//     wallet: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
+//   },
+//   contents: "Hello, Bob!",
+// } as const;
+
+// // const message2 = {
+// //   owner: signerAddress,
+// //   spender: diamondAddress,
+// //   value: ethers.parseUnits("5", 18), // Amount to approve
+// //   nonce: nonce.toHexString(),
+// //   deadline,
+// // };
