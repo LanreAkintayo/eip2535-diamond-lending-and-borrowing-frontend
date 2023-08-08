@@ -58,7 +58,7 @@ export default function SupplyAssets({ tokens }: IsupplyAsset) {
                     return (
                       <button
                         onClick={() => setSelectedTokenToSupply(token)}
-                        className="bg-gray-300 text-base text-gray-800 p-2 rounded-md"
+                        className="bg-gray-300 text-base text-gray-800 p-2 rounded-md hover:bg-gray-400"
                       >
                         Supply
                       </button>

@@ -17,11 +17,9 @@ import {
   fetchBalance,
 } from "@wagmi/core";
 
-
 import { erc20ABI } from "wagmi";
 import { appSettings } from "../constants/settings";
 // import { appSettings } from "@/constants/settings";
-
 
 const defaultWalletState = {
   signerAddress: null,
@@ -60,14 +58,17 @@ const WalletProvider = (props: any) => {
   const [walletState, dispatchWalletAction] = useReducer(
     walletReducer,
     defaultWalletState
-    ); 
+  );
 
-    console.log("We are now here")
+  console.log("We are now here");
 
   const loadSignerHandler = async () => {
     const account = getAccount();
     const signerAddress = account.address;
-    dispatchWalletAction({ type: "SIGNER_ADDRESS", signerAddress: signerAddress });
+    dispatchWalletAction({
+      type: "SIGNER_ADDRESS",
+      signerAddress: signerAddress,
+    });
     return signerAddress;
   };
 
@@ -102,13 +103,50 @@ const WalletProvider = (props: any) => {
     }
   };
 
+  const addToken = async (token: any) => {
+
+    const tokenAddress = token.tokenAddress;
+    const tokenSymbol = token.tokenName;
+    const tokenDecimals = token.tokenDecimals;
+    const tokenImage = token.tokenImage;
+
+    let hasAdded = false;
+
+    try {
+      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
+      const wasAdded = await window.ethereum.request({
+        method: "wallet_watchAsset",
+        params: {
+          type: "ERC20", // Initially only supports ERC20, but eventually more!
+          options: {
+            address: tokenAddress, // The address that the token is at.
+            symbol: tokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
+            decimals: tokenDecimals, // The number of decimals in the token
+            image: tokenImage, // A string url of the token logo
+          },
+        },
+      });
+
+      if (wasAdded) {
+        hasAdded = true;
+      } else {
+        hasAdded = false;
+      }
+    } catch (error) {
+      console.log(error);
+      hasAdded = false;
+    }
+
+    return hasAdded
+  };
 
   const walletContext = {
     signerAddress: walletState.signerAddress,
-    chainId: walletState.chainId,   
+    chainId: walletState.chainId,
     loadSignerAddress: loadSignerHandler,
     loadChainId: loadChainIdHandler,
     switchToAppNetwork,
+    addToken
   };
 
   return (

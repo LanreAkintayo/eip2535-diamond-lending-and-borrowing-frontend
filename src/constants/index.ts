@@ -14,7 +14,7 @@ export const IMAGES = {
   WETH: "https://staging.aave.com/icons/tokens/weth.svg",
   LINK: "https://staging.aave.com/icons/tokens/link.svg",
   FAU: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5qUPi3Ar2dQZ2m9K5opr_h9QaQz4_G5HVYA&usqp=CAU",
-  LAR: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqZs8PLHRLaGd4QfIvOYmCg30svx5dHp0y6A&usqp=CAU",
+  LAR: "https://staging.aave.com/icons/tokens/matic.svg",
   WMATIC: "https://staging.aave.com/icons/tokens/wmatic.svg",
   MATIC: "https://staging.aave.com/icons/tokens/matic.svg ",
 };
@@ -31,8 +31,7 @@ export const addressToImage: { [key: string]: string } = {
   [link]: "https://staging.aave.com/icons/tokens/link.svg",
   [usdc]: "https://staging.aave.com/icons/tokens/usdc.svg",
   [jeur]: "https://staging.aave.com/icons/tokens/jeur.svg",
-  [larAddress]:
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqZs8PLHRLaGd4QfIvOYmCg30svx5dHp0y6A&usqp=CAU",
+  [larAddress]: "https://staging.aave.com/icons/tokens/matic.svg",
 };
 
 // set the Permit type parameters

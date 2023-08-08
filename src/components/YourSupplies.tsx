@@ -5,6 +5,8 @@ import SupplyRow from "./SupplyRow";
 import useDefi from "../hooks/useDefi";
 import { inCurrencyFormat } from "../utils/helper";
 import { DetailedSuppliedToken } from "../types";
+import ModalWithdraw from "./ModalWithdraw";
+import ModalSupply from "./ModalSupply";
 
 interface IYourSupply {
   tokens: DetailedSuppliedToken[];
@@ -12,8 +14,14 @@ interface IYourSupply {
 
 export default function YourSupply({ tokens }: IYourSupply) {
   const [selectedTokenToSupply, setSelectedTokenToSupply] = useState(null);
-  const [selectedTokenToWithdraw, setSelectedTokenToWithdraw] = useState(null);
+  const [selectedTokenToWithdraw, setSelectedTokenToWithdraw] =
+    useState<DetailedSuppliedToken | null>();
   const { userTotalCollateralInUsd } = useDefi();
+
+  const handleCloseModal = () => {
+    setSelectedTokenToWithdraw(null);
+    setSelectedTokenToSupply(null);
+  };
 
   return (
     <div className="text-white">
@@ -83,7 +91,7 @@ export default function YourSupply({ tokens }: IYourSupply) {
                       return (
                         <button
                           onClick={() => setSelectedTokenToWithdraw(token)}
-                          className="bg-gray-300 text-gray-700 text-base p-2 rounded-md"
+                          className="bg-gray-300 text-gray-700 text-base p-2 rounded-md hover:bg-gray-400"
                         >
                           Withdraw
                         </button>
@@ -93,7 +101,7 @@ export default function YourSupply({ tokens }: IYourSupply) {
                       return (
                         <button
                           onClick={() => setSelectedTokenToSupply(token)}
-                          className="ml-2 border border-gray-400 bg-slate-800 text-base font-medium p-2 px-4 rounded-md"
+                          className="ml-2 border border-gray-400 bg-slate-800 text-base font-medium p-2 px-4 rounded-md hover:bg-gray-500"
                         >
                           Supply
                         </button>
@@ -104,6 +112,22 @@ export default function YourSupply({ tokens }: IYourSupply) {
               })}
             </tbody>
           </table>
+
+          <div className="justify-center items-center text-center sm:block sm:p-0 mt-2">
+            {selectedTokenToWithdraw && (
+              <ModalWithdraw
+                token={selectedTokenToWithdraw}
+                closeModal={handleCloseModal}
+              />
+            )}
+
+            {selectedTokenToSupply && (
+              <ModalSupply
+                token={selectedTokenToSupply}
+                closeModal={handleCloseModal}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

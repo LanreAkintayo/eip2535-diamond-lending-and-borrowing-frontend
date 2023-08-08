@@ -5,6 +5,7 @@ import { inCurrencyFormat } from "../utils/helper";
 import BorrowRow from "./BorrowRow";
 import Skeleton from "./Skeleton";
 import { DetailedBorrowedToken } from "../types";
+import ModalBorrow from "./ModalBorrow";
 
 interface IYourBorrows {
   tokens: DetailedBorrowedToken[];
@@ -14,8 +15,11 @@ export default function YourBorrows({ tokens }: IYourBorrows) {
   const [selectedTokenToBorrow, setSelectedTokenToBorrow] = useState(null);
   const { userTotalBorrowedInUsd, borrowPower } = useDefi();
 
-
   const formattedBorrowPower = borrowPower ? Number(borrowPower) / 10000 : 0;
+
+  const handleCloseModal = () => {
+    setSelectedTokenToBorrow(null);
+  };
 
   return (
     <div className="text-white">
@@ -41,7 +45,7 @@ export default function YourBorrows({ tokens }: IYourBorrows) {
                     <p className="text-gray-400">
                       Borrow power used{" "}
                       <span className="font-normal text-gray-300">
-                       {formattedBorrowPower}%
+                        {formattedBorrowPower}%
                       </span>
                     </p>
                   </div>
@@ -103,6 +107,15 @@ export default function YourBorrows({ tokens }: IYourBorrows) {
               })}
             </tbody>
           </table>
+
+          <div className="flex justify-center text-center sm:block sm:p-0 mt-2">
+            {selectedTokenToBorrow && (
+              <ModalBorrow
+                token={selectedTokenToBorrow}
+                closeModal={handleCloseModal}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

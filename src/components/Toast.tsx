@@ -24,7 +24,7 @@ export const ToastModal = ({
   message: string | undefined;
 }) => {
   return (
-    <div className="flex items-center font-body">
+    <div className="flex rounded-md items-center font-sans">
       {status == 'success' && (
         <img src="/success.png" width={34} height={34} />
       )}
@@ -33,7 +33,7 @@ export const ToastModal = ({
       )}
       <div className="ml-2">
         <p
-          className={`text-sm font-bold ${
+          className={`text-base font-bold ${
             status == 'success' ? 'text-green-800' : 'text-red-800'
           }`}
         >
@@ -42,7 +42,7 @@ export const ToastModal = ({
         <p className="text-sm">
           Transaction {status == 'success' ? 'Successful' : 'Failed'}
         </p>
-        {message && <p className="text-xs py-2 text-gray-900">{message}</p>}
+        {message && <p className="text-sm py-2 text-gray-900">{message}</p>}
       </div>
     </div>
   );

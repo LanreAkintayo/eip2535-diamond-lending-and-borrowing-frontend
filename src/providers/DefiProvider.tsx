@@ -175,6 +175,27 @@ const DefiProvider = (props: any) => {
           args: [eachSupply.tokenAddress, eachSupply.amountSupplied],
         })) as bigint;
 
+        const oraclePrice = (await readContract({
+          address: diamondAddress as `0x${string}`,
+          abi: getterAbi,
+          functionName: "getUsdEquivalence",
+          args: [tokenAddress, 1 * 10 ** decimals],
+        })) as bigint;
+
+        const walletBalance = await readContract({
+          address: tokenAddress as `0x${string}`,
+          abi: erc20ABI,
+          functionName: "balanceOf",
+          args: [signerAddress as `0x${string}`],
+        });
+
+        const walletBalanceInUsd = (await readContract({
+          address: diamondAddress as `0x${string}`,
+          abi: getterAbi,
+          functionName: "getUsdEquivalence",
+          args: [tokenAddress, walletBalance],
+        })) as bigint;
+
         const tokenImage = addressToImage[tokenAddress];
 
         const tokenDetails = (await readContract({
@@ -191,6 +212,9 @@ const DefiProvider = (props: any) => {
           decimals,
           amountSuppliedInUsd,
           liquidationThreshold: tokenDetails.liquidationThreshold,
+          oraclePrice,
+          walletBalance,
+          walletBalanceInUsd,
         };
       }
     );
@@ -737,7 +761,6 @@ const DefiProvider = (props: any) => {
       availableLiquidity,
       availableLiquidityInUsd,
       utilizationRate,
-
     };
   };
 

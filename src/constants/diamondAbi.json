@@ -1,5 +1,40 @@
 [
   {
+    "inputs": [],
+    "name": "CannotWithdrawAmount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InsufficientFunds",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoAmountAvailableToWithdraw",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OnlyOwnerCanCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ShouldBeGreaterThanZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TokenNotSupplied",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnsupportedToken",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",

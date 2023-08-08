@@ -7,6 +7,7 @@ interface IWalletContext {
   loadSignerAddress: () => Promise<any> | null;
   loadChainId: () => Promise<any> | null;
   switchToAppNetwork: (chainIdHex: string) => void;
+  addToken: (token: any) => Promise<boolean> | null; 
 }
 
 const WalletContext = React.createContext<IWalletContext>({
@@ -14,7 +15,8 @@ const WalletContext = React.createContext<IWalletContext>({
   chainId: 0,
   loadSignerAddress: () => null,
   loadChainId: () => null,
-  switchToAppNetwork: (chainIdHex: string) => {},
+  switchToAppNetwork: (chainIdHex: string) => { },
+  addToken: (token: any) => null
 });
 
 export default WalletContext;

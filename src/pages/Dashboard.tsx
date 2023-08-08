@@ -177,7 +177,7 @@ export default function Dashboard2() {
                         <p
                           className={`${healthFactorColor} text-2xl font-bold`}
                         >
-                          {formattedHealthFactor}
+                          {formattedHealthFactor.toFixed(2)}
                         </p>
                       </div>
                     </div>

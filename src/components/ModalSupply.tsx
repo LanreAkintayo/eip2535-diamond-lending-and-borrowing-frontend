@@ -11,6 +11,7 @@ import {
   erc20Abi,
   erc20PermitAbi,
   getterAbi,
+  larAddress,
   types,
 } from "../constants";
 import useWallet from "../hooks/useWallet";
@@ -28,6 +29,8 @@ import { getEthersSigner } from "../ethersSigner";
 import { TfiWallet } from "react-icons/tfi";
 import { ClipLoader } from "react-spinners";
 import useDefi from "../hooks/useDefi";
+import { BsArrowRight } from "react-icons/bs";
+import { displayToast } from "./Toast";
 
 interface IModalSupply {
   token: TokenData;
@@ -39,8 +42,9 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
   const [valueInUsd, setValueInUsd] = useState("0.00");
   const [deadline, setDeadline] = useState(0);
   const [sig, setSig] = useState<Signature>();
-
-  const { signerAddress, chainId } = useWallet();
+  const [transactionHash, setTransactionHash] = useState("")
+  
+  const { signerAddress, chainId, addToken } = useWallet();
   const {
     loadHealthFactor,
     loadSupplyAssets,
@@ -51,10 +55,10 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
     userTotalCollateralInUsd,
     userTotalBorrowedInUsd,
     liquidationThresholdWeighted,
-    
+    loadLiquidationThresholdWeighted,
   } = useDefi();
 
-  const [transactionHash, setTransactionHash] = useState(false);
+ 
   const [isLoading, setIsLoading] = useState(false);
 
   const [isApproving, setIsApproving] = useState(false);
@@ -67,6 +71,30 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
   const [supplyText, setSupplyText] = useState(`Supply ${token.tokenName}`);
 
   const [isSuccess, setIsSuccess] = useState(false);
+
+  const formattedHealthFactor = healthFactor ? Number(healthFactor) / 10000 : 0;
+  const [latestHealthFactor, setLatestHealthFactor] = useState(0);
+
+  // health factor color
+  let healthFactorColor;
+  let latestHealthFactorColor;
+  if (healthFactor) {
+    healthFactorColor =
+      formattedHealthFactor > 10
+        ? "text-green-600"
+        : formattedHealthFactor > 2
+        ? "text-orange-300"
+        : "text-red-200";
+  }
+
+  if (latestHealthFactor > 0) {
+    latestHealthFactorColor =
+      latestHealthFactor > 10
+        ? "text-green-600"
+        : latestHealthFactor > 2
+        ? "text-orange-300"
+        : "text-red-200";
+  }
 
   const addLAR = (token: TokenData) => {
     alert("Add LAR token");
@@ -86,18 +114,19 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
       liquidationThresholdWeighted
     );
 
-    console.log("Health factor: ", healthFactor)
+    console.log("Health factor: ", healthFactor);
   }, [
     userTotalCollateralInUsd,
     userTotalBorrowedInUsd,
     liquidationThresholdWeighted,
-    healthFactor
+    healthFactor,
   ]);
   const updateSupply = async () => {
     await loadHealthFactor(signerAddress);
     await loadSupplyAssets(signerAddress);
     await loadUserSupplies(signerAddress);
     await loadUserTotalCollateralInUsd(signerAddress);
+    await loadLiquidationThresholdWeighted(signerAddress);
   };
 
   const approveToken = async () => {
@@ -159,6 +188,7 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
       setIsApproving(false);
       setApproveText(`Approve ${token.tokenName}`);
       console.log("Failed to approve");
+      displayToast("failure", "Failed to approve");
     }
   };
 
@@ -189,6 +219,7 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
         });
 
         const { hash } = await writeContract(supplyRequest);
+        setTransactionHash(hash)
 
         const supplyReceipt = await waitForTransaction({
           hash,
@@ -211,6 +242,7 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
         setSupplyText(`Supply ${token.tokenName}`);
       } catch (error) {
         console.log("Error: ", error);
+        displayToast("failure", "Failed to supply");
         setIsSupplying(false);
         setSupplyText(`Supply ${token.tokenName}`);
       }
@@ -221,8 +253,8 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
     <BorderLayout>
       <div className="p-5">
         <div className="flex justify-between items-center rounded-t">
-          <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-            {transactionHash ? `Sucessful` : `Supply ${token.tokenName}`}
+          <h3 className="text-xl font-medium text-white">
+            {isSuccess ? `Sucessful` : `Supply ${token.tokenName}`}
           </h3>
           <button
             placeholder="0.00"
@@ -271,7 +303,7 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
             </p>
             <div className="p-4 border my-3 space-y-2 border-slate-700 rounded-md flex items-center justify-center flex-col">
               <img
-                src="./LAR.png"
+                src={IMAGES.LAR}
                 width={40}
                 height={40}
                 // layout="fixed"
@@ -280,7 +312,32 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
               />
               <p>Add LAR to wallet to track your balance</p>
               <button
-                onClick={() => addLAR(token)}
+                onClick={async () => {
+                  const tokenName = "LAR";
+                  const tokenAddress = larAddress;
+                  const tokenImage = IMAGES.LAR;
+                  const tokenDecimals = 18;
+                  const tokenSymbol = "LAR";
+
+                  const token = {
+                    tokenName,
+                    tokenAddress,
+                    tokenImage,
+                    tokenDecimals,
+                    tokenSymbol,
+                  };
+
+                  const hasAdded = await addToken(token);
+
+                  if (hasAdded) {
+                    displayToast(
+                      "success",
+                      "LAR has been added to your wallet"
+                    );
+                  } else {
+                    displayToast("failure", "Failed to add LAR");
+                  }
+                }}
                 className="bg-slate-700 p-2 flex space-x-2 items-center rounded-md text-base font-medium "
               >
                 <TfiWallet />
@@ -291,7 +348,7 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
             <button
               onClick={() => {
                 window.open(
-                  `https://kovan.etherscan.io/tx/${transactionHash}`,
+                  `https://mumbai.polygonscan.com/tx/${transactionHash}`,
                   "_blank"
                 );
               }}
@@ -348,6 +405,8 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
                       userTotalBorrowedInUsd,
                       liquidationThresholdWeighted
                     );
+
+                    setLatestHealthFactor(latestHealthFactor);
 
                     console.log("Latest Health factor: ", latestHealthFactor);
 
@@ -448,7 +507,19 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
               </div>
               <div className=" px-2 flex w-full justify-between items-center">
                 <p>Health Factor</p>
-                <p>{Number(healthFactor) / 10000}</p>
+                <div className="flex text-sm space-x-2 items-center font-medium">
+                  <p className={`${healthFactorColor}`}>
+                    {formattedHealthFactor.toFixed(2)}
+                  </p>
+                  {latestHealthFactor > 0 && (
+                    <div
+                      className={`flex items-center space-x-1 ${latestHealthFactorColor}`}
+                    >
+                      <BsArrowRight />
+                      <p>{latestHealthFactor.toFixed(2)}</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

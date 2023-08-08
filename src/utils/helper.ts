@@ -112,64 +112,22 @@ export const getLatestHealthFactor = async (
     );
 
     const usableAmountSuppliedInUsd = Number(
-      ethers.formatUnits(Number(amountSupplied).toString(), 18)
+      ethers.formatUnits(Number(amountSuppliedInUsd).toString(), 18)
     );
     const usableLiquidationThreshold =
       Number(currentTokenToSupply.liquidationThreshold) / 10000;
 
-    const numerator = parsedTotalCollateralInUsd * parsedLiquidationThresholdWeighted -
+    const numerator =
+      parsedTotalCollateralInUsd * parsedLiquidationThresholdWeighted -
       usableAmountSuppliedInUsd * usableLiquidationThreshold +
       (usableAmountSuppliedInUsd + parsedTokenAmountInUsd) *
-      usableLiquidationThreshold;
-    
-    const corr = numerator / latestTotalCollateralInUsd
-    
-    console.log("Correct liquidation threshold weighted: ", corr
-    
-    )
+        usableLiquidationThreshold;
+
+    const corr = numerator / latestTotalCollateralInUsd;
+
+    console.log("Correct liquidation threshold weighted: ", corr);
     healthFactor =
-      (latestTotalCollateralInUsd * corr) /
-      parsedTotalBorrowedInUsd;
-
-    // let numerator = 0;
-    // for (const eachSupply of usersTokenSupplied) {
-    //   if (eachSupply.tokenAddress == currentTokenToSupply.tokenAddress) {
-    //     const currentTotalCollateralInUsd =
-    //       Number(
-    //         ethers.formatUnits(eachSupply.amountSuppliedInUsd.toString(), 18)
-    //       ) +
-    //       (tokenAmount * Number(oraclePrice)) /
-    //       10 ** currentTokenToSupply.decimals;
-
-    //     console.log("Current total collateral in usd: ", currentTotalCollateralInUsd)
-    //     const currentLiquidationThreshold =
-    //       Number(eachSupply.liquidationThreshold) / 10000;
-
-    //     console.log("Current liquidation threshold: ", currentLiquidationThreshold)
-    //     const currentNumerator =
-    //       currentTotalCollateralInUsd * currentLiquidationThreshold;
-
-    //     numerator += currentNumerator;
-    //   } else {
-    //     const currentNumerator =
-    //       Number(
-    //         ethers.formatUnits(eachSupply.amountSuppliedInUsd.toString(), 18)
-    //       ) +
-    //       Number(eachSupply.liquidationThreshold) / 10000;
-
-    //     numerator += currentNumerator
-    //   }
-    // }
-
-    // const correctLiquidationThresholdWeighted =
-    //   numerator / latestTotalCollateralInUsd;
-
-    // console.log("Correct liquidation threshold weighted: ", correctLiquidationThresholdWeighted)
-    // console.log("Latest Collateral in usd: ", latestTotalCollateralInUsd)
-
-    // healthFactor =
-    //   (latestTotalCollateralInUsd * correctLiquidationThresholdWeighted) /
-    //   parsedTotalBorrowedInUsd;
+      (latestTotalCollateralInUsd * corr) / parsedTotalBorrowedInUsd;
 
     console.log("Health factor in helper", healthFactor);
   } else {
@@ -177,10 +135,16 @@ export const getLatestHealthFactor = async (
     console.log("It is not included");
 
     const newLiquidationThresholdWeighted =
-      parsedTotalCollateralInUsd * parsedLiquidationThresholdWeighted +
-      (parsedTokenAmountInUsd * parsedLiquidationThreshold) /
-        parsedTotalCollateralInUsd +
-      parsedTokenAmountInUsd;
+      (parsedTotalCollateralInUsd * parsedLiquidationThresholdWeighted +
+        parsedTokenAmountInUsd * parsedLiquidationThreshold) /
+      (parsedTotalCollateralInUsd + parsedTokenAmountInUsd);
+
+    // debugger;
+
+    console.log(
+      "New liquidation threshold weighted: ",
+      newLiquidationThresholdWeighted
+    );
 
     const latestTotalCollateral =
       parsedTotalCollateralInUsd + parsedTokenAmountInUsd;
@@ -189,5 +153,112 @@ export const getLatestHealthFactor = async (
       (latestTotalCollateral * newLiquidationThresholdWeighted) /
       parsedTotalBorrowedInUsd;
   }
+  return healthFactor;
+};
+
+export const getWithdrawalHealthFactor = (
+  usersTokenSupplied: DetailedSuppliedToken[],
+  currentTokenToWithdraw: DetailedSuppliedToken,
+  tokenAmount: number,
+  totalCollateralInUsd: any,
+  totalBorrowedInUsd: any,
+  liquidationThresholdWeighted: any
+) => {
+  const decimals = currentTokenToWithdraw.decimals;
+
+  const oraclePrice = currentTokenToWithdraw.oraclePrice;
+
+  const parsedLiquidationThresholdWeighted =
+    Number(liquidationThresholdWeighted) / 10000;
+
+  const parsedTotalCollateralInUsd = Number(
+    ethers.formatUnits(totalCollateralInUsd.toString(), 18)
+  );
+
+  const parsedTotalBorrowedInUsd = Number(
+    ethers.formatUnits(totalBorrowedInUsd.toString(), 18)
+  );
+  const parsedLiquidationThreshold =
+    Number(currentTokenToWithdraw.liquidationThreshold) / 10000;
+
+  const parsedTokenAmountInUsd =
+    (tokenAmount * Number(oraclePrice)) / 10 ** currentTokenToWithdraw.decimals;
+
+  console.log("Parsed token amount in usd: ", parsedTokenAmountInUsd);
+
+  const tokenAddresses = usersTokenSupplied.map(
+    (eachSupply) => eachSupply.tokenAddress
+  );
+  let healthFactor = 0;
+
+  console.log("UserTotalCollateralInUsd in the helper: ", totalCollateralInUsd);
+  console.log("UserTotalBorrowedInUsd in the helper: ", totalBorrowedInUsd);
+  console.log(
+    "liquidationThresholdWeited in the helper: ",
+    liquidationThresholdWeighted
+  );
+
+  console.log("It is included");
+  const latestTotalCollateralInUsd =
+    parsedTotalCollateralInUsd - parsedTokenAmountInUsd;
+
+  console.log(
+    "Latest total collateral in usd in helper: ",
+    latestTotalCollateralInUsd
+  );
+  console.log(
+    "Parsed liquidation threshold weighted in helper: ",
+    parsedLiquidationThresholdWeighted
+  );
+  console.log(
+    "Parsed total borrowed in usd in helper: ",
+    parsedTotalBorrowedInUsd
+  );
+
+  //   const { amountSupplied, amountSuppliedInUsd } = getAmountSupplied(
+  //     currentTokenToWithdraw,
+  //     usersTokenSupplied
+  // );
+  console.log(
+    "Parsed amount supplied: ",
+    currentTokenToWithdraw.amountSupplied,
+    decimals
+  );
+
+  const parsedAmountSupplied = Number(
+    ethers.formatUnits(
+      Number(currentTokenToWithdraw.amountSupplied).toString(),
+      decimals
+    )
+  );
+
+  const parsedAmountSuppliedInUsd = Number(
+    ethers.formatUnits(
+      Number(currentTokenToWithdraw.amountSuppliedInUsd).toString(),
+      decimals
+    )
+  );
+
+  console.log("Amount .....");
+
+  // const usableAmountSuppliedInUsd = Number(
+  //   ethers.formatUnits(Number(amountSupplied).toString(), 18)
+  // );
+  const usableLiquidationThreshold =
+    Number(currentTokenToWithdraw.liquidationThreshold) / 10000;
+
+  const numerator =
+    parsedTotalCollateralInUsd * parsedLiquidationThresholdWeighted -
+    parsedAmountSuppliedInUsd * usableLiquidationThreshold +
+    (parsedAmountSuppliedInUsd - parsedTokenAmountInUsd) *
+      usableLiquidationThreshold;
+
+  const corr = numerator / latestTotalCollateralInUsd;
+
+  console.log("Correct liquidation threshold weighted: ", corr);
+  healthFactor = (latestTotalCollateralInUsd * corr) / parsedTotalBorrowedInUsd;
+
+  console.log("Health factor in helper", healthFactor);
+
   return healthFactor;
 };

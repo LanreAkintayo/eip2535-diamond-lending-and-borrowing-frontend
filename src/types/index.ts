@@ -11,6 +11,8 @@ export type ContractSuppliedToken = {
 export type DetailedSuppliedToken = {
   amountSupplied: bigint;
   amountSuppliedInUsd: bigint;
+  walletBalance: bigint | string;
+  walletBalanceInUsd: bigint | string;
   isCollateral: boolean;
   startAccumulatingDay: bigint;
   supplierAddress: string;
@@ -20,7 +22,8 @@ export type DetailedSuppliedToken = {
   tokenName: string;
   tokenImage: string;
   decimals: number;
-  liquidationThreshold: bigint | string
+  liquidationThreshold: bigint | string;
+  oraclePrice: bigint | string
 };
 
 export type ContractBorrowedToken = {
