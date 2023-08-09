@@ -31,6 +31,11 @@ import { ClipLoader } from "react-spinners";
 import useDefi from "../hooks/useDefi";
 import { BsArrowRight } from "react-icons/bs";
 import { displayToast } from "./Toast";
+import Popup from "reactjs-popup";
+import { FiSettings } from "react-icons/fi";
+import { FaCheck } from "react-icons/fa";
+
+import "reactjs-popup/dist/index.css";
 
 interface IModalSupply {
   token: TokenData;
@@ -42,8 +47,11 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
   const [valueInUsd, setValueInUsd] = useState("0.00");
   const [deadline, setDeadline] = useState(0);
   const [sig, setSig] = useState<Signature>();
-  const [transactionHash, setTransactionHash] = useState("")
-  
+  const [transactionHash, setTransactionHash] = useState("");
+
+  const [openApproval, setOpenApproval] = useState(false);
+  const [approvalOption, setApprovalOption] = useState(0);
+
   const { signerAddress, chainId, addToken } = useWallet();
   const {
     loadHealthFactor,
@@ -58,7 +66,6 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
     loadLiquidationThresholdWeighted,
   } = useDefi();
 
- 
   const [isLoading, setIsLoading] = useState(false);
 
   const [isApproving, setIsApproving] = useState(false);
@@ -84,7 +91,9 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
         ? "text-green-600"
         : formattedHealthFactor > 2
         ? "text-orange-300"
-        : "text-red-200";
+        : formattedHealthFactor > 0
+        ? "text-red-300"
+        : "text-white";
   }
 
   if (latestHealthFactor > 0) {
@@ -93,7 +102,9 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
         ? "text-green-600"
         : latestHealthFactor > 2
         ? "text-orange-300"
-        : "text-red-200";
+        : latestHealthFactor > 0
+        ? "text-red-300"
+        : "text-white";
   }
 
   const addLAR = (token: TokenData) => {
@@ -127,6 +138,48 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
     await loadUserSupplies(signerAddress);
     await loadUserTotalCollateralInUsd(signerAddress);
     await loadLiquidationThresholdWeighted(signerAddress);
+  };
+
+  const approveByTransaction = async () => {
+    setIsApproving(true);
+    setApproveText(`Approving ${token.tokenName}`);
+
+    const parsedValue = BigInt(Number(value) * 10 ** token.decimals);
+
+    console.log("Parsed value in the approval: ", parsedValue);
+    try {
+      const approveRequest = await prepareWriteContract({
+        address: token.tokenAddress as `0x${string}`,
+        abi: erc20Abi,
+        functionName: "approve",
+        args: [diamondAddress, parsedValue],
+      });
+
+      const { hash } = await writeContract(approveRequest);
+      setTransactionHash(hash);
+
+      const approveReceipt = await waitForTransaction({
+        hash,
+      });
+
+      console.log("Receipt: ", approveReceipt);
+      if (approveReceipt.status == "success") {
+        console.log("Approved");
+        displayToast("success", `${token.tokenName} has been approved`);
+      } else {
+        console.log("Failure");
+        displayToast("failure", `Failed to approve ${token.tokenName}`);
+      }
+
+      setIsApproving(false);
+      setApproveText(`Approve ${token.tokenName}`);
+      setHasApproved(true);
+    } catch (error) {
+      setIsApproving(false);
+      setApproveText(`Approve ${token.tokenName}`);
+      console.log("Failed to approve");
+      displayToast("failure", `Failed to approve ${token.tokenName}`);
+    }
   };
 
   const approveToken = async () => {
@@ -219,7 +272,7 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
         });
 
         const { hash } = await writeContract(supplyRequest);
-        setTransactionHash(hash)
+        setTransactionHash(hash);
 
         const supplyReceipt = await waitForTransaction({
           hash,
@@ -246,6 +299,50 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
         setIsSupplying(false);
         setSupplyText(`Supply ${token.tokenName}`);
       }
+    }
+  };
+
+  const supplyTokenWithTransaction = async () => {
+    setIsSupplying(true);
+    setSupplyText(`Supplying ${token.tokenName}`);
+
+    const parsedValue = BigInt(Number(value) * 10 ** token.decimals);
+
+    try {
+      const supplyRequest = await prepareWriteContract({
+        address: diamondAddress as `0x${string}`,
+        abi: diamondAbi,
+        functionName: "supply",
+        args: [token.tokenAddress, parsedValue],
+      });
+
+      const { hash } = await writeContract(supplyRequest);
+      setTransactionHash(hash);
+
+      const supplyReceipt = await waitForTransaction({
+        hash,
+      });
+
+      console.log("Receipt: ", supplyReceipt);
+      if (supplyReceipt.status == "success") {
+        console.log("Supplied");
+        setIsSuccess(true);
+        await updateSupply();
+
+        // await
+        // await loadAllWalletTokens(signerAddress)
+      } else {
+        console.log("Failure");
+        console.log("Failed to Supply");
+      }
+
+      setIsSupplying(false);
+      setSupplyText(`Supply ${token.tokenName}`);
+    } catch (error) {
+      console.log("Error: ", error);
+      displayToast("failure", "Failed to supply");
+      setIsSupplying(false);
+      setSupplyText(`Supply ${token.tokenName}`);
     }
   };
 
@@ -286,12 +383,8 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
             </svg>
           </button>
         </div>
-
-        {/* <div className="p-2 mt-2 rounded-md bg-orange-200 ">
-                    <p className="">Wrong Network. Please switch to Kovan</p>
-                  </div> */}
       </div>
-      {/* <!-- Modal body --> */}
+
       {isSuccess ? (
         <div className="w-full max-w-md pt-1 space-y-3">
           <div className="flex flex-col justify-center items-center">
@@ -509,14 +602,20 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
                 <p>Health Factor</p>
                 <div className="flex text-sm space-x-2 items-center font-medium">
                   <p className={`${healthFactorColor}`}>
-                    {formattedHealthFactor.toFixed(2)}
+                    {formattedHealthFactor > 0
+                      ? formattedHealthFactor.toFixed(2)
+                      : "--"}
                   </p>
-                  {latestHealthFactor > 0 && (
+                  {latestHealthFactor > 0 && latestHealthFactor < 100000 && (
                     <div
                       className={`flex items-center space-x-1 ${latestHealthFactorColor}`}
                     >
                       <BsArrowRight />
-                      <p>{latestHealthFactor.toFixed(2)}</p>
+                      <p>
+                        {latestHealthFactor > 0
+                          ? latestHealthFactor.toFixed(2)
+                          : "--"}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -534,33 +633,103 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
 
           <div className="pb-8 mx-3 flex flex-col justify-center items-center space-y-2 rounded-b border-gray-200 dark:border-gray-600">
             {!hasApproved && (
-              <button
-                // disabled={!!!value}
-                onClick={approveToken}
-                data-modal-toggle="small-modal"
-                type="button"
-                className={`${
-                  isApproving
-                    ? "bg-gray-600 cursor-wait"
-                    : "bg-gray-600 hover:bg-gray-600 "
-                } w-full mx-4 text-white hover:text-white rounded-md p-2`}
-              >
-                {isApproving ? (
-                  <div className="flex w-full justify-center space-x-4 items-center">
-                    <ClipLoader color="#fff" loading={true} size={30} />
-                    <p className="ml-2">{approveText}</p>
+              <div className="mx-4 w-full flex flex-col">
+                <Popup
+                  trigger={
+                    <button
+                      className="self-end"
+                      onClick={() => setOpenApproval(true)}
+                    >
+                      <div className="text-[12px] py-1 flex items-center space-x-2">
+                        <p>
+                          Approve with{" "}
+                          <span className="text-blue-400">{`${
+                            approvalOption == 0
+                              ? "Signed Message"
+                              : "Transaction"
+                          }`}</span>{" "}
+                        </p>
+                        <FiSettings className="text-blue-400" />
+                      </div>
+                    </button>
+                  }
+                  position="bottom left"
+                  on="click"
+                  open={openApproval}
+                  closeOnDocumentClick
+                  mouseLeaveDelay={300}
+                  mouseEnterDelay={0}
+                  contentStyle={{
+                    padding: "0px",
+                    border: "1px solid #29293d",
+                    background: "#29293d",
+                  }}
+                  arrow={false}
+                >
+                  <div className="font-medium text-lg text-white my-2">
+                    <button
+                      className={`hover:bg-gray-600 p-3 w-full text-left flex items-center justify-between ${
+                        approvalOption == 0 && "bg-gray-700"
+                      }`}
+                      onClick={() => {
+                        setApprovalOption(0);
+                        setOpenApproval(false);
+                      }}
+                    >
+                      <p>Signed Message</p>
+                      {approvalOption == 0 && <FaCheck />}
+                    </button>
+                    <button
+                      className={`hover:bg-gray-600 p-3 w-full text-left flex items-center justify-between ${
+                        approvalOption == 1 && "bg-gray-700"
+                      }`}
+                      onClick={() => {
+                        setApprovalOption(1);
+                        setOpenApproval(false);
+                      }}
+                    >
+                      <p>Transaction</p>
+                      {approvalOption == 1 && <FaCheck />}
+                    </button>
                   </div>
-                ) : (
-                  <div className="flex w-full items-center">
-                    <p className="w-full">{approveText}</p>
-                  </div>
-                )}
-                {/*  */}
-              </button>
+                </Popup>
+
+                <button
+                  // disabled={!!!value}
+                  onClick={
+                    approvalOption == 0
+                      ? approveToken
+                      : approveByTransaction
+                  }
+                  data-modal-toggle="small-modal"
+                  type="button"
+                  className={`${
+                    isApproving
+                      ? "bg-gray-600 cursor-wait"
+                      : "bg-gray-600 hover:bg-gray-600 "
+                  } w-full text-white hover:text-white rounded-md p-2`}
+                >
+                  {isApproving ? (
+                    <div className="flex w-full justify-center space-x-4 items-center">
+                      <ClipLoader color="#fff" loading={true} size={30} />
+                      <p className="ml-2">{approveText}</p>
+                    </div>
+                  ) : (
+                    <div className="flex w-full items-center">
+                      <p className="w-full">{approveText}</p>
+                    </div>
+                  )}
+                  {/*  */}
+                </button>
+              </div>
             )}
             <button
               disabled={isSupplying || !hasApproved}
-              onClick={supplyTokenWithPermit}
+              onClick={
+                approvalOption == 0
+                  ? supplyTokenWithPermit
+                  : supplyTokenWithTransaction
+              }
               data-modal-toggle="small-modal"
               type="button"
               className={`${

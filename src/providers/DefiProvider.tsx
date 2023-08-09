@@ -426,7 +426,7 @@ const DefiProvider = (props: any) => {
       const availableLiquidity = totalSupplied - totalBorrowed;
       const availableLiquidityInUsd = totalSuppliedInUsd - totalBorrowedInUsd;
 
-      const utilizationRate = (totalBorrowed * BigInt(10000)) / totalSupplied;
+      const utilizationRate = Number(totalSupplied) > 0 ? (totalBorrowed * BigInt(10000)) / totalSupplied: BigInt(0);
 
       return {
         tokenName,
@@ -558,7 +558,7 @@ const DefiProvider = (props: any) => {
       const availableLiquidity = totalSupplied - totalBorrowed;
       const availableLiquidityInUsd = totalSuppliedInUsd - totalBorrowedInUsd;
 
-      const utilizationRate = (totalBorrowed * BigInt(10000)) / totalSupplied;
+      const utilizationRate = Number(totalSupplied) > 0 ? (totalBorrowed * BigInt(10000)) / totalSupplied: BigInt(0);
 
       return {
         tokenName,

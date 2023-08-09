@@ -39,10 +39,14 @@ export default function Dashboard2() {
     maxLTV,
     currentLTV,
     supplyAssets,
-    borrowAssets
+    borrowAssets,
   } = useDefi();
 
   // console.log("Borrow Assets: ", borrowAssets);
+
+  console.log("Health factor: ", healthFactor);
+
+  console.log("user total borrowed in usd:", userTotalBorrowedInUsd);
 
   const formattedHealthFactor = healthFactor ? Number(healthFactor) / 10000 : 0;
   let healthFactorColor = "text-white";
@@ -51,8 +55,10 @@ export default function Dashboard2() {
       healthFactorColor = "text-green-700";
     } else if (formattedHealthFactor > 2) {
       healthFactorColor = "text-orange-300";
-    } else {
+    } else if (formattedHealthFactor > 0) {
       healthFactorColor = "text-red-800";
+    } else {
+      healthFactorColor = "text-white";
     }
   }
 
@@ -166,19 +172,35 @@ export default function Dashboard2() {
                       <div className="w-9 h-8"></div>
                       <div>
                         <p className="text-gray-300 text-[13px]">Net worth</p>
-                        <p className="text-white text-2xl font-bold">
-                          ${netWorth}
-                        </p>
+                        {(userTotalCollateralInUsd &&
+                          userTotalCollateralInUsd) ||
+                        (Number(userTotalCollateralInUsd) >= 0 &&
+                          Number(userTotalCollateralInUsd) >= 0) ? (
+                          <p className="text-white text-2xl font-bold">
+                            ${netWorth}
+                          </p>
+                        ) : (
+                          <div className="text-base bg-gray-700 animate-pulse w-12 h-8 rounded-md"></div>
+                        )}
                       </div>
                       <div className="ml-6">
                         <p className="text-gray-300 text-[13px]">
                           Health Factor
                         </p>
-                        <p
-                          className={`${healthFactorColor} text-2xl font-bold`}
-                        >
-                          {formattedHealthFactor.toFixed(2)}
-                        </p>
+                        {(userTotalCollateralInUsd &&
+                          userTotalCollateralInUsd) ||
+                        (Number(userTotalCollateralInUsd) >= 0 &&
+                          Number(userTotalCollateralInUsd) >= 0) ? (
+                          <p
+                            className={`${healthFactorColor} text-2xl font-bold`}
+                          >
+                            {Number(healthFactor) > 0
+                              ? formattedHealthFactor.toFixed(2)
+                              : "--"}
+                          </p>
+                        ) : (
+                          <div className="text-base bg-gray-700 animate-pulse w-15 h-8 rounded-md"></div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -197,9 +219,8 @@ export default function Dashboard2() {
                     <div className="w-full xl:w-6/12  xl:mb-0 px-2">
                       <SupplyAssets tokens={supplyAssets!} />
                     </div>
-                      <div className="w-full xl:w-6/12 px-2">
-                        <BorrowAssets tokens={borrowAssets!} />
-                    
+                    <div className="w-full xl:w-6/12 px-2">
+                      <BorrowAssets tokens={borrowAssets!} />
                     </div>
                   </div>
 

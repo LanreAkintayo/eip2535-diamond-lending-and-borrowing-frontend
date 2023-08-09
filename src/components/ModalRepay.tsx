@@ -1,5 +1,5 @@
 import correct from "@assets/correct.png";
-import { useEffect, useState } from "react";
+import { MouseEventHandler, useEffect, useRef, useState } from "react";
 import BorderLayout from "./BorderLayout";
 import { DetailedBorrowedToken, TokenData } from "../types";
 import { GiCheckMark } from "react-icons/gi";
@@ -35,6 +35,11 @@ import { ClipLoader } from "react-spinners";
 import useDefi from "../hooks/useDefi";
 import { BsArrowRight } from "react-icons/bs";
 import { displayToast } from "./Toast";
+import Popup from "reactjs-popup";
+import { FaCheck } from "react-icons/fa";
+import { FiSettings } from "react-icons/fi";
+
+import "reactjs-popup/dist/index.css";
 
 interface IModalRepay {
   token: DetailedBorrowedToken;
@@ -46,13 +51,19 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
   const [valueInUsd, setValueInUsd] = useState("0.00");
   const [deadline, setDeadline] = useState(0);
   const [sig, setSig] = useState<Signature>();
+  const [parsedValue, setParsedValue] = useState<bigint>();
   const [transactionHash, setTransactionHash] = useState("");
+
+  const [openApproval, setOpenApproval] = useState(false);
+  const [approvalOption, setApprovalOption] = useState(0);
 
   const { signerAddress, chainId, addToken } = useWallet();
   const {
     loadHealthFactor,
     loadSupplyAssets,
     loadUserSupplies,
+    loadUserBorrows,
+    loadUserTotalBorrowedInUsd,
     loadUserTotalCollateralInUsd,
     healthFactor,
     userSupplies,
@@ -70,8 +81,8 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
   );
   const [hasApproved, setHasApproved] = useState(true);
 
-  const [isSupplying, setIsSupplying] = useState(false);
-  const [supplyText, setSupplyText] = useState(`Repay ${token.tokenName}`);
+  const [isRepaying, setIsRepaying] = useState(false);
+  const [repayText, setRepayText] = useState(`Repay ${token.tokenName}`);
 
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -117,20 +128,28 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
     setDebtAfterInUsd(debtAfterInUsd);
     setDebtAfterInToken(inCurrencyFormat(debtAfterInToken));
   }, [value]);
-  const updateSupply = async () => {
+  const updateRepay = async () => {
     await loadHealthFactor(signerAddress);
     await loadSupplyAssets(signerAddress);
-    await loadUserSupplies(signerAddress);
-    await loadUserTotalCollateralInUsd(signerAddress);
+    await loadUserBorrows(signerAddress);
+    await loadUserTotalBorrowedInUsd(signerAddress);
     await loadLiquidationThresholdWeighted(signerAddress);
   };
 
   const approveToken = async () => {
     setIsApproving(true);
     setApproveText(`Approving ${token.tokenName}`);
-    const parsedValue = BigInt(Number(value) * 10 ** token.decimals);
 
-    console.log("Parsed value: ", parsedValue);
+    const { totalToRepay, totalInterest } = getAmountToRepay(Number(value));
+    const parsedValue = BigInt(
+      (totalToRepay * 10 ** token.decimals)
+        // totalInterest * 10 ** token.decimals
+        .toFixed(0)
+    );
+
+    setParsedValue(parsedValue);
+
+    console.log("Parsed value in the approval: ", parsedValue);
     try {
       const nonce = (await readContract({
         address: token.tokenAddress as `0x${string}`,
@@ -184,28 +203,137 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
       setIsApproving(false);
       setApproveText(`Approve ${token.tokenName}`);
       console.log("Failed to approve");
-      displayToast("failure", "Failed to approve");
+      displayToast(
+        "failure",
+        `Try the other approving option . Approval by signed message is not supported for this token`
+      );
+    }
+  };
+  const approveByTransaction = async () => {
+    setIsApproving(true);
+    setApproveText(`Approving ${token.tokenName}`);
+
+    const { totalToRepay, totalInterest } = getAmountToRepay(Number(value));
+    const parsedValue = BigInt(
+      (totalToRepay * 10 ** token.decimals)
+        // totalInterest * 10 ** token.decimals
+        .toFixed(0)
+    );
+
+    setParsedValue(parsedValue);
+
+    console.log("Parsed value in the approval: ", parsedValue);
+    try {
+      const approveRequest = await prepareWriteContract({
+        address: token.tokenAddress as `0x${string}`,
+        abi: erc20Abi,
+        functionName: "approve",
+        args: [diamondAddress, parsedValue],
+      });
+
+      const { hash } = await writeContract(approveRequest);
+      setTransactionHash(hash);
+
+      const approveReceipt = await waitForTransaction({
+        hash,
+      });
+
+      console.log("Receipt: ", approveReceipt);
+      if (approveReceipt.status == "success") {
+        console.log("Approved");
+        displayToast("success", `${token.tokenName} has been approved`);
+      } else {
+        console.log("Failure");
+        displayToast("failure", `Failed to approve ${token.tokenName}`);
+      }
+
+      setIsApproving(false);
+      setApproveText(`Approve ${token.tokenName}`);
+      setHasApproved(true);
+    } catch (error) {
+      setIsApproving(false);
+      setApproveText(`Approve ${token.tokenName}`);
+      console.log("Failed to approve");
+      displayToast("failure", `Failed to approve ${token.tokenName}`);
     }
   };
 
-  const supplyTokenWithPermit = async () => {
+  const repayTokenWithTransaction = async () => {
+    console.log("We are here");
+
+    setIsRepaying(true);
+    setRepayText(`Repaying ${token.tokenName}`);
+
+    const amountBorrowed = Number(token.amountBorrowed) / 10 ** token.decimals;
+    let usableValue =
+      amountBorrowed >= Number(value) ? Number(value) : amountBorrowed;
+
+    // const { totalToRepay } = getAmountToRepay(Number(value));
+    const tokenAmount = BigInt((usableValue * 10 ** token.decimals).toFixed());
+    try {
+      const repayRequest = await prepareWriteContract({
+        address: diamondAddress as `0x${string}`,
+        abi: diamondAbi,
+        functionName: "repay",
+        args: [token.tokenAddress, tokenAmount],
+      });
+
+      const { hash } = await writeContract(repayRequest);
+      setTransactionHash(hash);
+
+      const repayReceipt = await waitForTransaction({
+        hash,
+      });
+
+      console.log("Receipt: ", repayReceipt);
+      if (repayReceipt.status == "success") {
+        console.log("Repayed");
+        setIsSuccess(true);
+        await updateRepay();
+      } else {
+        console.log("Failure");
+        console.log("Failed to repay");
+      }
+
+      setIsRepaying(false);
+      setRepayText(`Repay ${token.tokenName}`);
+    } catch (error) {
+      console.log("Error: ", error);
+      displayToast("failure", "Failed to repay");
+      setIsRepaying(false);
+      setRepayText(`Repay ${token.tokenName}`);
+    }
+  };
+  const repayTokenWithPermit = async () => {
     console.log("We are here");
 
     if (!sig) {
       console.log("Approve the token first");
     } else {
-      setIsSupplying(true);
-      setSupplyText(`Repaying ${token.tokenName}`);
-      const parsedValue = BigInt(Number(value) * 10 ** token.decimals);
+      setIsRepaying(true);
+      setRepayText(`Repaying ${token.tokenName}`);
+
+      const amountBorrowed =
+        Number(token.amountBorrowed) / 10 ** token.decimals;
+      let usableValue =
+        amountBorrowed >= Number(value) ? Number(value) : amountBorrowed;
+
+      // const { totalToRepay } = getAmountToRepay(Number(value));
+      const tokenAmount = BigInt(
+        (usableValue * 10 ** token.decimals).toFixed()
+      );
+
+      console.log("Parsed value in repay: ", parsedValue);
       console.log("We are now here");
       console.log("We are inside try block");
       try {
-        const supplyRequest = await prepareWriteContract({
+        const repayRequest = await prepareWriteContract({
           address: diamondAddress as `0x${string}`,
           abi: diamondAbi,
-          functionName: "supplyWithPermit",
+          functionName: "repayWithPermit",
           args: [
             token.tokenAddress,
+            tokenAmount,
             parsedValue,
             deadline,
             sig?.v,
@@ -214,33 +342,30 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
           ],
         });
 
-        const { hash } = await writeContract(supplyRequest);
+        const { hash } = await writeContract(repayRequest);
         setTransactionHash(hash);
 
-        const supplyReceipt = await waitForTransaction({
+        const repayReceipt = await waitForTransaction({
           hash,
         });
 
-        console.log("Receipt: ", supplyReceipt);
-        if (supplyReceipt.status == "success") {
-          console.log("Supplied");
+        console.log("Receipt: ", repayReceipt);
+        if (repayReceipt.status == "success") {
+          console.log("Repayed");
           setIsSuccess(true);
-          await updateSupply();
-
-          // await
-          // await loadAllWalletTokens(signerAddress)
+          await updateRepay();
         } else {
           console.log("Failure");
-          console.log("Failed to Supply");
+          console.log("Failed to repay");
         }
 
-        setIsSupplying(false);
-        setSupplyText(`Repay ${token.tokenName}`);
+        setIsRepaying(false);
+        setRepayText(`Repay ${token.tokenName}`);
       } catch (error) {
         console.log("Error: ", error);
-        displayToast("failure", "Failed to supply");
-        setIsSupplying(false);
-        setSupplyText(`Repay ${token.tokenName}`);
+        displayToast("failure", "Failed to repay");
+        setIsRepaying(false);
+        setRepayText(`Repay ${token.tokenName}`);
       }
     }
   };
@@ -267,7 +392,7 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
     const totalToRepay = accumulatedInterest + getAmountToRepay;
     const totalToRepayInUsd = totalToRepay * oraclePrice;
 
-    return { totalToRepay, totalToRepayInUsd };
+    return { totalToRepay, totalToRepayInUsd, totalInterest };
   };
 
   return (
@@ -320,7 +445,7 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
 
             <div className="font-bold mt-4">All Done!</div>
             <p>
-              You Supplied {value} {token?.tokenName}
+              You Repayed {value} {token?.tokenName}
             </p>
             <div className="p-4 border my-3 space-y-2 border-slate-700 rounded-md flex items-center justify-center flex-col">
               <img
@@ -519,6 +644,7 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
                   </p>
                   <button
                     onClick={() => {
+                      setHasApproved(false);
                       const walletBalance =
                         Number(token.walletBalance) / 10 ** token.decimals;
                       const walletBalanceInUsd = inCurrencyFormat(
@@ -668,49 +794,116 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
 
           <div className="pb-8 mx-3 flex flex-col justify-center items-center space-y-2 rounded-b border-gray-200 dark:border-gray-600">
             {!hasApproved && (
-              <button
-                // disabled={!!!value}
-                onClick={approveToken}
-                data-modal-toggle="small-modal"
-                type="button"
-                className={`${
-                  isApproving
-                    ? "bg-gray-600 cursor-wait"
-                    : "bg-gray-600 hover:bg-gray-600 "
-                } w-full mx-4 text-white hover:text-white rounded-md p-2`}
-              >
-                {isApproving ? (
-                  <div className="flex w-full justify-center space-x-4 items-center">
-                    <ClipLoader color="#fff" loading={true} size={30} />
-                    <p className="ml-2">{approveText}</p>
+              <div className="mx-4 w-full flex flex-col">
+                <Popup
+                  trigger={
+                    <button
+                      className="self-end"
+                      onClick={() => setOpenApproval(true)}
+                    >
+                      <div className="text-[12px] py-1 flex items-center space-x-2">
+                        <p>
+                          Approve with{" "}
+                          <span className="text-blue-400">{`${
+                            approvalOption == 0
+                              ? "Signed Message"
+                              : "Transaction"
+                          }`}</span>{" "}
+                        </p>
+                        <FiSettings className="text-blue-400" />
+                      </div>
+                    </button>
+                  }
+                  position="bottom left"
+                  on="click"
+                  open={openApproval}
+                  closeOnDocumentClick
+                  mouseLeaveDelay={300}
+                  mouseEnterDelay={0}
+                  contentStyle={{
+                    padding: "0px",
+                    border: "1px solid #29293d",
+                    background: "#29293d",
+                  }}
+                  arrow={false}
+                >
+                  <div className="font-medium text-lg text-white my-2">
+                    <button
+                      className={`hover:bg-gray-600 p-3 w-full text-left flex items-center justify-between ${
+                        approvalOption == 0 && "bg-gray-700"
+                      }`}
+                      onClick={() => {
+                        setApprovalOption(0);
+                        setOpenApproval(false);
+                      }}
+                    >
+                      <p>Signed Message</p>
+                      {approvalOption == 0 && <FaCheck />}
+                    </button>
+                    <button
+                      className={`hover:bg-gray-600 p-3 w-full text-left flex items-center justify-between ${
+                        approvalOption == 1 && "bg-gray-700"
+                      }`}
+                      onClick={() => {
+                        setApprovalOption(1);
+                        setOpenApproval(false);
+                      }}
+                    >
+                      <p>Transaction</p>
+                      {approvalOption == 1 && <FaCheck />}
+                    </button>
                   </div>
-                ) : (
-                  <div className="flex w-full items-center">
-                    <p className="w-full">{approveText}</p>
-                  </div>
-                )}
-                {/*  */}
-              </button>
+                </Popup>
+                <button
+                  // disabled={!!!value}
+                  onClick={
+                    approvalOption == 0 ? approveToken : approveByTransaction
+                  }
+                  data-modal-toggle="small-modal"
+                  type="button"
+                  className={`${
+                    isApproving
+                      ? "bg-gray-600 cursor-wait"
+                      : "bg-gray-600 hover:bg-gray-600 "
+                  } text-white hover:text-white rounded-md p-2`}
+                >
+                  {isApproving ? (
+                    <div className="flex w-full justify-center space-x-4 items-center">
+                      <ClipLoader color="#fff" loading={true} size={30} />
+                      <p className="ml-2">{approveText}</p>
+                    </div>
+                  ) : (
+                    <div className="flex w-full items-center">
+                      <p className="w-full">{approveText}</p>
+                    </div>
+                  )}
+                  {/*  */}
+                </button>
+              </div>
             )}
             <button
-              disabled={isSupplying || !hasApproved}
-              onClick={supplyTokenWithPermit}
+              disabled={isRepaying || !hasApproved}
+              onClick={
+                approvalOption == 0
+                  ? repayTokenWithPermit
+                  : repayTokenWithTransaction
+              }
               data-modal-toggle="small-modal"
               type="button"
               className={`${
-                isSupplying
+                isRepaying
                   ? "bg-gray-600 cursor-wait"
                   : "bg-gray-700 hover:bg-gray-700 "
               } w-full mx-4 text-white hover:text-white rounded-md p-2`}
             >
-              {isSupplying ? (
+              {isRepaying ? (
                 <div className="flex w-full justify-center space-x-4 items-center">
                   <ClipLoader color="#fff" loading={true} size={30} />
-                  <p className="ml-2">{supplyText}</p>
+                  <p className="ml-2">{repayText}</p>
                 </div>
               ) : (
                 <div className="flex w-full items-center">
-                  <p className="w-full">{supplyText}</p>
+                  <p className="w-full">{repayText}</p>
                 </div>
               )}
               {/*  */}

@@ -90,7 +90,9 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
         ? "text-green-600"
         : formattedHealthFactor > 2
         ? "text-orange-300"
-        : "text-red-500";
+        : latestHealthFactor > 0
+        ? "text-red-300"
+        : "text-white";
   }
 
   if (latestHealthFactor > 0) {
@@ -99,7 +101,9 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
         ? "text-green-600"
         : latestHealthFactor > 2
         ? "text-orange-300"
-        : "text-red-500";
+        : latestHealthFactor > 0
+        ? "text-red-300"
+        : "text-white";
   }
 
   const addLAR = (token: TokenData) => {
@@ -470,7 +474,9 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
                 <p>Health Factor</p>
                 <div className="flex text-sm space-x-2 items-center font-medium">
                   <p className={`${healthFactorColor}`}>
-                    {formattedHealthFactor.toFixed(2)}
+                    {formattedHealthFactor > 0
+                      ? formattedHealthFactor.toFixed(2)
+                      : "--"}
                   </p>
                   {latestHealthFactor > 0 && (
                     <div
@@ -483,14 +489,6 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
                 </div>
               </div>
             </div>
-
-            {/* {supplyError && (
-            <div className="text-red-600 text-sm mt-5 bg-red-200 border overflow-auto scrollbar-hide rounded-md p-2 border-red-200 font-medium">
-              {supplyError.message}
-            </div>
-          )} */}
-
-            {/* <!-- Modal footer --> */}
           </div>
 
           <div className="pb-8 mx-3 flex flex-col justify-center items-center space-y-2 rounded-b border-gray-200 dark:border-gray-600">

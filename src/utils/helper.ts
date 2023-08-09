@@ -1,5 +1,10 @@
 import { ethers } from "ethers";
-import { BorrowAsset, DetailedBorrowedToken, DetailedSuppliedToken, TokenData } from "../types";
+import {
+  BorrowAsset,
+  DetailedBorrowedToken,
+  DetailedSuppliedToken,
+  TokenData,
+} from "../types";
 import { readContract } from "@wagmi/core";
 import { diamondAddress, getterAbi } from "../constants";
 import { each } from "chart.js/dist/helpers/helpers.core";
@@ -256,7 +261,10 @@ export const getWithdrawalHealthFactor = (
   const corr = numerator / latestTotalCollateralInUsd;
 
   console.log("Correct liquidation threshold weighted: ", corr);
-  healthFactor = (latestTotalCollateralInUsd * corr) / parsedTotalBorrowedInUsd;
+  healthFactor =
+    parsedTotalBorrowedInUsd > 0
+      ? (latestTotalCollateralInUsd * corr) / parsedTotalBorrowedInUsd
+      : -1;
 
   console.log("Health factor in helper", healthFactor);
 
@@ -286,8 +294,10 @@ export const getBorrowHealthFactor = (
   );
 
   const healthFactor =
-    (parsedTotalCollateralInUsd * parsedLiquidationThresholdWeighted) /
-    (parsedTotalBorrowedInUsd + tokenAmountInUsd);
+    parsedTotalBorrowedInUsd + tokenAmountInUsd > 0
+      ? (parsedTotalCollateralInUsd * parsedLiquidationThresholdWeighted) /
+        (parsedTotalBorrowedInUsd + tokenAmountInUsd)
+      : -1;
 
   return healthFactor;
 };
@@ -314,12 +324,10 @@ export const getRepayHealthFactor = (
   );
 
   const healthFactor =
-    (parsedTotalCollateralInUsd * parsedLiquidationThresholdWeighted) /
-    (parsedTotalBorrowedInUsd - tokenAmountInUsd);
+    parsedTotalBorrowedInUsd - tokenAmountInUsd > 0
+      ? (parsedTotalCollateralInUsd * parsedLiquidationThresholdWeighted) /
+        (parsedTotalBorrowedInUsd - tokenAmountInUsd)
+      : -1;
 
   return healthFactor;
 };
-
-
-
-

@@ -30,6 +30,7 @@
     "react-spinners": "^0.13.8",
     "react-toastify": "^9.1.3",
     "react-tooltip": "^5.20.0",
+    "reactjs-popup": "^2.0.5",
     "tailwind-scrollbar-hide": "^1.1.7",
     "viem": "^1.5.0",
     "wagmi": "^1.3.9",

@@ -93,7 +93,9 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
         ? "text-green-600"
         : formattedHealthFactor > 2
         ? "text-orange-300"
-        : "text-red-200";
+        : formattedHealthFactor > 0
+        ? "text-red-300"
+        : "text-white";
   }
 
   if (latestHealthFactor > 0) {
@@ -102,7 +104,9 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
         ? "text-green-600"
         : latestHealthFactor > 2
         ? "text-orange-300"
-        : "text-red-200";
+        : latestHealthFactor > 0
+        ? "text-red-300"
+        : "text-white";
   }
 
   useEffect(() => {
@@ -487,9 +491,9 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
                 <p>Health Factor</p>
                 <div className="flex text-sm space-x-2 items-center font-medium">
                   <p className={`${healthFactorColor}`}>
-                    {formattedHealthFactor.toFixed(2)}
+                    {formattedHealthFactor > 0 ? formattedHealthFactor.toFixed(2) : "--"}
                   </p>
-                  {latestHealthFactor > 0 && (
+                  {latestHealthFactor > 0 && latestHealthFactor < 100000 && (
                     <div
                       className={`flex items-center space-x-1 ${latestHealthFactorColor}`}
                     >
