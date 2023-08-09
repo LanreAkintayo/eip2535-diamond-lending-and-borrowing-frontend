@@ -259,6 +259,48 @@ const DefiProvider = (props: any) => {
           args: [eachBorrow.tokenAddress, eachBorrow.amountBorrowed],
         })) as bigint;
 
+        const oraclePrice = (await readContract({
+          address: diamondAddress as `0x${string}`,
+          abi: getterAbi,
+          functionName: "getUsdEquivalence",
+          args: [eachBorrow.tokenAddress, 1 * 10 ** decimals],
+        })) as bigint;
+
+        const availableToBorrowInUsd = (await readContract({
+          address: diamondAddress as `0x${string}`,
+          abi: getterAbi,
+          functionName: "getMaxAvailableToBorrowInUsd",
+          args: [signerAddress],
+        })) as bigint;
+
+        const availableToBorrow = (await readContract({
+          address: diamondAddress as `0x${string}`,
+          abi: getterAbi,
+          functionName: "convertUsdToToken",
+          args: [tokenAddress, availableToBorrowInUsd],
+        })) as bigint;
+
+         const walletBalance = await readContract({
+           address: tokenAddress as `0x${string}`,
+           abi: erc20ABI,
+           functionName: "balanceOf",
+           args: [signerAddress as `0x${string}`],
+         });
+
+         const walletBalanceInUsd = (await readContract({
+           address: diamondAddress as `0x${string}`,
+           abi: getterAbi,
+           functionName: "getUsdEquivalence",
+           args: [tokenAddress, walletBalance],
+         })) as bigint;
+        
+         const tokenDetails = (await readContract({
+           address: diamondAddress as `0x${string}`,
+           abi: getterAbi,
+           functionName: "getTokenDetails",
+           args: [tokenAddress],
+         })) as TokenDetails;
+
         const tokenImage = addressToImage[tokenAddress];
 
         return {
@@ -267,6 +309,12 @@ const DefiProvider = (props: any) => {
           tokenImage,
           decimals,
           amountBorrowedInUsd,
+          oraclePrice,
+          availableToBorrow,
+          availableToBorrowInUsd,
+          walletBalance, 
+          walletBalanceInUsd,
+          borrowStableRate: tokenDetails.borrowStableRate
         };
       }
     );

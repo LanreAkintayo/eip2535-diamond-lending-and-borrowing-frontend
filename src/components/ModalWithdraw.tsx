@@ -90,7 +90,7 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
         ? "text-green-600"
         : formattedHealthFactor > 2
         ? "text-orange-300"
-        : "text-red-200";
+        : "text-red-500";
   }
 
   if (latestHealthFactor > 0) {
@@ -99,7 +99,7 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
         ? "text-green-600"
         : latestHealthFactor > 2
         ? "text-orange-300"
-        : "text-red-200";
+        : "text-red-500";
   }
 
   const addLAR = (token: TokenData) => {
@@ -160,9 +160,6 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
         console.log("Supplied");
         setIsSuccess(true);
         await updateSupply();
-
-        // await
-        // await loadAllWalletTokens(signerAddress)
       } else {
         console.log("Failure");
         console.log("Failed to withdraw");
@@ -293,13 +290,45 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
                       liquidationThresholdWeighted
                     );
                     setLatestHealthFactor(latestHealthFactor);
-                    // console.log("Latest Health factor: ", latestHealthFactor);
-                    // console.log("Value: ", Number(value));
-                    // // console.log("Wallet balance: ", walletBalance);
-                    // // console.log("Token.walletBalance: ", token.walletBalance);
-                    if (Number(value) >= amountSupplied) {
-                      setValue(amountSupplied.toString());
-                      setValueInUsd(amountSuppliedInUsd);
+
+                    let maxAvailableToWithdrawInUsd;
+                    let maxAvailableToWithdraw;
+
+                    const usableUserTotalCollateralInUsd =
+                      Number(userTotalCollateralInUsd) / 10 ** 18;
+                    const usableTotalBorrowedInUsd =
+                      Number(userTotalBorrowedInUsd) / 10 ** 18;
+                    const usableWalletBalance =
+                      Number(token.walletBalance) / 10 ** token.decimals;
+                    const usableWalletBalanceInUsd =
+                      Number(token.walletBalanceInUsd) / 10 ** token.decimals;
+                    const usablemaxLTV = Number(maxLTV) / 10000;
+                    const usableOraclePrice =
+                      Number(token.oraclePrice) / 10 ** token.decimals;
+                    const usableAmountSupplied =
+                      Number(token.amountSupplied) / 10 ** token.decimals;
+                    const usableAmountSuppliedInUsd =
+                      Number(token.amountSuppliedInUsd) / 10 ** token.decimals;
+
+                    const availableToWithdrawInUsd =
+                      usableUserTotalCollateralInUsd -
+                      usableTotalBorrowedInUsd / usablemaxLTV;
+
+                    if (availableToWithdrawInUsd >= usableAmountSuppliedInUsd) {
+                      maxAvailableToWithdrawInUsd = usableAmountSuppliedInUsd;
+                      maxAvailableToWithdraw = usableAmountSupplied;
+                    } else {
+                      maxAvailableToWithdrawInUsd =
+                        0.99 * availableToWithdrawInUsd;
+                      maxAvailableToWithdraw =
+                        maxAvailableToWithdrawInUsd / usableOraclePrice;
+                    }
+
+                    if (Number(value) >= maxAvailableToWithdraw) {
+                      setValue(maxAvailableToWithdraw.toString());
+                      setValueInUsd(
+                        inCurrencyFormat(maxAvailableToWithdrawInUsd)
+                      );
                       return;
                     }
                     let usableValue = "0.00";
@@ -378,11 +407,10 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
                         "Amount supplied in usd: ",
                         usableAmountSuppliedInUsd
                       );
-                      const difference =
-                        usableUserTotalCollateralInUsd -
-                        usableAmountSuppliedInUsd;
 
-                      if (availableToWithdrawInUsd >= usableAmountSuppliedInUsd) {
+                      if (
+                        availableToWithdrawInUsd >= usableAmountSuppliedInUsd
+                      ) {
                         maxAvailableToWithdrawInUsd = usableAmountSuppliedInUsd;
                         maxAvailableToWithdraw = usableAmountSupplied;
                       } else {

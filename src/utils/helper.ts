@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { DetailedSuppliedToken, TokenData } from "../types";
+import { BorrowAsset, DetailedBorrowedToken, DetailedSuppliedToken, TokenData } from "../types";
 import { readContract } from "@wagmi/core";
 import { diamondAddress, getterAbi } from "../constants";
 import { each } from "chart.js/dist/helpers/helpers.core";
@@ -262,3 +262,64 @@ export const getWithdrawalHealthFactor = (
 
   return healthFactor;
 };
+
+export const getBorrowHealthFactor = (
+  tokenToBorrow: BorrowAsset,
+  tokenAmount: number,
+  totalCollateralInUsd: any,
+  totalBorrowedInUsd: any,
+  liquidationThresholdWeighted: any
+) => {
+  const oraclePrice =
+    Number(tokenToBorrow.oraclePrice) / 10 ** tokenToBorrow.decimals;
+
+  const tokenAmountInUsd = tokenAmount * oraclePrice;
+  const parsedLiquidationThresholdWeighted =
+    Number(liquidationThresholdWeighted) / 10000;
+
+  const parsedTotalCollateralInUsd = Number(
+    ethers.formatUnits(totalCollateralInUsd.toString(), 18)
+  );
+
+  const parsedTotalBorrowedInUsd = Number(
+    ethers.formatUnits(totalBorrowedInUsd.toString(), 18)
+  );
+
+  const healthFactor =
+    (parsedTotalCollateralInUsd * parsedLiquidationThresholdWeighted) /
+    (parsedTotalBorrowedInUsd + tokenAmountInUsd);
+
+  return healthFactor;
+};
+export const getRepayHealthFactor = (
+  tokenToBorrow: DetailedBorrowedToken,
+  tokenAmount: number,
+  totalCollateralInUsd: any,
+  totalBorrowedInUsd: any,
+  liquidationThresholdWeighted: any
+) => {
+  const oraclePrice =
+    Number(tokenToBorrow.oraclePrice) / 10 ** tokenToBorrow.decimals;
+
+  const tokenAmountInUsd = tokenAmount * oraclePrice;
+  const parsedLiquidationThresholdWeighted =
+    Number(liquidationThresholdWeighted) / 10000;
+
+  const parsedTotalCollateralInUsd = Number(
+    ethers.formatUnits(totalCollateralInUsd.toString(), 18)
+  );
+
+  const parsedTotalBorrowedInUsd = Number(
+    ethers.formatUnits(totalBorrowedInUsd.toString(), 18)
+  );
+
+  const healthFactor =
+    (parsedTotalCollateralInUsd * parsedLiquidationThresholdWeighted) /
+    (parsedTotalBorrowedInUsd - tokenAmountInUsd);
+
+  return healthFactor;
+};
+
+
+
+

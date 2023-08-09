@@ -22,7 +22,7 @@ export default function BorrowRow({
   return (
     <>
       <tr>
-        <th className="border-b-0 px-4 border align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
+        <th className="border-b-0 border-slate-700 px-4 border align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
           <div className="flex items-center">
             <img
               src={token.tokenImage}
@@ -35,7 +35,7 @@ export default function BorrowRow({
             <div className="ml-2">{token.tokenName}</div>
           </div>
         </th>
-        <td className="border-b-0 px-4 border align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+        <td className="border-b-0 border-slate-700 px-4 border align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
           <div className="text-base font-medium">
             {formattedAmountBorrowed}
           </div>
@@ -43,15 +43,15 @@ export default function BorrowRow({
             ${formattedAmountBorrowedInUsd}
           </div>
         </td>
-        <td className="border-b-0 px-4 border  align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+        <td className="border-b-0 border-slate-700 px-4 border  align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
           {formattedStableRate}%
         </td>
-        <td className="border-b-0 px-4 border  align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+        <td className="border-b-0 border-slate-700 px-4 border  align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
           <span className="border border-gray-400 text-gray-400  bg-slate-800 p-1 px-3 rounded-md">
             STABLE
           </span>
         </td>
-        <td className="border-b-0 px-4 border align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+        <td className="border-b-0 border-slate-700 px-4 border align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
           <Repay />
           <Borrow />
         </td>

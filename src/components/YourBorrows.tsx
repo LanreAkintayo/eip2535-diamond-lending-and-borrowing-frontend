@@ -6,6 +6,7 @@ import BorrowRow from "./BorrowRow";
 import Skeleton from "./Skeleton";
 import { DetailedBorrowedToken } from "../types";
 import ModalBorrow from "./ModalBorrow";
+import ModalRepay from "./ModalRepay";
 
 interface IYourBorrows {
   tokens: DetailedBorrowedToken[];
@@ -19,6 +20,7 @@ export default function YourBorrows({ tokens }: IYourBorrows) {
 
   const handleCloseModal = () => {
     setSelectedTokenToBorrow(null);
+    setSelectedTokenToRepay(null);
   };
 
   return (
@@ -86,7 +88,7 @@ export default function YourBorrows({ tokens }: IYourBorrows) {
                       return (
                         <button
                           onClick={() => setSelectedTokenToRepay(token)}
-                          className="bg-gray-300 text-gray-700  px-4 text-base p-2 rounded-md"
+                          className="bg-gray-300 text-gray-700  px-4 text-base p-2 rounded-md hover:bg-gray-400"
                         >
                           Repay
                         </button>
@@ -96,7 +98,7 @@ export default function YourBorrows({ tokens }: IYourBorrows) {
                       return (
                         <button
                           onClick={() => setSelectedTokenToBorrow(token)}
-                          className="ml-2 border border-gray-400 bg-slate-800 px-4 text-base font-medium p-2 rounded-md"
+                          className="ml-2 border border-gray-400 hover:bg-gray-900 bg-slate-800 px-4 text-base font-medium p-2 rounded-md"
                         >
                           Borrow
                         </button>
@@ -112,6 +114,13 @@ export default function YourBorrows({ tokens }: IYourBorrows) {
             {selectedTokenToBorrow && (
               <ModalBorrow
                 token={selectedTokenToBorrow}
+                closeModal={handleCloseModal}
+              />
+            )}
+
+            {selectedTokenToRepay && (
+              <ModalRepay
+                token={selectedTokenToRepay}
                 closeModal={handleCloseModal}
               />
             )}

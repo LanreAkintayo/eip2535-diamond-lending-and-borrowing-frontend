@@ -46,6 +46,12 @@ export type DetailedBorrowedToken = {
   tokenName: string;
   tokenImage: string;
   decimals: number;
+  oraclePrice: bigint | string;
+  availableToBorrowInUsd: bigint | string;
+  availableToBorrow: bigint | string;
+  walletBalance: bigint | string;
+  walletBalanceInUsd: bigint | string;
+  borrowStableRate: bigint | string;
 };
 
 export type SupplyAsset = {

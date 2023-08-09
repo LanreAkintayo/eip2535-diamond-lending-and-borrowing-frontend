@@ -3,7 +3,11 @@ import { useEffect, useState } from "react";
 import BorderLayout from "./BorderLayout";
 import { TokenData } from "../types";
 import { GiCheckMark } from "react-icons/gi";
-import { getLatestHealthFactor, inCurrencyFormat } from "../utils/helper";
+import {
+  getBorrowHealthFactor,
+  getLatestHealthFactor,
+  inCurrencyFormat,
+} from "../utils/helper";
 import {
   IMAGES,
   diamondAbi,
@@ -32,12 +36,12 @@ import useDefi from "../hooks/useDefi";
 import { BsArrowRight } from "react-icons/bs";
 import { displayToast } from "./Toast";
 
-interface IModalSupply {
+interface IModalBorrow {
   token: TokenData;
   closeModal: any;
 }
 
-export default function ModalBorrow({ token, closeModal }: IModalSupply) {
+export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
   const [value, setValue] = useState("");
   const [valueInUsd, setValueInUsd] = useState("0.00");
   const [deadline, setDeadline] = useState(0);
@@ -50,12 +54,15 @@ export default function ModalBorrow({ token, closeModal }: IModalSupply) {
     loadSupplyAssets,
     loadUserSupplies,
     loadUserTotalCollateralInUsd,
+    loadUserTotalBorrowedInUsd,
     healthFactor,
     userSupplies,
     userTotalCollateralInUsd,
     userTotalBorrowedInUsd,
     liquidationThresholdWeighted,
     loadLiquidationThresholdWeighted,
+    loadBorrowAssets,
+    loadUserBorrows,
   } = useDefi();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -66,13 +73,16 @@ export default function ModalBorrow({ token, closeModal }: IModalSupply) {
   );
   const [hasApproved, setHasApproved] = useState(true);
 
-  const [isSupplying, setIsSupplying] = useState(false);
-  const [supplyText, setSupplyText] = useState(`Borrow ${token.tokenName}`);
+  const [isBorrowing, setIsBorrowing] = useState(false);
+  const [borrowText, setBorrowText] = useState(`Borrow ${token.tokenName}`);
 
   const [isSuccess, setIsSuccess] = useState(false);
 
   const formattedHealthFactor = healthFactor ? Number(healthFactor) / 10000 : 0;
   const [latestHealthFactor, setLatestHealthFactor] = useState(0);
+
+  const [reserveBalance, setReserveBalance] = useState(0);
+  const [reserveBalanceInUsd, setReserveBalanceInUsd] = useState(0);
 
   // health factor color
   let healthFactorColor;
@@ -95,156 +105,88 @@ export default function ModalBorrow({ token, closeModal }: IModalSupply) {
         : "text-red-200";
   }
 
-  const addLAR = (token: TokenData) => {
-    alert("Add LAR token");
-  };
-
   useEffect(() => {
-    console.log(
-      "UserTotalCollateralInUsd in the modal: ",
-      userTotalCollateralInUsd
-    );
-    console.log(
-      "UserTotalBorrowedInUsd in the modal: ",
-      userTotalBorrowedInUsd
-    );
-    console.log(
-      "liquidationThresholdWeited in the modal: ",
-      liquidationThresholdWeighted
-    );
+    // Check the reserve amount
+    const checkReserveBalance = async () => {
+      const reserveBalance = (await readContract({
+        address: token.tokenAddress as `0x${string}`,
+        abi: erc20Abi,
+        functionName: "balanceOf",
+        args: [diamondAddress],
+      })) as bigint;
+      const oraclePrice = Number(token.oraclePrice) / 10 ** token.decimals;
 
-    console.log("Health factor: ", healthFactor);
-  }, [
-    userTotalCollateralInUsd,
-    userTotalBorrowedInUsd,
-    liquidationThresholdWeighted,
-    healthFactor,
-  ]);
-  const updateSupply = async () => {
+      const reserveBalanceInUsd =
+        (Number(reserveBalance) / 10 ** token.decimals) * oraclePrice;
+
+      console.log(
+        "Reserve Balance: ",
+        Number(reserveBalance) / 10 ** token.decimals
+      );
+
+      console.log("Reserve balance in usd: ", reserveBalanceInUsd);
+      //  console.log("Reserve balance: ", reserveBalance);
+
+      const formattedReserveBalance =
+        Number(reserveBalance) / 10 ** token.decimals;
+
+      setReserveBalance(formattedReserveBalance);
+      setReserveBalanceInUsd(reserveBalanceInUsd);
+    };
+
+    checkReserveBalance();
+  }, []);
+  const updateBorrow = async () => {
     await loadHealthFactor(signerAddress);
-    await loadSupplyAssets(signerAddress);
-    await loadUserSupplies(signerAddress);
-    await loadUserTotalCollateralInUsd(signerAddress);
+    await loadBorrowAssets(signerAddress);
+    await loadUserBorrows(signerAddress);
+    await loadUserTotalBorrowedInUsd(signerAddress);
     await loadLiquidationThresholdWeighted(signerAddress);
   };
 
-  const approveToken = async () => {
-    setIsApproving(true);
-    setApproveText(`Approving ${token.tokenName}`);
-    const parsedValue = BigInt(Number(value) * 10 ** token.decimals);
-
-    console.log("Parsed value: ", parsedValue);
-    try {
-      const nonce = (await readContract({
-        address: token.tokenAddress as `0x${string}`,
-        abi: erc20PermitAbi,
-        functionName: "nonces",
-        args: [signerAddress],
-      })) as bigint;
-
-      console.log("Nonce: ", nonce);
-
-      const domain = {
-        name: token.tokenName,
-        version: "1",
-        chainId: 80001,
-        verifyingContract: token.tokenAddress as `0x${string}`,
-      };
-
-      // Expire after 60 minutes
-      const deadline = Math.floor(Date.now() / 1000) + 3600;
-      setDeadline(deadline);
-      // const value = ethers.parseUnits("5", 18);
-
-      const message = {
-        owner: signerAddress,
-        spender: diamondAddress,
-        value: parsedValue,
-        nonce: nonce,
-        deadline,
-      };
-
-      const signature = await signTypedData({
-        domain,
-        message,
-        primaryType: "Permit",
-        types,
-      });
-
-      console.log("Signature: ", signature);
-
-      const sig = ethers.Signature.from(signature);
-      console.log("Splitted signature: ", sig);
-      setSig(sig);
-
-      const recovered = ethers.verifyTypedData(domain, types, message, sig);
-
-      console.log("Recovered: ", recovered);
-      setIsApproving(false);
-      setApproveText(`Approve ${token.tokenName}`);
-      setHasApproved(true);
-    } catch (error) {
-      setIsApproving(false);
-      setApproveText(`Approve ${token.tokenName}`);
-      console.log("Failed to approve");
-      displayToast("failure", "Failed to approve");
-    }
-  };
-
-  const supplyTokenWithPermit = async () => {
+  const borrowToken = async () => {
     console.log("We are here");
 
-    if (!sig) {
-      console.log("Approve the token first");
-    } else {
-      setIsSupplying(true);
-      setSupplyText(`Supplying ${token.tokenName}`);
-      const parsedValue = BigInt(Number(value) * 10 ** token.decimals);
-      console.log("We are now here");
-      console.log("We are inside try block");
-      try {
-        const supplyRequest = await prepareWriteContract({
-          address: diamondAddress as `0x${string}`,
-          abi: diamondAbi,
-          functionName: "supplyWithPermit",
-          args: [
-            token.tokenAddress,
-            parsedValue,
-            deadline,
-            sig?.v,
-            sig?.r,
-            sig?.s,
-          ],
-        });
+    setIsBorrowing(true);
+    setBorrowText(`Borrowing ${token.tokenName}`);
+    const parsedValue = (Number(value) * 10 ** token.decimals).toFixed(0);
+    console.log("We are now here");
+    console.log("We are inside try block");
+    try {
+      const borrowRequest = await prepareWriteContract({
+        address: diamondAddress as `0x${string}`,
+        abi: diamondAbi,
+        functionName: "borrow",
+        args: [token.tokenAddress, parsedValue],
+      });
 
-        const { hash } = await writeContract(supplyRequest);
-        setTransactionHash(hash);
+      const { hash } = await writeContract(borrowRequest);
+      setTransactionHash(hash);
 
-        const supplyReceipt = await waitForTransaction({
-          hash,
-        });
+      const borrowReceipt = await waitForTransaction({
+        hash,
+      });
 
-        console.log("Receipt: ", supplyReceipt);
-        if (supplyReceipt.status == "success") {
-          console.log("Supplied");
-          setIsSuccess(true);
-          await updateSupply();
+      console.log("Receipt: ", borrowReceipt);
+      if (borrowReceipt.status == "success") {
+        console.log("Supplied");
+        setIsSuccess(true);
+        await updateBorrow();
 
-          // await
-          // await loadAllWalletTokens(signerAddress)
-        } else {
-          console.log("Failure");
-          console.log("Failed to Supply");
-        }
-
-        setIsSupplying(false);
-        setSupplyText(`Supply ${token.tokenName}`);
-      } catch (error) {
-        console.log("Error: ", error);
-        displayToast("failure", "Failed to supply");
-        setIsSupplying(false);
-        setSupplyText(`Supply ${token.tokenName}`);
+        // await
+        // await loadAllWalletTokens(signerAddress)
+      } else {
+        console.log("Failure");
+        console.log("Failed to borrow");
       }
+
+      setIsBorrowing(false);
+      setBorrowText(`Borrow ${token.tokenName}`);
+    } catch (error) {
+      console.log("Error: ", error);
+      displayToast("failure", "Failed to borrow");
+      setIsBorrowing(false);
+      setBorrowText(`Borrow ${token.tokenName}`);
     }
   };
 
@@ -253,7 +195,7 @@ export default function ModalBorrow({ token, closeModal }: IModalSupply) {
       <div className="p-5">
         <div className="flex justify-between items-center rounded-t">
           <h3 className="text-xl font-medium text-white">
-            {isSuccess ? `Sucessful` : `Supply ${token.tokenName}`}
+            {isSuccess ? `Sucessful` : `Borrow ${token.tokenName}`}
           </h3>
           <button
             placeholder="0.00"
@@ -298,27 +240,27 @@ export default function ModalBorrow({ token, closeModal }: IModalSupply) {
 
             <div className="font-bold mt-4">All Done!</div>
             <p>
-              You Supplied {value} {token?.tokenName}
+              You borrowed {value} {token?.tokenName}
             </p>
-            <div className="p-4 border my-3 space-y-2 border-slate-700 rounded-md flex items-center justify-center flex-col">
+            <div className="p-4 w-[300px] border my-3 space-y-2 border-slate-700 rounded-md flex items-center justify-center flex-col">
               <img
-                src={IMAGES.LAR}
+                src={token.tokenImage}
                 width={40}
                 height={40}
                 // layout="fixed"
                 className="card-img-top"
                 alt="coinimage"
               />
-              <p>Add LAR to wallet to track your balance</p>
+              <p>Add {token.tokenName} to wallet</p>
               <button
                 onClick={async () => {
-                  const tokenName = "LAR";
-                  const tokenAddress = larAddress;
-                  const tokenImage = IMAGES.LAR;
-                  const tokenDecimals = 18;
-                  const tokenSymbol = "LAR";
+                  const tokenName = token.tokenName;
+                  const tokenAddress = token.tokenAddress;
+                  const tokenImage = token.tokenImage;
+                  const tokenDecimals = token.decimals;
+                  const tokenSymbol = token.tokenName;
 
-                  const token = {
+                  const tokenToAdd = {
                     tokenName,
                     tokenAddress,
                     tokenImage,
@@ -326,15 +268,15 @@ export default function ModalBorrow({ token, closeModal }: IModalSupply) {
                     tokenSymbol,
                   };
 
-                  const hasAdded = await addToken(token);
+                  const hasAdded = await addToken(tokenToAdd);
 
                   if (hasAdded) {
                     displayToast(
                       "success",
-                      "LAR has been added to your wallet"
+                      `${token.tokenName} has been added to your wallet`
                     );
                   } else {
-                    displayToast("failure", "Failed to add LAR");
+                    displayToast("failure", `Failed to add ${token.tokenName}`);
                   }
                 }}
                 className="bg-slate-700 p-2 flex space-x-2 items-center rounded-md text-base font-medium "
@@ -383,53 +325,71 @@ export default function ModalBorrow({ token, closeModal }: IModalSupply) {
             <div className="flex flex-col items-center border rounded-md p-2 border-slate-700">
               <div className="w-full flex items-center">
                 <input
-                  onChange={async (event) => {
+                    onChange={async (event) => {
+                      
+                      console.log("Borrow stable rate: ", token.borrowStableRate)
                     setHasApproved(false);
-                    const walletBalance =
-                      Number(token.walletBalance) / 10 ** token.decimals;
-                    const walletBalanceInUsd = inCurrencyFormat(
-                      Number(token.walletBalanceInUsd) / 10 ** token.decimals
+
+                    const availableToBorrow =
+                      Number(token.availableToBorrow) / 10 ** 18;
+                    const availableToBorrowInUsd = inCurrencyFormat(
+                      Number(token.availableToBorrowInUsd) / 10 ** 18
+                    );
+
+                    console.log("Available to borrow: ", availableToBorrow);
+                    console.log(
+                      "Available to borrow in usd: ",
+                      availableToBorrowInUsd
                     );
 
                     const { value } = event.target;
-                    // if (isNaN(value)) {
-                    //   return;
-                    // }
-
-                    const latestHealthFactor = await getLatestHealthFactor(
-                      userSupplies,
-                      token,
-                      Number(value),
-                      userTotalCollateralInUsd,
-                      userTotalBorrowedInUsd,
-                      liquidationThresholdWeighted
-                    );
-
-                    setLatestHealthFactor(latestHealthFactor);
-
-                    console.log("Latest Health factor: ", latestHealthFactor);
+                    if (isNaN(Number(value))) {
+                      return;
+                    }
 
                     console.log("Value: ", Number(value));
                     // console.log("Wallet balance: ", walletBalance);
 
                     // console.log("Token.walletBalance: ", token.walletBalance);
-                    if (Number(value) >= walletBalance) {
-                      setValue(walletBalance.toString());
-                      setValueInUsd(walletBalanceInUsd);
-                      return;
-                    }
+                    if (Number(value) >= availableToBorrow) {
+                      setValue(availableToBorrow.toString());
+                      setValueInUsd(availableToBorrowInUsd);
 
-                    let usableValue = "0.00";
-
-                    if (value) {
-                      usableValue = inCurrencyFormat(
-                        parseFloat(value) *
-                          (Number(token.oraclePrice) / 10 ** token.decimals)
+                      const latestHealthFactor = getBorrowHealthFactor(
+                        token,
+                        availableToBorrow,
+                        userTotalCollateralInUsd,
+                        userTotalBorrowedInUsd,
+                        liquidationThresholdWeighted
                       );
+
+                      setLatestHealthFactor(latestHealthFactor);
+                      return;
+                    } else {
+                      let usableValue = "0.00";
+
+                      if (value) {
+                        usableValue = inCurrencyFormat(
+                          parseFloat(value) *
+                            (Number(token.oraclePrice) / 10 ** token.decimals)
+                        );
+                      }
+
+                      setValueInUsd(usableValue);
+                      setValue(value);
+
+                      const latestHealthFactor = getBorrowHealthFactor(
+                        token,
+                        Number(value),
+                        userTotalCollateralInUsd,
+                        userTotalBorrowedInUsd,
+                        liquidationThresholdWeighted
+                      );
+
+                      setLatestHealthFactor(latestHealthFactor);
                     }
 
-                    setValueInUsd(usableValue);
-                    setValue(value);
+                    console.log("Latest Health factor: ", latestHealthFactor);
                   }}
                   value={value}
                   type="text"
@@ -459,21 +419,29 @@ export default function ModalBorrow({ token, closeModal }: IModalSupply) {
                   <p className="font-bold text-sm text-gray-500 ">
                     Balance:{" "}
                     {inCurrencyFormat(
-                      Number(token.walletBalance) / 10 ** token.decimals
+                      Number(token.availableToBorrow) / 10 ** 18
                     )}
                   </p>
                   <button
                     onClick={() => {
-                      const formattedValueInUsd = inCurrencyFormat(
-                        Number(token.walletBalanceInUsd) / 10 ** token.decimals
+                      const availableToBorrow =
+                        Number(token.availableToBorrow) / 10 ** 18;
+                      const availableToBorrowInUsd = inCurrencyFormat(
+                        Number(token.availableToBorrowInUsd) / 10 ** 18
                       );
-                      setValue(
-                        (
-                          Number(token.walletBalance) /
-                          10 ** token.decimals
-                        ).toString()
+
+                      const latestHealthFactor = getBorrowHealthFactor(
+                        token,
+                        availableToBorrow,
+                        userTotalCollateralInUsd,
+                        userTotalBorrowedInUsd,
+                        liquidationThresholdWeighted
                       );
-                      setValueInUsd(formattedValueInUsd);
+
+                      setLatestHealthFactor(latestHealthFactor);
+
+                      setValue(availableToBorrow.toString());
+                      setValueInUsd(availableToBorrowInUsd);
                     }}
                     className="font-medium ml-2 text-gray-6 00 text-sm"
                   >
@@ -491,19 +459,30 @@ export default function ModalBorrow({ token, closeModal }: IModalSupply) {
 
             {/* <!-- Modal footer --> */}
           </div>
+
+          {reserveBalanceInUsd != 0 &&
+            reserveBalanceInUsd <=
+              Number(token.availableToBorrowInUsd) / 10 ** 18 && (
+              <div className="p-6 w-full pt-1 space-y-2">
+                <div className="flex flex-col text-sm border rounded-md p-1 bg-red-300 text-red-800 space-y-5">
+                  <p>
+                    {token.tokenName} is not available for borrow at the moment.
+                    Check back later
+                  </p>
+                </div>
+              </div>
+            )}
+
           <div className="p-6 w-full pt-1 space-y-2">
             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
               Transaction Overview
             </p>
             <div className="flex flex-col items-center border rounded-md px-2 py-3 border-slate-700 space-y-5">
               <div className=" px-2 flex w-full justify-between items-center">
-                <p>Supply APY</p>
-                <p>{Number(token.supplyStableRate) / 100}%</p>
+                <p>Borrow APY</p>
+                <p>{Number(token.borrowStableRate) / 100}%</p>
               </div>
-              <div className=" px-2 flex w-full justify-between items-center">
-                <p>Collateralization</p>
-                <p className="text-green-500">Enabled</p>
-              </div>
+
               <div className=" px-2 flex w-full justify-between items-center">
                 <p>Health Factor</p>
                 <div className="flex text-sm space-x-2 items-center font-medium">
@@ -532,50 +511,29 @@ export default function ModalBorrow({ token, closeModal }: IModalSupply) {
           </div>
 
           <div className="pb-8 mx-3 flex flex-col justify-center items-center space-y-2 rounded-b border-gray-200 dark:border-gray-600">
-            {!hasApproved && (
-              <button
-                // disabled={!!!value}
-                onClick={approveToken}
-                data-modal-toggle="small-modal"
-                type="button"
-                className={`${
-                  isApproving
-                    ? "bg-gray-600 cursor-wait"
-                    : "bg-gray-600 hover:bg-gray-600 "
-                } w-full mx-4 text-white hover:text-white rounded-md p-2`}
-              >
-                {isApproving ? (
-                  <div className="flex w-full justify-center space-x-4 items-center">
-                    <ClipLoader color="#fff" loading={true} size={30} />
-                    <p className="ml-2">{approveText}</p>
-                  </div>
-                ) : (
-                  <div className="flex w-full items-center">
-                    <p className="w-full">{approveText}</p>
-                  </div>
-                )}
-                {/*  */}
-              </button>
-            )}
             <button
-              disabled={isSupplying || !hasApproved}
-              onClick={supplyTokenWithPermit}
+              disabled={
+                isBorrowing ||
+                reserveBalanceInUsd <=
+                  Number(token.availableToBorrowInUsd) / 10 ** 18
+              }
+              onClick={borrowToken}
               data-modal-toggle="small-modal"
               type="button"
               className={`${
-                isSupplying
+                isBorrowing
                   ? "bg-gray-600 cursor-wait"
                   : "bg-gray-700 hover:bg-gray-700 "
               } w-full mx-4 text-white hover:text-white rounded-md p-2`}
             >
-              {isSupplying ? (
+              {isBorrowing ? (
                 <div className="flex w-full justify-center space-x-4 items-center">
                   <ClipLoader color="#fff" loading={true} size={30} />
-                  <p className="ml-2">{supplyText}</p>
+                  <p className="ml-2">{borrowText}</p>
                 </div>
               ) : (
                 <div className="flex w-full items-center">
-                  <p className="w-full">{supplyText}</p>
+                  <p className="w-full">{borrowText}</p>
                 </div>
               )}
               {/*  */}
