@@ -25,6 +25,7 @@ import ModalScale from "../components/ModalScale";
 import useWallet from "../hooks/useWallet";
 import { FaThumbsUp } from "react-icons/fa";
 import WalletConnect from "../components/WalletConnect";
+import YourSupplySmall from "../components/YourSupplySmall";
 
 export default function Dashboard2() {
   const {
@@ -78,8 +79,8 @@ export default function Dashboard2() {
     <div>
       {chainId == 80001 && signerAddress ? (
         <div>
-          <div className="bg-gradient-to-tr from-slate-900 to-gray-900 h-[320px]">
-            <div className="w-full h-full flex flex-col justify-center px-10 ">
+          <div className="bg-gradient-to-tr from-slate-900 to-gray-900 h-[250px] sm:h-[320px]">
+            <div className="w-full h-full flex flex-col justify-center px-5 sm:px-10 ">
               <div className="flex items-center">
                 <div>
                   <img
@@ -92,7 +93,9 @@ export default function Dashboard2() {
                   />
                 </div>
                 <div className="mx-2">
-                  <p className="text-3xl text-white">Polygon Market</p>
+                  <p className="text-xl ssm:text-3xl text-white">
+                    Polygon Market
+                  </p>
                 </div>
               </div>
               <div className="flex items-center mt-3">
@@ -102,7 +105,9 @@ export default function Dashboard2() {
                   {(userTotalCollateralInUsd && userTotalCollateralInUsd) ||
                   (Number(userTotalCollateralInUsd) >= 0 &&
                     Number(userTotalCollateralInUsd) >= 0) ? (
-                    <p className="text-white text-2xl font-bold">${netWorth}</p>
+                    <p className="text-white text-xl sm:text-2xl font-bold">
+                      ${netWorth}
+                    </p>
                   ) : (
                     <div className="text-base bg-gray-700 animate-pulse w-12 h-8 rounded-md"></div>
                   )}
@@ -115,7 +120,7 @@ export default function Dashboard2() {
                       (Number(userTotalCollateralInUsd) >= 0 &&
                         Number(userTotalCollateralInUsd) >= 0) ? (
                         <p
-                          className={`${healthFactorColor} text-2xl font-bold`}
+                          className={`${healthFactorColor} text-xl sm:text-2xl font-bold`}
                         >
                           {Number(healthFactor) > 0
                             ? formattedHealthFactor.toFixed(2)
@@ -125,7 +130,7 @@ export default function Dashboard2() {
                         <div className="text-base bg-gray-700 animate-pulse w-15 h-8 rounded-md"></div>
                       )}
                       <button
-                        className="text-white px-2 bg-gray-700 rounded-md text-sm hover:bg-gray-600"
+                        className="text-white text-[11px] sm:text-[12px]  px-1 sm:px-2 bg-gray-700 rounded-md text-sm hover:bg-gray-600"
                         onClick={() => setOpenRiskDetails(true)}
                       >
                         Risk Details
@@ -136,14 +141,20 @@ export default function Dashboard2() {
               </div>
             </div>
           </div>
-          <div className="px-2 h-full md:px-10 mx-auto -mt-24">
+          <div className="px-2 h-full md:px-10 mx-auto -mt-16 sm:-mt-24">
             <div className="flex flex-wrap mt-4">
-              <div className="w-full xl:w-6/12 xl:mb-0 px-2">
+              <div className="w-full xl:w-6/12 xl:mb-0 px-2 sm:block hidden">
                 <YourSupply tokens={userSupplies} />
               </div>
-              <div className="w-full xl:w-6/12 px-2">
+              <div className="w-full xl:w-6/12 px-2sm:block hidden">
                 <YourBorrows tokens={userBorrows} />
               </div>
+            </div>
+            <div className="mt-4">
+              <div className="w-full xl:mb-0 px-2 sm:hidden block">
+                <YourSupplySmall tokens={userSupplies} />
+              </div>
+             
             </div>
 
             <div className="flex flex-wrap mt-4">
@@ -160,8 +171,8 @@ export default function Dashboard2() {
         </div>
       ) : (
         <div>
-          <div className="bg-gradient-to-tr from-slate-900 to-gray-900 h-[320px]">
-            <div className="w-full h-full flex flex-col justify-center px-10 ">
+          <div className="bg-gradient-to-tr from-slate-900 to-gray-900 h-[250px] sm:h-[320px]">
+            <div className="w-full h-full flex flex-col justify-center px-4 sm:px-10 ">
               <div className="flex items-center">
                 <div>
                   <img
@@ -174,7 +185,9 @@ export default function Dashboard2() {
                   />
                 </div>
                 <div className="mx-2">
-                  <p className="text-3xl text-white">Polygon Market</p>
+                  <p className="text-xl sm:text-3xl text-white">
+                    Polygon Market
+                  </p>
                 </div>
               </div>
               <div className="flex items-center mt-3">
@@ -186,7 +199,7 @@ export default function Dashboard2() {
               </div>
             </div>
           </div>
-          <div className="px-2 h-full md:px-10 mx-auto -mt-24">
+          <div className="px-2 h-full md:px-10 mx-auto -mt-16 sm:-mt-24">
             <div className="w-full h-[400px] bg-gray-800 border border-slate-700 flex flex-col items-center justify-center space-y-2 text-gray-400 ">
               <div className="rounded-full p-6 bg-orange-800 ">
                 <FaThumbsUp className="text-8xl text-white" />

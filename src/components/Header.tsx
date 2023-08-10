@@ -14,6 +14,8 @@ import { displayToast } from "./Toast";
 import { FaBars, FaTimes } from "react-icons/fa";
 import useWallet from "../hooks/useWallet";
 import { useLocation, Link, NavLink } from "react-router-dom";
+import { ImHome } from "react-icons/im";
+import { MdDashboard } from "react-icons/md";
 
 const useMediaQuery = (width: number) => {
   const [targetReached, setTargetReached] = useState(false);
@@ -82,29 +84,35 @@ export default function Header() {
     >
       {!collapsed && isBreakpoint && (
         <div className={`z-80 h-screen ${!collapsed && "fixed inset-0"}`}>
-          <Sidebar collapsedWidth="10px" collapsed={collapsed}>
+          <Sidebar
+            className="h-screen"
+            backgroundColor="#0f172a"
+            collapsedWidth="10px"
+            collapsed={collapsed}
+          >
             <div
               className="px-4 pt-4 w-full flex justify-end cursor-pointer "
               onClick={handleSidebar}
             >
-              <FaTimes />
+              <FaTimes className="text-white" />
             </div>
             <Menu className="">
-              <div className="text-xl text-white hover:text-orange-600">
-                <MenuItem
-                  component={<Link to="/" />}>
-                  <p
-                    className={`text-[16px] text-white ${
-                      currentUrl == "/" && "border-b-2 border-orange-600"
-                    }`}
-                  >
-                    Home
-                  </p>
-                </MenuItem>
+              <div
+                className={`mx-3 mb-4 text-xl flex items-center space-x-3 text-white font-semibold ${
+                  currentUrl == "/" && "text-orange-800"
+                } hover:text-orange-600`}
+              >
+                <ImHome />
+                <Link to="/">Home</Link>
               </div>
-              <MenuItem component={<Link to="/dashboard" />}>
-                <p className="text-[16px]">Dashboard</p>
-              </MenuItem>
+              <div
+                className={`mx-3 text-xl flex items-center space-x-3 text-white font-semibold ${
+                  currentUrl == "/dashboard" && "text-orange-600"
+                } hover:text-orange-600`}
+              >
+                <MdDashboard />
+                <Link to="/dashboard">Dashboard</Link>
+              </div>
             </Menu>
           </Sidebar>
         </div>
@@ -142,16 +150,15 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <div className=" text-white flex items-center ">
             <WalletConnect />
-           {isBreakpoint && (
-            <div
-              className="text-white rounded-full hover:text-orange-500 cursor-pointer"
-              onClick={handleSidebar}
-            >
-              <FaBars className="ml-3 w-9 h-9 bg-orange-500 rounded-full text-black p-2" />
-            </div>
-          )}
+            {isBreakpoint && (
+              <div
+                className="text-white rounded-full hover:text-orange-500 cursor-pointer"
+                onClick={handleSidebar}
+              >
+                <FaBars className="ml-3 w-9 h-9 bg-orange-500 rounded-full text-black p-2" />
+              </div>
+            )}
           </div>
-          
         </div>
       </nav>
     </div>
