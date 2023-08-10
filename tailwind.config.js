@@ -10,6 +10,7 @@ module.exports = {
       "ft": "900px",
       'ss': '384px',
       "ssm": '486px',
+      "sc": "405px",
       ...defaultTheme.screens,
     },
     fontFamily: {

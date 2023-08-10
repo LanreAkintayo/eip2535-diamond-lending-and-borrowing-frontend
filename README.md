@@ -51,7 +51,7 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 What's left for me to do.
 switch on and off collateral.
-
+Reduce the margin you applied on the ltvbar
 Add some tooltip to explain what some features do.
 Deal with the responsiveness
 Clean the code up

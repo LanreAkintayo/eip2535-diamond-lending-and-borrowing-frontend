@@ -81,8 +81,8 @@ export default function Header() {
       className={`fixed z-10 bg-gradient-to-tr from-slate-900 to-gray-900 top-0 left-0 w-screen `}
     >
       {!collapsed && isBreakpoint && (
-        <div className={`z-50 h-screen ${!collapsed && "fixed inset-0"}`}>
-          <Sidebar collapsedWidth="0px" collapsed={collapsed}>
+        <div className={`z-80 h-screen ${!collapsed && "fixed inset-0"}`}>
+          <Sidebar collapsedWidth="10px" collapsed={collapsed}>
             <div
               className="px-4 pt-4 w-full flex justify-end cursor-pointer "
               onClick={handleSidebar}
@@ -91,8 +91,8 @@ export default function Header() {
             </div>
             <Menu className="">
               <div className="text-xl text-white hover:text-orange-600">
-                <MenuItem>
-                  component={<Link to="/" />}
+                <MenuItem
+                  component={<Link to="/" />}>
                   <p
                     className={`text-[16px] text-white ${
                       currentUrl == "/" && "border-b-2 border-orange-600"
@@ -110,13 +110,13 @@ export default function Header() {
         </div>
       )}
 
-      <nav className="flex items-center flex-col ss:flex-row w-full justify-between ss:px-2 py-2 sm:px-4 h-full">
-        <p className="font-logo text-xl text-white sm:text-3xl self-start ss:self-auto">
+      <nav className="flex items-center flex-row w-full justify-between px-2 py-2 sm:px-4 h-full">
+        <p className="font-logo hidden sc:block px-2 text-white text-2xl ssm:text-3xl self-start ss:self-auto">
           <span className="text-orange-700">{"<"}L</span>arry
           <span className="text-orange-700">C</span>odes
           <span className="text-orange-700">{"/>"}</span>
         </p>
-        <div className="flex justify-center items-center w-80 rounded-full py-4">
+        <div className="flex justify-center items-center w-80 rounded-full py-2">
           {!isBreakpoint && (
             <div className="flex">
               <Link
@@ -139,12 +139,10 @@ export default function Header() {
             </div>
           )}
         </div>
-        <div className="flex mx-2 items-center">
-          <div className=" text-white flex items-center w-full sc:py-10">
+        <div className="flex items-center justify-between">
+          <div className=" text-white flex items-center ">
             <WalletConnect />
-           
-          </div>
-          {isBreakpoint && (
+           {isBreakpoint && (
             <div
               className="text-white rounded-full hover:text-orange-500 cursor-pointer"
               onClick={handleSidebar}
@@ -152,6 +150,8 @@ export default function Header() {
               <FaBars className="ml-3 w-9 h-9 bg-orange-500 rounded-full text-black p-2" />
             </div>
           )}
+          </div>
+          
         </div>
       </nav>
     </div>

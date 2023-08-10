@@ -52,7 +52,7 @@ export default function WalletConnect() {
         chainId == 80001 ? (
           <div className="flex items-center gap-3 sm:gap-6 lg:gap-8">
             {isConnected ? (
-              <div className="mr-5 px-3 bg-orange-800 hover:bg-orange-700 py-2 rounded-md hover:bg-amber-800 hover:text-white ">
+              <div className="mr-5 px-3 bg-orange-800 hover:bg-orange-700  rounded-md hover:bg-amber-800 hover:text-white ">
                 <div
                   className="flex cursor-pointer items-center gap-3 rounded-md py-1.5 px-2 text-sm font-medium text-white transition"
                   onClick={() => {
@@ -84,17 +84,6 @@ export default function WalletConnect() {
               className="rounded-full bg-orange-800 hover:bg-orange-700 text-white w-40 p-2 mr-3"
               onClick={async () => {
                 try {
-                  // const chainIds = await window.ethereum.request({ method: 'eth_chainId' });
-
-                  // console.log("ChainID: ", chainIds)
-
-                  // const walletClient = createWalletClient({
-                  //   chain: polygonMumbai,
-                  //   transport: custom(window.ethereum)
-                  // })
-
-                  // await walletClient.addChain({ chain: polygonMumbai })
-                  
                   await switchNetwork({
                     chainId: supportedChainId,
                   });
