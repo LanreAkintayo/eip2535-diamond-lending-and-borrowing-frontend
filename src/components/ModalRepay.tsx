@@ -447,49 +447,7 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
             <p>
               You Repayed {value} {token?.tokenName}
             </p>
-            <div className="p-4 border my-3 space-y-2 border-slate-700 rounded-md flex items-center justify-center flex-col">
-              <img
-                src={IMAGES.LAR}
-                width={40}
-                height={40}
-                // layout="fixed"
-                className="card-img-top"
-                alt="coinimage"
-              />
-              <p>Add LAR to wallet to track your balance</p>
-              <button
-                onClick={async () => {
-                  const tokenName = "LAR";
-                  const tokenAddress = larAddress;
-                  const tokenImage = IMAGES.LAR;
-                  const tokenDecimals = 18;
-                  const tokenSymbol = "LAR";
-
-                  const token = {
-                    tokenName,
-                    tokenAddress,
-                    tokenImage,
-                    tokenDecimals,
-                    tokenSymbol,
-                  };
-
-                  const hasAdded = await addToken(token);
-
-                  if (hasAdded) {
-                    displayToast(
-                      "success",
-                      "LAR has been added to your wallet"
-                    );
-                  } else {
-                    displayToast("failure", "Failed to add LAR");
-                  }
-                }}
-                className="bg-slate-700 p-2 flex space-x-2 items-center rounded-md text-base font-medium "
-              >
-                <TfiWallet />
-                <p>Add to wallet</p>
-              </button>
-            </div>
+         
 
             <button
               onClick={() => {

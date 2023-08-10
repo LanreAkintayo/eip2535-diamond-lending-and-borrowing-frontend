@@ -19,6 +19,8 @@ import { inCurrencyFormat, todp } from "../utils/helper";
 import useDefi from "../hooks/useDefi";
 import { IMAGES } from "../constants";
 import SupplyAssets from "../components/SupplyAssets";
+import HealthFactorBar from "../components/HealthFactorBar";
+import LTVBar from "../components/LTVBar";
 
 export default function Dashboard2() {
   // const { network } = useNetwork();
@@ -42,7 +44,7 @@ export default function Dashboard2() {
     borrowAssets,
   } = useDefi();
 
-  // console.log("Borrow Assets: ", borrowAssets);
+  console.log("uSER SUPPLIES: ", userSupplies);
 
   console.log("Health factor: ", healthFactor);
 
@@ -201,6 +203,13 @@ export default function Dashboard2() {
                         ) : (
                           <div className="text-base bg-gray-700 animate-pulse w-15 h-8 rounded-md"></div>
                         )}
+                      </div>
+                      <div className="relative w-[300px]">
+                        <HealthFactorBar />
+                      </div>
+
+                        <div className=" ml-8 relative w-[300px]">
+                          <LTVBar />
                       </div>
                     </div>
                   </div>

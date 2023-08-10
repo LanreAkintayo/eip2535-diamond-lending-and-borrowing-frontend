@@ -5,9 +5,9 @@ import erc20PermitAbi from "./erc20PermitAbi.json";
 
 export const DEPLOYER = "0xec2B1547294a4dd62C0aE651aEb01493f8e4cD74";
 
-const diamondAddress = "0x6AB4C520F98ad65958BF2D331D25A9Ee183c78FE";
-const larAddress = "0x7F1EdD6F935cE75FD20EeAa96A79D4B8de3dd91F";
-const getterAddress = "0x55E5d5056d552040F3C9d471584e1000708a7bc1";
+const diamondAddress = "0x1E73498a5FB599d4cEC91042354AF8068c6c039D";
+const larAddress = "0x31f47DA1D5733b96BFc4534083DF0BC07626d6Ad";
+const getterAddress = "0x622958653D8feD77610d3A60528e359Bc9F7318C";
 
 export const IMAGES = {
   DAI: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSllrF9PNBf88kIx9USP5g73XDYjkMyRBaDig&usqp=CAU",

@@ -490,17 +490,6 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
                     //   return;
                     // }
 
-                    const latestHealthFactor = await getLatestHealthFactor(
-                      userSupplies,
-                      token,
-                      Number(value),
-                      userTotalCollateralInUsd,
-                      userTotalBorrowedInUsd,
-                      liquidationThresholdWeighted
-                    );
-
-                    setLatestHealthFactor(latestHealthFactor);
-
                     console.log("Latest Health factor: ", latestHealthFactor);
 
                     console.log("Value: ", Number(value));
@@ -508,22 +497,43 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
 
                     // console.log("Token.walletBalance: ", token.walletBalance);
                     if (Number(value) >= walletBalance) {
+                      const latestHealthFactor = getLatestHealthFactor(
+                        userSupplies,
+                        token,
+                        Number(walletBalance),
+                        userTotalCollateralInUsd,
+                        userTotalBorrowedInUsd,
+                        liquidationThresholdWeighted
+                      );
+
+                      setLatestHealthFactor(latestHealthFactor);
+
                       setValue(walletBalance.toString());
                       setValueInUsd(walletBalanceInUsd);
                       return;
-                    }
-
-                    let usableValue = "0.00";
-
-                    if (value) {
-                      usableValue = inCurrencyFormat(
-                        parseFloat(value) *
-                          (Number(token.oraclePrice) / 10 ** token.decimals)
+                    } else {
+                      const latestHealthFactor = getLatestHealthFactor(
+                        userSupplies,
+                        token,
+                        Number(value),
+                        userTotalCollateralInUsd,
+                        userTotalBorrowedInUsd,
+                        liquidationThresholdWeighted
                       );
-                    }
 
-                    setValueInUsd(usableValue);
-                    setValue(value);
+                      setLatestHealthFactor(latestHealthFactor);
+                      let usableValue = "0.00";
+
+                      if (value) {
+                        usableValue = inCurrencyFormat(
+                          parseFloat(value) *
+                            (Number(token.oraclePrice) / 10 ** token.decimals)
+                        );
+                      }
+
+                      setValueInUsd(usableValue);
+                      setValue(value);
+                    }
                   }}
                   value={value}
                   type="text"
@@ -558,15 +568,24 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
                   </p>
                   <button
                     onClick={() => {
+                      const walletBalance =
+                        Number(token.walletBalance) / 10 ** token.decimals;
+
+                      const latestHealthFactor =  getLatestHealthFactor(
+                        userSupplies,
+                        token,
+                        Number(walletBalance),
+                        userTotalCollateralInUsd,
+                        userTotalBorrowedInUsd,
+                        liquidationThresholdWeighted
+                      );
+
+                      setLatestHealthFactor(latestHealthFactor);
+
                       const formattedValueInUsd = inCurrencyFormat(
                         Number(token.walletBalanceInUsd) / 10 ** token.decimals
                       );
-                      setValue(
-                        (
-                          Number(token.walletBalance) /
-                          10 ** token.decimals
-                        ).toString()
-                      );
+                      setValue(walletBalance.toString());
                       setValueInUsd(formattedValueInUsd);
                     }}
                     className="font-medium ml-2 text-gray-6 00 text-sm"
@@ -697,9 +716,7 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
                 <button
                   // disabled={!!!value}
                   onClick={
-                    approvalOption == 0
-                      ? approveToken
-                      : approveByTransaction
+                    approvalOption == 0 ? approveToken : approveByTransaction
                   }
                   data-modal-toggle="small-modal"
                   type="button"

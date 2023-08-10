@@ -54,6 +54,7 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
     loadSupplyAssets,
     loadUserSupplies,
     loadUserTotalCollateralInUsd,
+    loadUserTotalBorrowedInUsd,
     healthFactor,
     userSupplies,
     userTotalCollateralInUsd,
@@ -110,6 +111,18 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
     alert("Add LAR token");
   };
 
+  const updateHealthFactor = (tokenAmount: number) => {
+    const latestHealthFactor = getWithdrawalHealthFactor(
+      userSupplies,
+      token,
+      tokenAmount,
+      userTotalCollateralInUsd,
+      userTotalBorrowedInUsd,
+      liquidationThresholdWeighted
+    );
+    setLatestHealthFactor(latestHealthFactor);
+  };
+
   useEffect(() => {
     console.log(
       "UserTotalCollateralInUsd in the modal: ",
@@ -136,13 +149,14 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
     await loadSupplyAssets(signerAddress);
     await loadUserSupplies(signerAddress);
     await loadUserTotalCollateralInUsd(signerAddress);
+    await loadUserTotalBorrowedInUsd(signerAddress)
     await loadLiquidationThresholdWeighted(signerAddress);
   };
 
   const withdrawToken = async () => {
     setIsWithdrawing(true);
     setWithdrawText(`Withdrawing ${token.tokenName}`);
-    const parsedValue = BigInt(Number(value) * 10 ** token.decimals);
+    const parsedValue = BigInt((Number(value) * 10 ** token.decimals).toFixed(0));
 
     try {
       const withdrawRequest = await prepareWriteContract({
@@ -273,6 +287,9 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
                 <input
                   onChange={async (event) => {
                     // // setHasApproved(false);
+
+                 
+
                     // debugger;
                     const amountSupplied =
                       Number(token.amountSupplied) / 10 ** token.decimals;
@@ -285,15 +302,6 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
                     }
 
                     // debugger;
-                    const latestHealthFactor = getWithdrawalHealthFactor(
-                      userSupplies,
-                      token,
-                      Number(value),
-                      userTotalCollateralInUsd,
-                      userTotalBorrowedInUsd,
-                      liquidationThresholdWeighted
-                    );
-                    setLatestHealthFactor(latestHealthFactor);
 
                     let maxAvailableToWithdrawInUsd;
                     let maxAvailableToWithdraw;
@@ -316,7 +324,9 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
 
                     const availableToWithdrawInUsd =
                       usableUserTotalCollateralInUsd -
-                      usableTotalBorrowedInUsd / usablemaxLTV;
+                        usableTotalBorrowedInUsd / usablemaxLTV;
+                      
+                      console.log("Calculated max available to withdraw in usd: ", availableToWithdrawInUsd)
 
                     if (availableToWithdrawInUsd >= usableAmountSuppliedInUsd) {
                       maxAvailableToWithdrawInUsd = usableAmountSuppliedInUsd;
@@ -329,21 +339,25 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
                     }
 
                     if (Number(value) >= maxAvailableToWithdraw) {
+                      updateHealthFactor(maxAvailableToWithdraw);
+
                       setValue(maxAvailableToWithdraw.toString());
                       setValueInUsd(
                         inCurrencyFormat(maxAvailableToWithdrawInUsd)
                       );
                       return;
+                    } else {
+                      let usableValue = "0.00";
+                      if (value) {
+                        usableValue = inCurrencyFormat(
+                          parseFloat(value) *
+                            (Number(token.oraclePrice) / 10 ** token.decimals)
+                        );
+                      }
+                      updateHealthFactor(Number(value));
+                      setValueInUsd(usableValue);
+                      setValue(value);
                     }
-                    let usableValue = "0.00";
-                    if (value) {
-                      usableValue = inCurrencyFormat(
-                        parseFloat(value) *
-                          (Number(token.oraclePrice) / 10 ** token.decimals)
-                      );
-                    }
-                    setValueInUsd(usableValue);
-                    setValue(value);
                   }}
                   value={value}
                   type="text"
@@ -424,16 +438,8 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
                           maxAvailableToWithdrawInUsd / usableOraclePrice;
                       }
 
-                      const latestHealthFactor = getWithdrawalHealthFactor(
-                        userSupplies,
-                        token,
-                        maxAvailableToWithdraw,
-                        userTotalCollateralInUsd,
-                        userTotalBorrowedInUsd,
-                        liquidationThresholdWeighted
-                      );
+                      updateHealthFactor(maxAvailableToWithdraw);
 
-                      setLatestHealthFactor(latestHealthFactor);
                       setValue(maxAvailableToWithdraw.toString());
                       setValueInUsd(
                         inCurrencyFormat(maxAvailableToWithdrawInUsd)

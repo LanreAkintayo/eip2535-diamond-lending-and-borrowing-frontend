@@ -81,8 +81,8 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
   const formattedHealthFactor = healthFactor ? Number(healthFactor) / 10000 : 0;
   const [latestHealthFactor, setLatestHealthFactor] = useState(0);
 
-  const [reserveBalance, setReserveBalance] = useState(0);
-  const [reserveBalanceInUsd, setReserveBalanceInUsd] = useState(0);
+  const [reserveBalance, setReserveBalance] = useState(-1);
+  const [reserveBalanceInUsd, setReserveBalanceInUsd] = useState(-1);
 
   // health factor color
   let healthFactorColor;
@@ -464,7 +464,7 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
             {/* <!-- Modal footer --> */}
           </div>
 
-          {reserveBalanceInUsd != 0 &&
+          {reserveBalanceInUsd != -1 &&
             reserveBalanceInUsd <=
               Number(token.availableToBorrowInUsd) / 10 ** 18 && (
               <div className="p-6 w-full pt-1 space-y-2">

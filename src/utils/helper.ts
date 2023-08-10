@@ -49,8 +49,7 @@ const getAmountSupplied = (
     amountSuppliedInUsd,
   };
 };
-
-export const getLatestHealthFactor = async (
+export const getLatestHealthFactor = (
   usersTokenSupplied: DetailedSuppliedToken[],
   currentTokenToSupply: TokenData,
   tokenAmount: number,
@@ -330,4 +329,8 @@ export const getRepayHealthFactor = (
       : -1;
 
   return healthFactor;
+};
+
+export const range = (start: number, end: number) => {
+  return Array.from({ length: end - start + 1 }, (_, index) => start + index);
 };

@@ -79,6 +79,16 @@ export default function YourBorrows({ tokens }: IYourBorrows) {
             </thead>
             <tbody>
               {!tokens && <Skeleton />}
+              {tokens?.length == 0 && (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="border-b-0 px-4 border align-middle border-slate-700 border-l-0 border-r-0 text-sm whitespace-nowrap p-4 col-span-4"
+                  >
+                    No Borrows yet.
+                  </td>
+                </tr>
+              )}
               {tokens?.map((token: any) => {
                 return (
                   <BorrowRow

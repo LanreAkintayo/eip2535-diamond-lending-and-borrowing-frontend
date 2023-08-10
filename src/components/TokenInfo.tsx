@@ -52,10 +52,6 @@ export default function TokenInfo({
   const [borrowingResult, setBorrowingResult] = useState(null);
 
   const handleCloseModal = () => {
-    setSupplyError(null);
-    setSupplyResult(null);
-    setBorrowingError(null);
-    setBorrowingResult(null);
     setSelectedTokenToSupply(null);
     setSelectedTokenToBorrow(null);
   };
@@ -212,12 +208,14 @@ export default function TokenInfo({
                 {" "}
                 {formattedWalletBalance} {token.tokenName}
               </p>
-              <p className="text-gray-400 font-medium text-base">${formattedWalletBalanceInUsd}</p>
+              <p className="text-gray-400 font-medium text-base">
+                ${formattedWalletBalanceInUsd}
+              </p>
             </div>
             <div className="w-3/12">
               <button
                 onClick={() => setSelectedTokenToSupply(token)}
-                className="bg-gray-300 text-gray-800 rounded-md px-4 text-base p-2 font-bold "
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-md px-4 text-base p-2 font-bold "
               >
                 Supply
               </button>
@@ -238,12 +236,29 @@ export default function TokenInfo({
             </div>
             <div className="w-3/12">
               <button
-                onClick={() => setSelectedTokenToSupply(token)}
-                className="bg-gray-300 text-gray-800 rounded-md px-4 text-base p-2 font-bold "
+                onClick={() => setSelectedTokenToBorrow(token)}
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-md px-4 text-base p-2 font-bold "
               >
                 Borrow
               </button>
             </div>
+          </div>
+
+          <div className="justify-center items-center text-center sm:block sm:p-0 mt-2">
+            {selectedTokenToSupply && (
+              <ModalSupply
+                token={selectedTokenToSupply}
+                closeModal={handleCloseModal}
+              />
+            )}
+
+            {selectedTokenToBorrow && (
+              <ModalBorrow
+                token={selectedTokenToBorrow}
+                closeModal={handleCloseModal}
+              />
+            )}
+
           </div>
         </div>
       </div>
