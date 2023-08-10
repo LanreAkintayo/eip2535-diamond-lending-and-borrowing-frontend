@@ -26,6 +26,9 @@ import useWallet from "../hooks/useWallet";
 import { FaThumbsUp } from "react-icons/fa";
 import WalletConnect from "../components/WalletConnect";
 import YourSupplySmall from "../components/YourSupplySmall";
+import YourBorrowsSmall from "../components/YourBorrowsSmall";
+import SupplyAssetsSmall from "../components/SupplyAssetsSmall";
+import BorrowAssetsSmall from "../components/BorrowAssetsSmall";
 
 export default function Dashboard2() {
   const {
@@ -43,6 +46,7 @@ export default function Dashboard2() {
   } = useDefi();
 
   const { signerAddress, chainId } = useWallet();
+  const [selectedButton, setSelectedButton] = useState(0);
 
   const formattedHealthFactor = healthFactor ? Number(healthFactor) / 10000 : 0;
   let healthFactorColor = "text-white";
@@ -99,13 +103,13 @@ export default function Dashboard2() {
                 </div>
               </div>
               <div className="flex items-center mt-3">
-                <div className="w-9 h-8"></div>
+                <div className="sc:w-9 h-8"></div>
                 <div>
                   <p className="text-gray-300 text-[13px]">Net worth</p>
                   {(userTotalCollateralInUsd && userTotalCollateralInUsd) ||
                   (Number(userTotalCollateralInUsd) >= 0 &&
                     Number(userTotalCollateralInUsd) >= 0) ? (
-                    <p className="text-white text-xl sm:text-2xl font-bold">
+                    <p className="text-white text-lg sc:text-xl sm:text-2xl font-bold">
                       ${netWorth}
                     </p>
                   ) : (
@@ -120,7 +124,7 @@ export default function Dashboard2() {
                       (Number(userTotalCollateralInUsd) >= 0 &&
                         Number(userTotalCollateralInUsd) >= 0) ? (
                         <p
-                          className={`${healthFactorColor} text-xl sm:text-2xl font-bold`}
+                          className={`${healthFactorColor} text-lg sc:text-xl sm:text-2xl font-bold`}
                         >
                           {Number(healthFactor) > 0
                             ? formattedHealthFactor.toFixed(2)
@@ -130,7 +134,7 @@ export default function Dashboard2() {
                         <div className="text-base bg-gray-700 animate-pulse w-15 h-8 rounded-md"></div>
                       )}
                       <button
-                        className="text-white text-[11px] sm:text-[12px]  px-1 sm:px-2 bg-gray-700 rounded-md text-sm hover:bg-gray-600"
+                        className="text-white text-[9px] sc:text-[11px] sm:text-[12px]  px-1 sm:px-2 bg-gray-700 rounded-md text-sm hover:bg-gray-600"
                         onClick={() => setOpenRiskDetails(true)}
                       >
                         Risk Details
@@ -142,28 +146,72 @@ export default function Dashboard2() {
             </div>
           </div>
           <div className="px-2 h-full md:px-10 mx-auto -mt-16 sm:-mt-24">
-            <div className="flex flex-wrap mt-4">
+            <div className="mt-4 p-1 border rounded-md border-slate-600 w-full text-white flex items-center justify-around bg-gray-800 space-x-4 sm:hidden block">
+              <button
+                onClick={() => setSelectedButton(0)}
+                className={`${
+                  selectedButton == 0
+                    ? "rounded-md bg-gray-100 text-black"
+                    : "bg-gray-800 hover:opacity-50"
+                } py-2  w-full`}
+              >
+                Supply
+              </button>
+              <button
+                onClick={() => setSelectedButton(1)}
+                className={`${
+                  selectedButton == 1
+                    ? "rounded-md bg-gray-100 text-black"
+                    : "bg-gray-800 hover:opacity-50"
+                } py-2  w-full`}
+              >
+                Borrow
+              </button>
+            </div>
+            <div className="sm:mt-4 flex flex-wrap">
               <div className="w-full xl:w-6/12 xl:mb-0 px-2 sm:block hidden">
                 <YourSupply tokens={userSupplies} />
               </div>
-              <div className="w-full xl:w-6/12 px-2sm:block hidden">
+              <div className="w-full xl:w-6/12 px-2 sm:block hidden">
                 <YourBorrows tokens={userBorrows} />
               </div>
             </div>
-            <div className="mt-4">
-              <div className="w-full xl:mb-0 px-2 sm:hidden block">
-                <YourSupplySmall tokens={userSupplies} />
-              </div>
-             
+
+            <div className="mt-4 space-y-8">
+              {selectedButton == 0 && (
+                <div className="w-full xl:mb-0 px-2 sm:hidden block">
+                  <YourSupplySmall tokens={userSupplies} />
+                </div>
+              )}
+
+              {selectedButton == 1 && (
+                <div className="w-full px-2 sm:hidden block">
+                  <YourBorrowsSmall tokens={userBorrows} />
+                </div>
+              )}
             </div>
 
             <div className="flex flex-wrap mt-4">
-              <div className="w-full xl:w-6/12  xl:mb-0 px-2">
+              <div className="w-full xl:w-6/12  xl:mb-0 px-2 sm:block hidden">
                 <SupplyAssets tokens={supplyAssets!} />
               </div>
-              <div className="w-full xl:w-6/12 px-2">
+              <div className="w-full xl:w-6/12 px-2 sm:block hidden">
                 <BorrowAssets tokens={borrowAssets!} />
               </div>
+            </div>
+
+            <div className="mt-4 space-y-8">
+              {selectedButton == 0 && (
+                <div className="w-full xl:mb-0 px-2 sm:hidden block">
+                  <SupplyAssetsSmall tokens={supplyAssets!} />
+                </div>
+              )}
+
+              {selectedButton == 1 && (
+                <div className="w-full px-2 sm:hidden block">
+                  <BorrowAssetsSmall tokens={borrowAssets!} />
+                </div>
+              )}
             </div>
 
             {/* <Footer /> */}
