@@ -156,7 +156,8 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
   const withdrawToken = async () => {
     setIsWithdrawing(true);
     setWithdrawText(`Withdrawing ${token.tokenName}`);
-    const parsedValue = BigInt((Number(value) * 10 ** token.decimals).toFixed(0));
+
+    const parsedValue = BigInt(Number(value) * 10 ** token.decimals);
 
     try {
       const withdrawRequest = await prepareWriteContract({

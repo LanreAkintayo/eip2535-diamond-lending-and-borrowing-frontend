@@ -21,16 +21,12 @@ import { IMAGES } from "../constants";
 import SupplyAssets from "../components/SupplyAssets";
 import HealthFactorBar from "../components/HealthFactorBar";
 import LTVBar from "../components/LTVBar";
+import ModalScale from "../components/ModalScale";
+import useWallet from "../hooks/useWallet";
+import { FaThumbsUp } from "react-icons/fa";
+import WalletConnect from "../components/WalletConnect";
 
 export default function Dashboard2() {
-  // const { network } = useNetwork();
-  // const { requireInstall, isLoading, connect, contract, web3 } = useWeb3();
-  // const { account } = useAccount();
-  // const { tokens } = useSupplyAssets();
-  // const { tokensForBorrow } = useBorrowAssets();
-  // const { yourSupplies } = useYourSupplies();
-  // const { yourBorrows } = useYourBorrows();
-
   const {
     userSupplies,
     userBorrows,
@@ -42,13 +38,10 @@ export default function Dashboard2() {
     currentLTV,
     supplyAssets,
     borrowAssets,
+    borrowPower,
   } = useDefi();
 
-  console.log("uSER SUPPLIES: ", userSupplies);
-
-  console.log("Health factor: ", healthFactor);
-
-  console.log("user total borrowed in usd:", userTotalBorrowedInUsd);
+  const { signerAddress, chainId } = useWallet();
 
   const formattedHealthFactor = healthFactor ? Number(healthFactor) / 10000 : 0;
   let healthFactorColor = "text-white";
@@ -64,8 +57,6 @@ export default function Dashboard2() {
     }
   }
 
-  // console.log("User total borrowed: ", userTotalBorrowedInUsd);
-  // console.log("user total collateral in used: ", userTotalCollateralInUsd);
   const netWorth =
     userTotalCollateralInUsd && userTotalCollateralInUsd
       ? inCurrencyFormat(
@@ -74,241 +65,148 @@ export default function Dashboard2() {
         )
       : 0;
 
-  const NETWORK_ID = 42;
+  const [openRiskDetails, setOpenRiskDetails] = useState(false);
 
-  const [selectedTokenToSupply, setSelectedTokenToSupply] = useState(null);
-  const [selectedTokenToBorrow, setSelectedTokenToBorrow] = useState(null);
-  const [selectedTokenToWithdraw, setSelectedTokenToWithdraw] = useState(null);
-  const [selectedTokenToRepay, setSelectedTokenToRepay] = useState(null);
-
-  const [transactionHash, setTransactionHash] = useState(null);
-  const [newSupply, setNewSupply] = useState(true);
-
-  const [supplyError, setSupplyError] = useState(null);
-  const [supplyResult, setSupplyResult] = useState(null);
-
-  const [borrowingError, setBorrowingError] = useState(null);
-  const [borrowingResult, setBorrowingResult] = useState(null);
-
-  const [WithdrawError, setWithdrawError] = useState(null);
-  const [WithdrawResult, setWithdrawResult] = useState(null);
-
-  const [repayError, setRepayError] = useState(null);
-  const [repayResult, setRepayResult] = useState(null);
-
-  //   const toWei = (value) => {
-  //     return web3.utils.toWei(value.toString());
-  //   };
-
-  const handleCloseModal = () => {
-    setSupplyError(null);
-    setSupplyResult(null);
-    setBorrowingError(null);
-    setBorrowingResult(null);
-    setWithdrawError(null);
-    setWithdrawResult(null);
-    setRepayError(null);
-    setRepayResult(null);
-    setSelectedTokenToSupply(null);
-    setSelectedTokenToBorrow(null);
-    setSelectedTokenToWithdraw(null);
-    setSelectedTokenToRepay(null);
-    setTransactionHash(null);
+  const handleRiskDetails = () => {
+    setOpenRiskDetails(false);
   };
 
-  const supplyToken = async (token: any, value: any) => {
-    console.log("Supply Token");
-  };
-
-  const borrowToken = async (token: any, value: any) => {
-    console.log("Borrow Token");
-  };
-
-  const withdrawToken = async (token: any, value: any) => {
-    console.log("Withdraw token: ");
-  };
-
-  const repayToken = async (token: any, value: any) => {
-    console.log("Repay token");
-  };
-
-  const addBorrowedToken = async (token: any) => {
-    console.log("Add borrowed Token");
-  };
-
-  const addTokenToMetamask = async (token: any) => {
-    console.log("Add token to metamask");
-  };
-
-  const addLAR = async (token: any) => {
-    console.log("Add LAR Token");
-  };
+  console.log("Signer: ", signerAddress);
+  console.log("Chain ID: ", chainId);
 
   return (
-    <div className="">
-      {true ? (
-        true ? (
-          <>
-            {false ? (
-              <div>Page is Loading</div>
-            ) : (
-              <div>
-                <div className="bg-gradient-to-tr from-slate-900 to-gray-900 h-[320px]">
-                  <div className="w-full h-full flex flex-col justify-center px-10 ">
-                    <div className="flex items-center">
-                      <div>
-                        <img
-                          src={IMAGES.MATIC}
-                          width={35}
-                          height={30}
-                          // layout="fixed"
-                          className="card-img-top"
-                          alt="coinimage"
-                        />
-                      </div>
-                      <div className="mx-2">
-                        <p className="text-3xl text-white">Polygon Market</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center mt-3">
-                      <div className="w-9 h-8"></div>
-                      <div>
-                        <p className="text-gray-300 text-[13px]">Net worth</p>
-                        {(userTotalCollateralInUsd &&
-                          userTotalCollateralInUsd) ||
-                        (Number(userTotalCollateralInUsd) >= 0 &&
-                          Number(userTotalCollateralInUsd) >= 0) ? (
-                          <p className="text-white text-2xl font-bold">
-                            ${netWorth}
-                          </p>
-                        ) : (
-                          <div className="text-base bg-gray-700 animate-pulse w-12 h-8 rounded-md"></div>
-                        )}
-                      </div>
-                      <div className="ml-6">
-                        <p className="text-gray-300 text-[13px]">
-                          Health Factor
-                        </p>
-                        {(userTotalCollateralInUsd &&
-                          userTotalCollateralInUsd) ||
-                        (Number(userTotalCollateralInUsd) >= 0 &&
-                          Number(userTotalCollateralInUsd) >= 0) ? (
-                          <p
-                            className={`${healthFactorColor} text-2xl font-bold`}
-                          >
-                            {Number(healthFactor) > 0
-                              ? formattedHealthFactor.toFixed(2)
-                              : "--"}
-                          </p>
-                        ) : (
-                          <div className="text-base bg-gray-700 animate-pulse w-15 h-8 rounded-md"></div>
-                        )}
-                      </div>
-                      <div className="relative w-[300px]">
-                        <HealthFactorBar />
-                      </div>
-
-                        <div className=" ml-8 relative w-[300px]">
-                          <LTVBar />
-                      </div>
-                    </div>
-                  </div>
+    <div>
+      {chainId == 80001 && signerAddress ? (
+        <div>
+          <div className="bg-gradient-to-tr from-slate-900 to-gray-900 h-[320px]">
+            <div className="w-full h-full flex flex-col justify-center px-10 ">
+              <div className="flex items-center">
+                <div>
+                  <img
+                    src={IMAGES.MATIC}
+                    width={35}
+                    height={30}
+                    // layout="fixed"
+                    className="card-img-top"
+                    alt="coinimage"
+                  />
                 </div>
-                <div className="px-2 h-full md:px-10 mx-auto -mt-24">
-                  <div className="flex flex-wrap mt-4">
-                    <div className="w-full xl:w-6/12 xl:mb-0 px-2">
-                      <YourSupply tokens={userSupplies} />
-                    </div>
-                    <div className="w-full xl:w-6/12 px-2">
-                      <YourBorrows tokens={userBorrows} />
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap mt-4">
-                    <div className="w-full xl:w-6/12  xl:mb-0 px-2">
-                      <SupplyAssets tokens={supplyAssets!} />
-                    </div>
-                    <div className="w-full xl:w-6/12 px-2">
-                      <BorrowAssets tokens={borrowAssets!} />
-                    </div>
-                  </div>
-
-                  {/* <Footer /> */}
+                <div className="mx-2">
+                  <p className="text-3xl text-white">Polygon Market</p>
                 </div>
               </div>
-            )}
-
-            <div className="flex text-center sm:block sm:p-0">
-              {/* <ModalWithdraw /> */}
+              <div className="flex items-center mt-3">
+                <div className="w-9 h-8"></div>
+                <div>
+                  <p className="text-gray-300 text-[13px]">Net worth</p>
+                  {(userTotalCollateralInUsd && userTotalCollateralInUsd) ||
+                  (Number(userTotalCollateralInUsd) >= 0 &&
+                    Number(userTotalCollateralInUsd) >= 0) ? (
+                    <p className="text-white text-2xl font-bold">${netWorth}</p>
+                  ) : (
+                    <div className="text-base bg-gray-700 animate-pulse w-12 h-8 rounded-md"></div>
+                  )}
+                </div>
+                {formattedHealthFactor && formattedHealthFactor > 0 && (
+                  <div className="ml-6">
+                    <p className="text-gray-300 text-[13px]">Health Factor</p>
+                    <div className="flex space-x-2">
+                      {(userTotalCollateralInUsd && userTotalCollateralInUsd) ||
+                      (Number(userTotalCollateralInUsd) >= 0 &&
+                        Number(userTotalCollateralInUsd) >= 0) ? (
+                        <p
+                          className={`${healthFactorColor} text-2xl font-bold`}
+                        >
+                          {Number(healthFactor) > 0
+                            ? formattedHealthFactor.toFixed(2)
+                            : "--"}
+                        </p>
+                      ) : (
+                        <div className="text-base bg-gray-700 animate-pulse w-15 h-8 rounded-md"></div>
+                      )}
+                      <button
+                        className="text-white px-2 bg-gray-700 rounded-md text-sm hover:bg-gray-600"
+                        onClick={() => setOpenRiskDetails(true)}
+                      >
+                        Risk Details
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          </>
-        ) : false ? (
-          <div className="w-full grid min-h-screen place-items-center bg-black text-white">
-            <button
-              onClick={() => {
-                window.open("https://metamask.io/download/", "_blank");
-              }}
-              className="border border-white p-2 rounded-md"
-            >
-              Install metamask
-            </button>
           </div>
-        ) : (
-          <div className="w-full grid min-h-screen place-items-center bg-black text-white">
-            <button
-              onClick={() => alert("connect to metamask")}
-              className="border border-white p-2 rounded-md"
-            >
-              Connect to metamask with your browser
-            </button>
+          <div className="px-2 h-full md:px-10 mx-auto -mt-24">
+            <div className="flex flex-wrap mt-4">
+              <div className="w-full xl:w-6/12 xl:mb-0 px-2">
+                <YourSupply tokens={userSupplies} />
+              </div>
+              <div className="w-full xl:w-6/12 px-2">
+                <YourBorrows tokens={userBorrows} />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap mt-4">
+              <div className="w-full xl:w-6/12  xl:mb-0 px-2">
+                <SupplyAssets tokens={supplyAssets!} />
+              </div>
+              <div className="w-full xl:w-6/12 px-2">
+                <BorrowAssets tokens={borrowAssets!} />
+              </div>
+            </div>
+
+            {/* <Footer /> */}
           </div>
-        )
+        </div>
       ) : (
-        <div className="w-full grid min-h-screen place-items-center bg-black text-white">
-          <div className="border border-white p-2 rounded-md">
-            Connecting.... Please! Wait for a moment.
+        <div>
+          <div className="bg-gradient-to-tr from-slate-900 to-gray-900 h-[320px]">
+            <div className="w-full h-full flex flex-col justify-center px-10 ">
+              <div className="flex items-center">
+                <div>
+                  <img
+                    src={IMAGES.MATIC}
+                    width={35}
+                    height={30}
+                    // layout="fixed"
+                    className="card-img-top"
+                    alt="coinimage"
+                  />
+                </div>
+                <div className="mx-2">
+                  <p className="text-3xl text-white">Polygon Market</p>
+                </div>
+              </div>
+              <div className="flex items-center mt-3">
+                <div className="w-9 h-8"></div>
+                <div>
+                  <p className="text-gray-300 text-[13px]">Net worth</p>
+                  <p className="text-white">___</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="px-2 h-full md:px-10 mx-auto -mt-24">
+            <div className="w-full h-[400px] bg-gray-800 border border-slate-700 flex flex-col items-center justify-center space-y-2 text-gray-400 ">
+              <div className="rounded-full p-6 bg-orange-800 ">
+                <FaThumbsUp className="text-8xl text-white" />
+              </div>
+              <p className="font-medium text-xl text-white">
+                Please, connect your wallet{" "}
+              </p>
+              <p className="w-5/12 text-center">
+                Please, make sure you are connected to Polygon Mumbai testnet to
+                see your supplies, borrowings and open positions
+              </p>
+
+              <WalletConnect />
+            </div>
           </div>
         </div>
       )}
 
       <div className="flex justify-center text-center sm:block sm:p-0 mt-2">
-        {/* 
-
-        {selectedTokenToBorrow && (
-          <ModalBorrow
-            token={selectedTokenToBorrow}
-            closeModal={handleCloseModal}
-            balance={yourSupplies.data?.yourBalance}
-            onBorrow={borrowToken}
-            borrowingError={borrowingError}
-            borrowingResult={borrowingResult}
-            addBorrowedToken={addBorrowedToken}
-          />
-        )}
-
-        {selectedTokenToWithdraw && (
-          <ModalWithdraw
-            token={selectedTokenToWithdraw}
-            closeModal={handleCloseModal}
-            onWithdraw={withdrawToken}
-            withdrawError={WithdrawError}
-            withdrawResult={WithdrawResult}
-            addTokenToMetamask={addTokenToMetamask}
-            contract={contract}
-            web3={web3}
-          />
-        )}
-
-        {selectedTokenToRepay && web3 && (
-          <ModalRepay
-            token={selectedTokenToRepay}
-            closeModal={handleCloseModal}
-            onRepay={repayToken}
-            repayError={repayError}
-            repayResult={repayResult}
-            web3={web3}
-          />
-        )} */}
+        {openRiskDetails && <ModalScale closeModal={handleRiskDetails} />}
       </div>
     </div>
   );

@@ -35,6 +35,7 @@ import { ClipLoader } from "react-spinners";
 import useDefi from "../hooks/useDefi";
 import { BsArrowRight } from "react-icons/bs";
 import { displayToast } from "./Toast";
+import {IoMdInfinite} from "react-icons/io"
 
 interface IModalBorrow {
   token: TokenData;
@@ -55,6 +56,9 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
     loadUserSupplies,
     loadUserTotalCollateralInUsd,
     loadUserTotalBorrowedInUsd,
+    loadCurrentLTV,
+    loadMaxLTV,
+    loadBorrowPower,
     healthFactor,
     userSupplies,
     userTotalCollateralInUsd,
@@ -142,10 +146,13 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
   }, []);
   const updateBorrow = async () => {
     await loadHealthFactor(signerAddress);
+    await loadMaxLTV(signerAddress)
+    await loadCurrentLTV(signerAddress)
     await loadBorrowAssets(signerAddress);
     await loadUserBorrows(signerAddress);
     await loadUserTotalBorrowedInUsd(signerAddress);
     await loadLiquidationThresholdWeighted(signerAddress);
+    await loadBorrowPower(signerAddress)
   };
 
   const borrowToken = async () => {
@@ -329,9 +336,8 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
             <div className="flex flex-col items-center border rounded-md p-2 border-slate-700">
               <div className="w-full flex items-center">
                 <input
-                    onChange={async (event) => {
-                      
-                      console.log("Borrow stable rate: ", token.borrowStableRate)
+                  onChange={async (event) => {
+                    console.log("Borrow stable rate: ", token.borrowStableRate);
                     setHasApproved(false);
 
                     const availableToBorrow =
@@ -468,10 +474,12 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
             reserveBalanceInUsd <=
               Number(token.availableToBorrowInUsd) / 10 ** 18 && (
               <div className="p-6 w-full pt-1 space-y-2">
-                <div className="flex flex-col text-sm border rounded-md p-1 bg-red-300 text-red-800 space-y-5">
+                <div className="flex flex-col text-sm border rounded-md p-1 border border-slate-600 p-2 text-gray-300 space-y-1">
+                  <p>Note:</p>
                   <p>
-                    {token.tokenName} is not available for borrow at the moment.
-                    Check back later
+                    {token.tokenName} balance in the reserve is {reserveBalance}{" "}
+                    {token.tokenName}. The transaction is likely to fail if you
+                    try to borrow anything more than that.
                   </p>
                 </div>
               </div>
@@ -491,7 +499,11 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
                 <p>Health Factor</p>
                 <div className="flex text-sm space-x-2 items-center font-medium">
                   <p className={`${healthFactorColor}`}>
-                    {formattedHealthFactor > 0 ? formattedHealthFactor.toFixed(2) : "--"}
+                    {formattedHealthFactor > 0 ? (
+                      formattedHealthFactor.toFixed(2)
+                    ) : (
+                      <IoMdInfinite className="text-green-700 text-xl" />
+                    )}
                   </p>
                   {latestHealthFactor > 0 && latestHealthFactor < 100000 && (
                     <div
@@ -516,11 +528,7 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
 
           <div className="pb-8 mx-3 flex flex-col justify-center items-center space-y-2 rounded-b border-gray-200 dark:border-gray-600">
             <button
-              disabled={
-                isBorrowing ||
-                reserveBalanceInUsd <=
-                  Number(token.availableToBorrowInUsd) / 10 ** 18
-              }
+              disabled={isBorrowing}
               onClick={borrowToken}
               data-modal-toggle="small-modal"
               type="button"

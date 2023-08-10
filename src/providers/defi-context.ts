@@ -53,7 +53,8 @@ const DefiContext = React.createContext<IDefiContext>({
   loadMaxLTV: (signerAddress: string) => null,
   loadCurrentLTV: (signerAddress: string) => null,
   loadLiquidationThresholdWeighted: (signerAddress: string) => null,
-  getTokenData: (signerAddress: string, tokenAddress: string) => null,
+  getTokenData: (signerAddress: string, tokenAddress: string) => null
+
 });
 
 export default DefiContext;

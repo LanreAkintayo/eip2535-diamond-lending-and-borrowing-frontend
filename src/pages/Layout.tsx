@@ -5,6 +5,7 @@ import { useAccount, useDisconnect } from "wagmi";
 import useWallet from "../hooks/useWallet";
 import Header from "../components/Header";
 import useDefi from "../hooks/useDefi";
+import { watchNetwork, watchAccount } from "@wagmi/core";
 
 interface LayoutProps {}
 
@@ -25,7 +26,7 @@ export default function Layout({
     loadCurrentLTV,
     loadLiquidationThresholdWeighted,
     loadSupplyAssets,
-    loadBorrowAssets
+    loadBorrowAssets,
   } = useDefi();
 
   const { isConnected } = useAccount();
@@ -50,10 +51,38 @@ export default function Layout({
   }, []);
 
   useEffect(() => {
+    const calclateInitialSettings = async () => {
+      try {
+        const unwatchAccount = watchAccount(async (account) => {
+          console.log("Account has changed......", account);
+          const newAccountAddress = account && account.address;
+          try {
+            const signerAddress = await loadSignerAddress();
+
+            console.log("Signer address: ", signerAddress);
+          } catch (err) {
+            console.log("No account is detected");
+          }
+        });
+
+        const unwatchNetwork = watchNetwork(async (network) => {
+          console.log("Network has changed:.......... ", network);
+
+          const chainId = await loadChainId();
+          console.log("Chain Id: ", chainId); 
+        });
+      } catch (err) {
+        console.log("Error::: ", err);
+      }
+    };
+    calclateInitialSettings();
+  }, []);
+
+  useEffect(() => {
     const loadDefi = async () => {
       if (signerAddress) {
         await loadUserBorrows(signerAddress);
-        await loadUserSupplies(signerAddress);
+
         await loadHealthFactor(signerAddress);
         await loadUserTotalCollateralInUsd(signerAddress);
         await loadUserTotalBorrowedInUsd(signerAddress);
@@ -61,6 +90,16 @@ export default function Layout({
         await loadMaxLTV(signerAddress);
         await loadCurrentLTV(signerAddress);
         await loadLiquidationThresholdWeighted(signerAddress);
+      }
+    };
+
+    loadDefi();
+  }, [signerAddress]);
+
+  useEffect(() => {
+    const loadDefi = async () => {
+      if (signerAddress) {
+        await loadUserSupplies(signerAddress);
       }
     };
 

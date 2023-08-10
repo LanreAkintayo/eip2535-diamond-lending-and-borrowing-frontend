@@ -56,6 +56,7 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
   const {
     loadHealthFactor,
     loadSupplyAssets,
+    loadBorrowAssets,
     loadUserSupplies,
     loadUserTotalCollateralInUsd,
     healthFactor,
@@ -135,6 +136,7 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
   const updateSupply = async () => {
     await loadHealthFactor(signerAddress);
     await loadSupplyAssets(signerAddress);
+    await loadBorrowAssets(signerAddress);
     await loadUserSupplies(signerAddress);
     await loadUserTotalCollateralInUsd(signerAddress);
     await loadLiquidationThresholdWeighted(signerAddress);

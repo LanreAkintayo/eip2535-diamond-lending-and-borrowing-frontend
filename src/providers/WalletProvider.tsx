@@ -79,7 +79,7 @@ const WalletProvider = (props: any) => {
 
     // console.log('Chain Id:::::::::::: ', chainId);
 
-    dispatchWalletAction({ type: "CHAINID", chainId: chainId });
+    dispatchWalletAction({ type: "CHAIN_ID", chainId: chainId });
     return chainId;
   };
 
@@ -95,7 +95,7 @@ const WalletProvider = (props: any) => {
 
       const chainIdValue = BigInt(chainIdHex);
 
-      dispatchWalletAction({ type: "CHAINID", chainId: chainIdValue });
+      dispatchWalletAction({ type: "CHAIN_ID", chainId: chainIdValue });
 
       // window.location.reload();
     } catch (error) {

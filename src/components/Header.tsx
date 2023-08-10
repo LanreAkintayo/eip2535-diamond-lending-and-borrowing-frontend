@@ -142,38 +142,7 @@ export default function Header() {
         <div className="flex mx-2 items-center">
           <div className=" text-white flex items-center w-full sc:py-10">
             <WalletConnect />
-            {chainId && chainId != supportedChainId && (
-              <button
-                className="text-orange-600 text-sm my-2 cursor-pointer bg-orange-100 rounded-lg p-2 px-2"
-                onClick={async () => {
-                  try {
-                    // const chainIds = await window.ethereum.request({ method: 'eth_chainId' });
-
-                    // console.log("ChainID: ", chainIds)
-
-                    // const walletClient = createWalletClient({
-                    //   chain: polygonMumbai,
-                    //   transport: custom(window.ethereum)
-                    // })
-
-                    // await walletClient.addChain({ chain: polygonMumbai })
-
-                    await switchNetwork({
-                      chainId: supportedChainId,
-                    });
-                  } catch (err) {
-                    console.log("Error", err);
-
-                    displayToast(
-                      "failure",
-                      "Make sure you add Polygon Mumbai testnet with a chain id of 80001"
-                    );
-                  }
-                }}
-              >
-                Switch to Mumbai
-              </button>
-            )}
+           
           </div>
           {isBreakpoint && (
             <div

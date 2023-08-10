@@ -131,7 +131,9 @@ export const getLatestHealthFactor = (
 
     console.log("Correct liquidation threshold weighted: ", corr);
     healthFactor =
-      (latestTotalCollateralInUsd * corr) / parsedTotalBorrowedInUsd;
+      parsedTotalBorrowedInUsd > 0
+        ? (latestTotalCollateralInUsd * corr) / parsedTotalBorrowedInUsd
+        : -1;
 
     console.log("Health factor in helper", healthFactor);
   } else {
@@ -154,8 +156,10 @@ export const getLatestHealthFactor = (
       parsedTotalCollateralInUsd + parsedTokenAmountInUsd;
 
     healthFactor =
-      (latestTotalCollateral * newLiquidationThresholdWeighted) /
-      parsedTotalBorrowedInUsd;
+      parsedTotalBorrowedInUsd > 0
+        ? (latestTotalCollateral * newLiquidationThresholdWeighted) /
+          parsedTotalBorrowedInUsd
+        : -1;
   }
   return healthFactor;
 };
@@ -231,14 +235,19 @@ export const getWithdrawalHealthFactor = (
 
   const parsedAmountSupplied = Number(
     ethers.formatUnits(
-      Number(currentTokenToWithdraw.amountSupplied).toString(),
+      currentTokenToWithdraw.amountSupplied.toString(),
       decimals
     )
   );
 
+  console.log(
+    "Parsed amount supplied --->>>>>>>>>>>>>: ",
+    parsedAmountSupplied
+  );
+
   const parsedAmountSuppliedInUsd = Number(
     ethers.formatUnits(
-      Number(currentTokenToWithdraw.amountSuppliedInUsd).toString(),
+      currentTokenToWithdraw.amountSuppliedInUsd.toString(),
       decimals
     )
   );
@@ -322,8 +331,12 @@ export const getRepayHealthFactor = (
     ethers.formatUnits(totalBorrowedInUsd.toString(), 18)
   );
 
+  console.log(
+    "parsedTotalBorrowedInUsd - tokenAmountInUsd",
+    parsedTotalBorrowedInUsd - tokenAmountInUsd
+  );
   const healthFactor =
-    parsedTotalBorrowedInUsd - tokenAmountInUsd > 0
+    parsedTotalBorrowedInUsd - tokenAmountInUsd > 0.0001
       ? (parsedTotalCollateralInUsd * parsedLiquidationThresholdWeighted) /
         (parsedTotalBorrowedInUsd - tokenAmountInUsd)
       : -1;

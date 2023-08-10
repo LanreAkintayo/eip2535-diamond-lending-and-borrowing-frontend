@@ -38,6 +38,7 @@ import { displayToast } from "./Toast";
 import Popup from "reactjs-popup";
 import { FaCheck } from "react-icons/fa";
 import { FiSettings } from "react-icons/fi";
+import { IoMdInfinite } from "react-icons/io";
 
 import "reactjs-popup/dist/index.css";
 
@@ -149,7 +150,7 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
 
     setParsedValue(parsedValue);
 
-    console.log("Parsed value in the approval: ", parsedValue);
+    // console.log("Parsed value in the approval: ", parsedValue);
     try {
       const nonce = (await readContract({
         address: token.tokenAddress as `0x${string}`,
@@ -158,7 +159,7 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
         args: [signerAddress],
       })) as bigint;
 
-      console.log("Nonce: ", nonce);
+      // console.log("Nonce: ", nonce);
 
       const domain = {
         name: token.tokenName,
@@ -323,9 +324,6 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
         (usableValue * 10 ** token.decimals).toFixed()
       );
 
-      console.log("Parsed value in repay: ", parsedValue);
-      console.log("We are now here");
-      console.log("We are inside try block");
       try {
         const repayRequest = await prepareWriteContract({
           address: diamondAddress as `0x${string}`,
@@ -379,15 +377,15 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
 
     const noOfDays = (currentTimeInSeconds - startAccumulatingDay) / 86400;
 
-    console.log("No of days :", noOfDays);
+    // console.log("No of days :", noOfDays);
 
     const totalInterest = borrowStableRate * amountBorrowed;
 
-    console.log("total interest: ", totalInterest);
+    // console.log("total interest: ", totalInterest);
 
     const accumulatedInterest = (noOfDays * totalInterest) / 365;
 
-    console.log("Accumulated interest: ", accumulatedInterest);
+    // console.log("Accumulated interest: ", accumulatedInterest);
 
     const totalToRepay = accumulatedInterest + getAmountToRepay;
     const totalToRepayInUsd = totalToRepay * oraclePrice;
@@ -447,7 +445,6 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
             <p>
               You Repayed {value} {token?.tokenName}
             </p>
-         
 
             <button
               onClick={() => {
@@ -729,14 +726,19 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
                   <p className={`${healthFactorColor}`}>
                     {formattedHealthFactor.toFixed(2)}
                   </p>
-                  {latestHealthFactor > 0 && (
-                    <div
-                      className={`flex items-center space-x-1 ${latestHealthFactorColor}`}
-                    >
-                      <BsArrowRight />
-                      <p>{latestHealthFactor.toFixed(2)}</p>
-                    </div>
-                  )}
+
+                  <div
+                    className={`flex items-center space-x-1 ${latestHealthFactorColor}`}
+                  >
+                    <BsArrowRight />
+                    <p>
+                      {latestHealthFactor > 0 ? (
+                        latestHealthFactor.toFixed(2)
+                      ) : (
+                        <IoMdInfinite className="text-green-600 text-xl " />
+                      )}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

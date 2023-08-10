@@ -14,9 +14,15 @@ interface IYourBorrows {
 export default function YourBorrows({ tokens }: IYourBorrows) {
   const [selectedTokenToRepay, setSelectedTokenToRepay] = useState(null);
   const [selectedTokenToBorrow, setSelectedTokenToBorrow] = useState(null);
-  const { userTotalBorrowedInUsd, borrowPower } = useDefi();
+  const {
+    userTotalBorrowedInUsd,
+    borrowPower,
+    userTotalCollateralInUsd,
+    maxLTV,
+  } = useDefi();
 
-  const formattedBorrowPower = borrowPower ? Number(borrowPower) / 10000 : 0;
+
+  const formattedBorrowPower = borrowPower ? Number(borrowPower) / 100 : 0;
 
   const handleCloseModal = () => {
     setSelectedTokenToBorrow(null);
