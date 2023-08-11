@@ -64,7 +64,7 @@ export default function Header() {
 
   const currentUrl = location.pathname;
 
-  console.log("Curent url: ", currentUrl)
+  // console.log("Curent url: ", currentUrl)
 
   // console.log("Current url: ", currentUrl);
 

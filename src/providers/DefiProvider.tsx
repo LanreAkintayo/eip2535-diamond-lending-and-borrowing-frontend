@@ -16,6 +16,7 @@ import {
   getContract,
   fetchBalance,
 } from "@wagmi/core";
+// import { createPublicClient, createWalletClient, http } from "viem";
 
 import { erc20ABI } from "wagmi";
 import { appSettings } from "../constants/settings";
@@ -35,6 +36,9 @@ import {
   TokenData,
   BorrowAsset,
 } from "../types";
+// import { polygonMumbai } from "wagmi/chains";
+// import { polygonMumbai } from "viem/chains";
+import { getEthersProvider } from "../ethers";
 // import { appSettings } from "@/constants/settings";
 
 const defaultDefiState = {
@@ -146,7 +150,38 @@ const DefiProvider = (props: any) => {
   );
 
   const loadUserSuppliesHandler = async (signerAddress: string) => {
-    console.log("Signer address: ------------------>",  signerAddress)
+    console.log("Signer address: ------------------>", signerAddress)
+    
+    const provider = getEthersProvider()
+    console.log("Provider: ", provider)
+
+    // await provider.
+
+    
+    // const publicClient = createPublicClient({
+    //   chain: polygonMumbai,
+    //   transport: http(),
+    // });
+
+    // console.log("Public client: ", publicClient)
+
+    // console.log("About to load usersupplies::")
+
+    // const userSupplies = (await publicClient.readContract({
+    //   address: diamondAddress,
+    //   abi: getterAbi,
+    //   functionName: "getAllSupplies",
+    //   args: [signerAddress],
+    // })) as ContractSuppliedToken[];
+
+
+    // walletClient.
+      // const { publicClient } = configureChains(chains, [
+      //   w3mProvider({ projectId }),
+      // ]);
+    
+    
+
     const userSupplies = (await readContract({
       address: diamondAddress,
       abi: getterAbi,
@@ -154,7 +189,7 @@ const DefiProvider = (props: any) => {
       args: [signerAddress],
     })) as ContractSuppliedToken[];
 
-    console.log("User supplies: ", userSupplies)
+    console.log("User supplies::::::::::::::::::::: ", userSupplies)
 
     const detailedSupplies = userSupplies.map(
       async (eachSupply: ContractSuppliedToken) => {
@@ -169,7 +204,7 @@ const DefiProvider = (props: any) => {
           address: tokenAddress as `0x${string}`,
           abi: erc20ABI,
           functionName: "decimals",
-        });
+        }) as number
 
         const amountSuppliedInUsd = (await readContract({
           address: diamondAddress as `0x${string}`,

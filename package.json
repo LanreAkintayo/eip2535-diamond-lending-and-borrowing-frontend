@@ -33,8 +33,8 @@
     "react-tooltip": "^5.20.0",
     "reactjs-popup": "^2.0.5",
     "tailwind-scrollbar-hide": "^1.1.7",
-    "viem": "^1.5.0",
-    "wagmi": "^1.3.9",
+    "viem": "^1.6.0",
+    "wagmi": "^1.3.10",
     "web-vitals": "^2.1.0"
   },
   "scripts": {

@@ -76,8 +76,8 @@ export default function Dashboard2() {
     setOpenRiskDetails(false);
   };
 
-  console.log("Signer: ", signerAddress);
-  console.log("Chain ID: ", chainId);
+  // console.log("Signer: ", signerAddress);
+  // console.log("Chain ID: ", chainId);
 
   return (
     <div>
