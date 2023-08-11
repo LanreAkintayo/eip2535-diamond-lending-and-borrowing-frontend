@@ -146,12 +146,15 @@ const DefiProvider = (props: any) => {
   );
 
   const loadUserSuppliesHandler = async (signerAddress: string) => {
+    console.log("Signer address: ------------------>",  signerAddress)
     const userSupplies = (await readContract({
       address: diamondAddress,
       abi: getterAbi,
       functionName: "getAllSupplies",
       args: [signerAddress],
     })) as ContractSuppliedToken[];
+
+    console.log("User supplies: ", userSupplies)
 
     const detailedSupplies = userSupplies.map(
       async (eachSupply: ContractSuppliedToken) => {
