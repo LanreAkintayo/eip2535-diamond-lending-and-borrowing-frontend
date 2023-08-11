@@ -2,7 +2,7 @@
   "name": "eip2535-defi-lending-and-borrowing-frontend",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://larry-defi-lending-and-borrowing.github.io/my-app",
+  "homepage": "http://larry-defi-lending-and-borrowing.github.io/",
   "dependencies": {
     "@syncfusion/ej2-react-progressbar": "^22.2.5",
     "@testing-library/jest-dom": "^5.17.0",
