@@ -30,7 +30,6 @@ export default function SupplyAssetsSmall({ tokens }: IsupplyAssetSmall) {
       </div>
 
       <div className="block w-full divide-solid divide-slate-600 divide-y overflow-x-auto space-y-3">
-        {!tokens && <Skeleton />}
         {tokens?.map((token: any) => {
           return (
             <SupplyAssetItem
