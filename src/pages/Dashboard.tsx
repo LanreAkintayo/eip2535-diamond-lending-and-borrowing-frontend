@@ -82,7 +82,7 @@ export default function Dashboard2() {
   return (
     <div>
       {chainId == 80001 && signerAddress ? (
-        <div>
+        <div>text-5xl sm:
           <div className="bg-gradient-to-tr from-slate-900 to-gray-900 h-[250px] sm:h-[320px]">
             <div className="w-full h-full flex flex-col justify-center px-5 sm:px-10 ">
               <div className="flex items-center">
@@ -250,12 +250,12 @@ export default function Dashboard2() {
           <div className="px-2 h-full md:px-10 mx-auto -mt-16 sm:-mt-24">
             <div className="w-full h-[400px] bg-gray-800 border border-slate-700 flex flex-col items-center justify-center space-y-2 text-gray-400 ">
               <div className="rounded-full p-6 bg-orange-800 ">
-                <FaThumbsUp className="text-8xl text-white" />
+                <FaThumbsUp className="text-5xl sm:text-8xl text-white" />
               </div>
-              <p className="font-medium text-xl text-white">
+              <p className="font-medium text-lg sm:text-xl text-white">
                 Please, connect your wallet{" "}
               </p>
-              <p className="w-5/12 text-center">
+              <p className="w-9/12 sm:w-7/12 text-sm sm:text-base text-center">
                 Please, make sure you are connected to Polygon Mumbai testnet to
                 see your supplies, borrowings and open positions
               </p>

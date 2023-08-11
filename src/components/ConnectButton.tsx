@@ -39,7 +39,7 @@ export default function ConnectButton() {
       <button
         onClick={onClick}
         disabled={loading}
-        className="rounded-full bg-orange-800 hover:bg-orange-700 text-white w-40 p-2 mr-3"
+        className="rounded-full bg-orange-800 hover:bg-orange-700 text-[12px] ssm:text-sm text-white w-40 p-2 mr-3"
       >
         {loading ? "Loading..." : "Connect Wallet"}
       </button>

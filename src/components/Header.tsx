@@ -155,7 +155,7 @@ export default function Header() {
                 className="text-white rounded-full hover:text-orange-500 cursor-pointer"
                 onClick={handleSidebar}
               >
-                <FaBars className="ml-3 w-9 h-9 bg-orange-500 rounded-full text-black p-2" />
+                <FaBars className="ml-3 w-9 h-9 border border-slate-600  rounded-full text-white p-2" />
               </div>
             )}
           </div>

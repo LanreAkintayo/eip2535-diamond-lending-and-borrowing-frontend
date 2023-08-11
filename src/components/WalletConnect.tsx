@@ -54,7 +54,7 @@ export default function WalletConnect() {
             {isConnected ? (
               <div className="mr-5 px-3 bg-orange-800 hover:bg-orange-700  rounded-md hover:bg-amber-800 hover:text-white ">
                 <div
-                  className="flex cursor-pointer items-center gap-3 rounded-md py-1.5 px-2 text-sm font-medium text-white transition"
+                  className="flex cursor-pointer items-center gap-3 rounded-md py-1.5 px-2 text-[12px] sm:text-sm font-medium text-white transition"
                   onClick={() => {
                     disconnect();
                   }}

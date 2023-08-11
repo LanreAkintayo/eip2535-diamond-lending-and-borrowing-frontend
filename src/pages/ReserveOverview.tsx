@@ -70,7 +70,7 @@ export default function ReserveOverview() {
     <div className="">
       {token ? (
         <div className="">
-          <div className="py-16 md:py-28 ss:py-20  bg-gradient-to-tr from-slate-900 to-gray-900 h-[340px] ssm:h-[320px] px-8">
+          <div className="pt-16 md:pt-28 ss:pt-20  bg-gradient-to-tr from-slate-900 to-gray-900 h-[340px] ssm:h-[320px] px-8">
             <div className="w-full flex flex-col justify-center space-y-4">
               <div className="flex flex-col ssm:flex-row ssm:items-center space-y-3 ssm:space-y-0 ">
                 <Link
@@ -78,7 +78,7 @@ export default function ReserveOverview() {
                   className="ssm:mx-2 w-[100px] h-8 bg-slate-700 flex items-center text-white rounded-md justify-center hover:bg-gray-800"
                 >
                   <GoArrowLeft />
-                  <p className="ml-2">Go back</p>
+                  <p className="ml-2 text-sm">Go back</p>
                 </Link>
 
                 <div className="flex items-center ssm:justify-center">
