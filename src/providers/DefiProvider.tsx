@@ -18,7 +18,7 @@ import {
 } from "@wagmi/core";
 // import { createPublicClient, createWalletClient, http } from "viem";
 
-import { erc20ABI } from "wagmi";
+import { erc20ABI, useContractRead } from "wagmi";
 import { appSettings } from "../constants/settings";
 import {
   addressToImage,
@@ -180,6 +180,10 @@ const DefiProvider = (props: any) => {
       //   w3mProvider({ projectId }),
       // ]);
     
+    
+   
+
+
     
 
     const userSupplies = (await readContract({
