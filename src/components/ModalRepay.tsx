@@ -571,19 +571,21 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
                   name="text"
                   id="text"
                   placeholder="0.00"
-                  className="bg-slate-800 w-80 block pl-2 p-1 font-medium sm:text-lg focus:outline-none rounded-md"
+                  className="w-full bg-slate-800  block pl-2 p-1 font-medium sm:text-lg focus:outline-none rounded-md"
                 />
 
-                <img
-                  src={token.tokenImage}
-                  width={30}
-                  height={30}
-                  // layout="fixed"
-                  className="ml-2 card-img-top"
-                  alt="coinimage"
-                />
+                <div className="w-full flex items-center space-x-3 justify-end">
+                  <img
+                    src={token.tokenImage}
+                    width={30}
+                    height={30}
+                    // layout="fixed"
+                    className="ml-2  w-[24px] ssm:w-[30px]"
+                    alt="coinimage"
+                  />
 
-                <p className="font-medium text-lg ml-2">{token.tokenName}</p>
+                  <p className="font-medium text-base ssm:text-lg ml-2">{token.tokenName}</p>
+                </div>
               </div>
 
               <div className="w-full justify-between flex items-center">
@@ -591,7 +593,7 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
                   ${valueInUsd}
                 </p>
                 <div className="flex items-center">
-                  <p className="font-bold text-sm text-gray-500 ">
+                  <p className="font-bold text-[12px] ssm:text-sm text-gray-500 ">
                     Wallet Balance:{" "}
                     {inCurrencyFormat(
                       Number(token.walletBalance) / 10 ** token.decimals
@@ -665,25 +667,17 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
                 </div>
               </div>
             </div>
-
-            {/* {supplyError && (
-            <div className="text-red-600 text-sm mt-5 bg-red-200 border overflow-auto scrollbar-hide rounded-md p-2 border-red-200 font-medium">
-              {supplyError.message}
-            </div>
-          )} */}
-
-            {/* <!-- Modal footer --> */}
           </div>
           <div className="p-6 w-full pt-1 space-y-2">
             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
               Transaction Overview
             </p>
             <div className="flex flex-col items-center border rounded-md px-2 py-3 border-slate-700 space-y-5">
-              <div className=" px-2 flex w-full justify-between items-center">
-                <p>Remaining Debt</p>
+              <div className=" ssm:px-2 flex w-full justify-between items-center">
+                <p className="text-sm sm:text-base">Remaining Debt</p>
                 <div className="flex flex-col items-end">
                   <div className="flex items-center space-x-1 text-sm">
-                    <p className={``}>
+                    <p className={`text-[12px] ssm:text-sm`}>
                       {inCurrencyFormat(
                         Number(token.amountBorrowed) / 10 ** token.decimals
                       )}{" "}
@@ -720,8 +714,8 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
                 </div>
               </div>
 
-              <div className=" px-2 flex w-full justify-between items-center">
-                <p>Health Factor</p>
+              <div className=" ssm:px-2 flex w-full justify-between items-center">
+                <p className="text-sm sm:text-base">Health Factor</p>
                 <div className="flex text-sm space-x-2 items-center font-medium">
                   <p className={`${healthFactorColor}`}>
                     {formattedHealthFactor.toFixed(2)}
@@ -742,14 +736,6 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
                 </div>
               </div>
             </div>
-
-            {/* {supplyError && (
-            <div className="text-red-600 text-sm mt-5 bg-red-200 border overflow-auto scrollbar-hide rounded-md p-2 border-red-200 font-medium">
-              {supplyError.message}
-            </div>
-          )} */}
-
-            {/* <!-- Modal footer --> */}
           </div>
 
           <div className="pb-8 mx-3 flex flex-col justify-center items-center space-y-2 rounded-b border-gray-200 dark:border-gray-600">

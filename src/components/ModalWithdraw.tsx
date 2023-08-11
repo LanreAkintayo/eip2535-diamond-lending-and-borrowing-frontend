@@ -459,13 +459,6 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
               </div>
             </div>
 
-            {/* {supplyError && (
-            <div className="text-red-600 text-sm mt-5 bg-red-200 border overflow-auto scrollbar-hide rounded-md p-2 border-red-200 font-medium">
-              {supplyError.message}
-            </div>
-          )} */}
-
-            {/* <!-- Modal footer --> */}
           </div>
           <div className="p-6 w-full pt-1 space-y-2">
             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">

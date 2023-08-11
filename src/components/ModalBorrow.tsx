@@ -406,19 +406,23 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
                   name="text"
                   id="text"
                   placeholder="0.00"
-                  className="bg-slate-800 w-80 block pl-2 p-1 font-medium sm:text-lg focus:outline-none rounded-md"
+                  className="bg-slate-800 w-full block pl-2 p-1 font-medium sm:text-lg focus:outline-none rounded-md"
                 />
 
-                <img
-                  src={token.tokenImage}
-                  width={30}
-                  height={30}
-                  // layout="fixed"
-                  className="ml-2 card-img-top"
-                  alt="coinimage"
-                />
+                <div className="w-full flex items-center space-x-3 justify-end">
+                  <img
+                    src={token.tokenImage}
+                    width={30}
+                    height={30}
+                    // layout="fixed"
+                    className="w-[24px] ssm:w-[30px]"
+                    alt="coinimage"
+                  />
 
-                <p className="font-medium text-lg ml-2">{token.tokenName}</p>
+                  <p className="font-medium text-base ssm:text-lg ml-2">
+                    {token.tokenName}
+                  </p>
+                </div>
               </div>
 
               <div className="w-full justify-between flex items-center">
@@ -426,7 +430,7 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
                   ${valueInUsd}
                 </p>
                 <div className="flex items-center">
-                  <p className="font-bold text-sm text-gray-500 ">
+                  <p className="font-bold text-[12px] ssm:text-sm text-gray-500 ">
                     Balance:{" "}
                     {inCurrencyFormat(
                       Number(token.availableToBorrow) / 10 ** 18
@@ -453,7 +457,7 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
                       setValue(availableToBorrow.toString());
                       setValueInUsd(availableToBorrowInUsd);
                     }}
-                    className="font-medium ml-2 text-gray-6 00 text-sm"
+                    className="font-medium ml-2 text-gray-6 00 text-[12px] ssm:text-sm"
                   >
                     MAX
                   </button>
@@ -486,19 +490,21 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
             )}
 
           <div className="p-6 w-full pt-1 space-y-2">
-            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+            <p className="text-sm ssm:text-base leading-relaxed text-gray-500 dark:text-gray-400">
               Transaction Overview
             </p>
             <div className="flex flex-col items-center border rounded-md px-2 py-3 border-slate-700 space-y-5">
               <div className=" px-2 flex w-full justify-between items-center">
-                <p>Borrow APY</p>
-                <p>{Number(token.borrowStableRate) / 100}%</p>
+                <p className="text-sm sm:text-base">Borrow APY</p>
+                <p className="text-sm sm:text-base">
+                  {Number(token.borrowStableRate) / 100}%
+                </p>
               </div>
 
               <div className=" px-2 flex w-full justify-between items-center">
-                <p>Health Factor</p>
+                <p className="text-sm sm:text-base">Health Factor</p>
                 <div className="flex text-sm space-x-2 items-center font-medium">
-                  <p className={`${healthFactorColor}`}>
+                  <p className={`text-sm sm:text-base ${healthFactorColor}`}>
                     {formattedHealthFactor > 0 ? (
                       formattedHealthFactor.toFixed(2)
                     ) : (
