@@ -9,18 +9,17 @@ export default function LTVBar() {
   const value = 10;
   const maxValue = 100;
 
-
-
-  const { healthFactor, maxLTV, currentLTV, liquidationThresholdWeighted } = useDefi();
+  const { healthFactor, maxLTV, currentLTV, liquidationThresholdWeighted } =
+    useDefi();
 
   const fMaxLTV = Number(maxLTV) / 100;
   const fCurrentLTV = Number(currentLTV) / 100;
-  const fLiquidationThresholdWeighted = Number(liquidationThresholdWeighted) / 100;
-  
-  console.log("fMaxLTV: ", fMaxLTV)
-  console.log("fCurrentLTV: ", fCurrentLTV)
-  console.log("fLiquidationThresholdWeighted: ", fLiquidationThresholdWeighted)
+  const fLiquidationThresholdWeighted =
+    Number(liquidationThresholdWeighted) / 100;
 
+  console.log("fMaxLTV: ", fMaxLTV);
+  console.log("fCurrentLTV: ", fCurrentLTV);
+  console.log("fLiquidationThresholdWeighted: ", fLiquidationThresholdWeighted);
 
   return (
     <div className="w-full h-2 bg-gray-700 overflow-hidden text-white">
@@ -49,17 +48,21 @@ export default function LTVBar() {
       ></div>
       {/* First internal progress bar with green background */}
       <div
-        className="h-full bg-green-600 opacity-50 relative space-x-5 z-40"
-        style={{ width: `${fMaxLTV}%` }}
+        className="h-full relative space-x-5 z-40"
+        style={{
+          width: `${fMaxLTV}%`,
+          backgroundImage: `url(./stripped.jpg)`,
+          backgroundSize: "cover",
+        }}
       >
-        <div className="w-full absolute inset-0 flex justify-between items-center">
+        {/* <div className="w-full absolute inset-0 flex justify-between items-center">
           {range(1, 30).map((_, index) => (
             <div
               key={index}
               className="bg-gray-700 w-[4px] h-full transform skew-x-45"
             />
           ))}
-        </div>
+        </div> */}
       </div>
 
       <div className="h-full bg-gray-400" style={{ width: `${100}%` }}>

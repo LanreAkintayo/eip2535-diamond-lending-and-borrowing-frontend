@@ -64,6 +64,8 @@ export default function Header() {
 
   const currentUrl = location.pathname;
 
+  console.log("Curent url: ", currentUrl)
+
   // console.log("Current url: ", currentUrl);
 
   useEffect(() => {
@@ -107,7 +109,7 @@ export default function Header() {
               </div>
               <div
                 className={`mx-3 text-xl flex items-center space-x-3 text-white font-semibold ${
-                  currentUrl == "/dashboard" && "text-orange-600"
+                  currentUrl == "/dashboard" && "text-orange-800"
                 } hover:text-orange-600`}
               >
                 <MdDashboard />

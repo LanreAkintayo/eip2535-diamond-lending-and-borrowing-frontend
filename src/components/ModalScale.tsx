@@ -98,7 +98,7 @@ export default function ModalScale({ closeModal }: IModalScale) {
                 </p>
               </div>
               <div className="">
-                <div className="bg-orange-500 font-medium text-white text-[12px] text-center flex flex-col items-center justify-center rounded-full w-[60px] h-[60px]">
+                <div className="bg-orange-500 font-medium text-white text-[12px] text-center flex flex-col items-center justify-center rounded-full w-[50px] h-[50px] ssm:w-[60px] ssm:h-[60px]">
                   {fHealthFactor.toFixed(2)}
                 </div>
               </div>
@@ -124,7 +124,7 @@ export default function ModalScale({ closeModal }: IModalScale) {
                 </p>
               </div>
               <div className="">
-                <div className="bg-green-500 font-medium text-white text-[12px] text-center flex flex-col items-center justify-center rounded-full w-[60px] h-[60px]">
+                <div className="bg-green-500 font-medium text-white text-[12px] text-center flex flex-col items-center justify-center rounded-full w-[50px] h-[50px] ssm:w-[60px] ssm:h-[60px]">
                   {fCurrentLTV.toFixed(2)}%
                 </div>
               </div>

@@ -134,7 +134,7 @@ export default function Dashboard2() {
                         <div className="text-base bg-gray-700 animate-pulse w-15 h-8 rounded-md"></div>
                       )}
                       <button
-                        className="text-white text-[9px] sc:text-[11px] sm:text-[12px]  px-1 sm:px-2 bg-gray-700 rounded-md text-sm hover:bg-gray-600"
+                        className="text-white text-[9px] sc:text-[11px] sm:text-[12px]  px-1 sm:px-2 bg-gray-700 rounded-md text-[10px] hover:bg-gray-600"
                         onClick={() => setOpenRiskDetails(true)}
                       >
                         Risk Details
