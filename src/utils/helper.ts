@@ -7,7 +7,6 @@ import {
 } from "../types";
 import { readContract } from "@wagmi/core";
 import { diamondAddress, getterAbi } from "../constants";
-import { each } from "chart.js/dist/helpers/helpers.core";
 
 export const todp = (amount: any, dp: number) => {
   return Number(amount).toFixed(dp);
