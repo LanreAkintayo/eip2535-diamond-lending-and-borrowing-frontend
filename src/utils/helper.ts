@@ -115,7 +115,7 @@ export const getLatestHealthFactor = (
     );
 
     const usableAmountSuppliedInUsd = Number(
-      ethers.formatUnits(Number(amountSuppliedInUsd).toString(), 18)
+      ethers.formatUnits(amountSuppliedInUsd!.toString(), 18)
     );
     const usableLiquidationThreshold =
       Number(currentTokenToSupply.liquidationThreshold) / 10000;

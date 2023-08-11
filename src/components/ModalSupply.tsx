@@ -146,7 +146,7 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
     setIsApproving(true);
     setApproveText(`Approving ${token.tokenName}`);
 
-    const parsedValue = BigInt(Number(value) * 10 ** token.decimals);
+    const parsedValue = (Number(value) * 10 ** token.decimals).toString();
 
     console.log("Parsed value in the approval: ", parsedValue);
     try {
@@ -187,7 +187,7 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
   const approveToken = async () => {
     setIsApproving(true);
     setApproveText(`Approving ${token.tokenName}`);
-    const parsedValue = BigInt(Number(value) * 10 ** token.decimals);
+    const parsedValue = (Number(value) * 10 ** token.decimals).toString();
 
     console.log("Parsed value: ", parsedValue);
     try {
@@ -255,7 +255,7 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
     } else {
       setIsSupplying(true);
       setSupplyText(`Supplying ${token.tokenName}`);
-      const parsedValue = BigInt(Number(value) * 10 ** token.decimals);
+      const parsedValue = (Number(value) * 10 ** token.decimals).toString();
       console.log("We are now here");
       console.log("We are inside try block");
       try {
@@ -477,7 +477,7 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
               Amount
             </p>
             <div className="flex flex-col items-center border rounded-md p-2 border-slate-700">
-              <div className="w-full flex items-center">
+              <div className="w-full flex items-center justify-between mx-1 ">
                 <input
                   onChange={async (event) => {
                     setHasApproved(false);
@@ -542,19 +542,22 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
                   name="text"
                   id="text"
                   placeholder="0.00"
-                  className="bg-slate-800 w-80 block pl-2 p-1 font-medium sm:text-lg focus:outline-none rounded-md"
+                  className="bg-slate-800 w-full  block pl-2 p-1 font-medium sm:text-lg focus:outline-none rounded-md"
                 />
+                <div className="w-full justify-end flex space-x-3">
+                  <img
+                    src={token.tokenImage}
+                    width={30}
+                    height={30}
+                    // layout="fixed"
+                    className="ml-2 card-img-top"
+                    alt="coinimage"
+                  />
 
-                <img
-                  src={token.tokenImage}
-                  width={30}
-                  height={30}
-                  // layout="fixed"
-                  className="ml-2 card-img-top"
-                  alt="coinimage"
-                />
-
-                <p className="font-medium text-lg ml-2">{token.tokenName}</p>
+                  <p className="font-medium text-base sm:text-lg ml-2">
+                    {token.tokenName}
+                  </p>
+                </div>
               </div>
 
               <div className="w-full justify-between flex items-center">
@@ -573,7 +576,7 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
                       const walletBalance =
                         Number(token.walletBalance) / 10 ** token.decimals;
 
-                      const latestHealthFactor =  getLatestHealthFactor(
+                      const latestHealthFactor = getLatestHealthFactor(
                         userSupplies,
                         token,
                         Number(walletBalance),
