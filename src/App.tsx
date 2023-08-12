@@ -15,10 +15,10 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route index path="/" element={<HomePage />} />
           <Route index path="/dashboard" element={<Dashboard />} />
           <Route path="/reserve_overview/:slug" element={<ReserveOverview />} />
           <Route path="/*" element={<NotFound />} />
+          <Route index path="/" element={<HomePage />} />
         </Route>
       </Routes>
     </BrowserRouter>

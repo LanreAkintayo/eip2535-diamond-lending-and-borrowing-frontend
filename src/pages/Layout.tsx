@@ -6,6 +6,7 @@ import useWallet from "../hooks/useWallet";
 import Header from "../components/Header";
 import useDefi from "../hooks/useDefi";
 import { watchNetwork, watchAccount } from "@wagmi/core";
+import { useLocation, Link, NavLink } from "react-router-dom";
 
 interface LayoutProps {}
 
@@ -28,6 +29,12 @@ export default function Layout({
     loadSupplyAssets,
     loadBorrowAssets,
   } = useDefi();
+
+  const location = useLocation();
+
+  // console.log("Location: ", location)
+
+  const currentUrl = location.pathname;
 
   const { isConnected } = useAccount();
 
@@ -69,7 +76,7 @@ export default function Layout({
           console.log("Network has changed:.......... ", network);
 
           const chainId = await loadChainId();
-          console.log("Chain Id: ", chainId); 
+          console.log("Chain Id: ", chainId);
         });
       } catch (err) {
         console.log("Error::: ", err);
@@ -129,7 +136,13 @@ export default function Layout({
   return (
     <div className="bg-gray-800 h-full dark:bg-dark-100 flex min-h-screen flex-col">
       <div className="">
-        <Header />
+        <Header
+          className={`${
+            currentUrl == "/"
+              ? "bg-transparent"
+              : "bg-gradient-to-tr from-slate-900 to-gray-900 "
+          }`}
+        />
       </div>
       <Outlet />
     </div>

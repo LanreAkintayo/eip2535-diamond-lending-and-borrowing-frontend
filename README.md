@@ -51,12 +51,54 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 What's left for me to do.
 switch on and off collateral.
-Reduce the margin you applied on the ltvbar
+
 Add some tooltip to explain what some features do.
-Deal with the responsiveness
+
 Clean the code up
 Write a README.md
 Write an article.
 
 
 
+
+https://pixabay.com/videos/world-globe-international-global-1992/
+
+
+  <div className="relative h-screen">
+        <div className="w-1/2 h-full bg-black float-left">
+          {/* Black section with text */}
+          <div className="h-full flex flex-col space-y-4 items-start px-8 justify-center">
+            <div className="text-gray-300 text-5xl font-medium">
+              <p>Decentralized</p>
+              <p>
+                <span className="text-orange-700">Lending</span> And{" "}
+                <span className="text-orange-700">Borrowing</span>
+              </p>
+            </div>
+            <p className="text-gray-300 w-8/12 leading-relaxed">
+              The aim of this project is to showcase how well I understand the
+              lending and borrowing techniques in the blockchain ecosystem
+            </p>
+            <button className="border border-orange-600 p-2 rounded-full px-8 text-base text-white ">
+              Go to Dashboard
+            </button>
+          </div>
+        </div>
+        <video className="w-1/2 h-full object-cover" autoPlay muted loop>
+          <source src="./lines.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+      

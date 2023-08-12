@@ -43,7 +43,7 @@ const useMediaQuery = (width: number) => {
   return targetReached;
 };
 
-export default function Header() {
+export default function Header({ className }: { className: string }) {
   const [collapsed, setCollapsed] = useState(true);
   const isBreakpoint = useMediaQuery(912);
   // const { isWeb3Enabled, chainId: chainIdHex, enableWeb3 } = useMoralis();
@@ -81,9 +81,7 @@ export default function Header() {
   };
 
   return (
-    <div
-      className={`fixed z-10 bg-gradient-to-tr from-slate-900 to-gray-900 top-0 left-0 w-screen `}
-    >
+    <div className={`${className} fixed z-50 top-0 left-0 w-screen `}>
       {!collapsed && isBreakpoint && (
         <div className={`z-80 h-screen ${!collapsed && "fixed inset-0"}`}>
           <Sidebar
@@ -132,8 +130,7 @@ export default function Header() {
               <Link
                 to="/"
                 className={`w-full text-white font-semibold ${
-                  currentUrl == "/" &&
-                  "border border-gray-400 px-5 rounded-full"
+                  currentUrl == "/" && "border-b-2 border-orange-700"
                 } hover:text-orange-600`}
               >
                 Home
