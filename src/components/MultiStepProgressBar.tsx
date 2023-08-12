@@ -3,8 +3,8 @@ import React, { useState } from "react";
 const PageOne = () => {
   return (
     <div className="text-gray-400 w-full flex flex-col items-center py-4">
-      <p className="text-3xl">Provide your collateral</p>
-      <p className="w-5/12 text-center py-3 leading-relaxed">
+      <p className="text-2xl sm:text-3xl">Provide your collateral</p>
+      <p className="w-10/12 sm:w-5/12 text-sm sm:text-base text-center py-3 leading-relaxed">
         Before gaining access to borrowing on the platform, it's essential to
         provide collateral as part of the process. This collateral serves as a
         security measure and is a prerequisite for obtaining borrowing
@@ -19,8 +19,8 @@ const PageOne = () => {
 const PageTwo = () => {
   return (
     <div className="text-gray-400 w-full flex flex-col items-center py-4">
-      <p className="text-3xl">Borrow from the pool</p>
-      <p className="w-5/12 text-center py-3 leading-relaxed">
+      <p className="text-2xl sm:text-3xl">Borrow from the pool</p>
+      <p className="w-10/12 sm:w-5/12 text-sm sm:text-base text-center py-3 leading-relaxed">
         Once you've supplied some supported tokens as collateral, you get the
         chance to borrow from this platform. The amount you can borrow is
         decided by how valuable your collateral is. The bigger your collateral's
@@ -36,8 +36,8 @@ const PageTwo = () => {
 const PageThree = () => {
   return (
     <div className="text-gray-400 w-full flex flex-col items-center py-4">
-      <p className="text-3xl">Return the funds you took out.</p>
-      <p className="w-5/12 text-center py-3 leading-relaxed">
+      <p className="text-2xl sm:text-3xl">Return the funds you took out.</p>
+      <p className="w-10/12 sm:w-5/12 text-sm sm:text-base text-center py-3 leading-relaxed">
         When the time comes for you to return the amount you borrowed as a loan,
         you'll find a conveniently placed "repay" button awaiting your action.
         This button is designed to facilitate the repayment process, making it
@@ -53,16 +53,13 @@ const PageThree = () => {
 const PageFour = () => {
   return (
     <div className="text-gray-400 w-full flex flex-col items-center py-4">
-      <p className="text-3xl">Withdraw your Collateral</p>
-      <p className="w-5/12 text-center py-3 leading-relaxed">
-        When the time comes for you to return the amount you borrowed as a loan,
-        you'll find a conveniently placed "repay" button awaiting your action.
-        This button is designed to facilitate the repayment process, making it
-        straightforward and user-friendly. By clicking on this button, you
-        initiate the process of settling your loan. It's important to note that
-        repaying the loan involves more than just the principal amount you
-        borrowed. In addition to returning the initial borrowed sum, you'll also
-        need to cover the interest that has accrued during the borrowing period.
+      <p className="text-2xl sm:text-3xl">Withdraw your Collateral</p>
+      <p className="w-10/12 sm:w-5/12 text-sm sm:text-base text-center py-3 leading-relaxed">
+        Once you've successfully settled your outstanding loans and fulfilled
+        your repayment responsibilities, a new opportunity arises: the option to
+        withdraw your pledged collateral. This step marks a significant point in
+        your lending journey, providing you with the chance to regain possession
+        of the assets you originally staked as security.
       </p>
     </div>
   );
@@ -76,7 +73,7 @@ const StepProgressBar: React.FC = () => {
       <div className="relative mt-6 mx-5">
         <div className="flex justify-around">
           <div
-            className={`z-10 w-14 h-14 flex items-center justify-center rounded-full cursor-pointer ${
+            className={`z-10 w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center rounded-full cursor-pointer ${
               currentStep == 1
                 ? "bg-orange-800 text-white"
                 : "bg-gray-400 text-gray-800"
@@ -86,7 +83,7 @@ const StepProgressBar: React.FC = () => {
             1
           </div>
           <div
-            className={`z-10 w-14 h-14 flex items-center justify-center rounded-full cursor-pointer ${
+            className={`z-10 w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center rounded-full cursor-pointer ${
               currentStep == 2
                 ? "bg-orange-800 text-white"
                 : "bg-gray-400 text-gray-800"
@@ -96,7 +93,7 @@ const StepProgressBar: React.FC = () => {
             2
           </div>
           <div
-            className={`z-10 w-14 h-14 flex items-center justify-center rounded-full cursor-pointer ${
+            className={`z-10 w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center rounded-full cursor-pointer ${
               currentStep === 3
                 ? "bg-orange-800 text-white"
                 : "bg-gray-400 text-gray-800"
@@ -106,7 +103,7 @@ const StepProgressBar: React.FC = () => {
             3
           </div>
           <div
-            className={`z-10 w-14 h-14 flex items-center justify-center rounded-full cursor-pointer ${
+            className={`z-10 w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center rounded-full cursor-pointer ${
               currentStep === 4
                 ? "bg-orange-800 text-white"
                 : "bg-gray-400 text-gray-800"
@@ -116,7 +113,7 @@ const StepProgressBar: React.FC = () => {
             4
           </div>
         </div>
-        <div className="absolute top-6 left-0 right-0 h-0.5 bg-gray-400"></div>
+        <div className="absolute top-5 sm:top-6 left-0 right-0 h-0.5 bg-gray-400"></div>
       </div>
 
       {currentStep == 1 && <PageOne />}

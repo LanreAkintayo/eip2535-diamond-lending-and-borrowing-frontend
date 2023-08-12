@@ -1,29 +1,76 @@
-// import Link from "next/link";
+// import Image from "next/image";
+
+import { FaGithub, FaLinkedinIn, FaTwitter, FaYoutube } from "react-icons/fa";
+import {MdOutlineEmail} from "react-icons/md"
 
 export default function Footer() {
   return (
-    <footer className="block py-4">
-      <div className="container mx-auto px-4">
-        <hr className="mb-4 border-b-1 border-blueGray-200" />
-        <div className="flex flex-wrap items-center md:justify-between justify-center">
-          <div className="w-full md:w-4/12 px-4">
-            
-          </div>
-          <div className="w-full md:w-8/12 px-4">
-            <ul className="flex flex-wrap list-none md:justify-end  justify-center">
-              <li>
-              {/* <Link href="/">
-                <a className="text-blueGray-500 hover:text-blueGray-700 text-sm font-semibold py-1">
-                  About Us
-                </a>
-              </Link> */}
-              </li>
-            </ul>
-          </div>
+    <footer className="border border-b-0 border-r-0 border-l-0 border-gray-300 bg-black py-4  text-gray-400 flex justify-between items-center flex-col">
+      <h1 className="text-xl pb-2 pt-1 ">
+        <u>Get in Touch</u>
+      </h1>
+      <div className="flex items-center justify-center space-x-3 text-xl">
+        <div>
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="https://github.com/LanreAkintayo"
+            className="object-cover ml-3 rounded-md "
+          >
+            <FaGithub />
+
+            {/* <Image src="/linkedin.svg" alt="github" width={28} height={28} /> */}
+          </a>
+        </div>
+        <div>
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="https://www.linkedin.com/in/lanre-akintayo-b6462b238"
+            className="object-cover ml-3 rounded-md "
+          >
+            <FaLinkedinIn />
+
+            {/* <Image src="/linkedin.svg" alt="github" width={28} height={28} /> */}
+          </a>
+        </div>
+        <div>
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href={
+              "https://twitter.com/larry_codes?t=SSIJM9u680cbsqFnXB_c1Q&s=08"
+            }
+            className="object-cover ml-3 rounded-md "
+          >
+            <FaTwitter />
+            {/* <Image src="/twitter.svg" alt="twitter" width={28} height={28} /> */}
+          </a>
+        </div>
+        <div>
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="https://www.youtube.com/channel/UC3QRrkhldo19vFvcilncvrw"
+            className="object-cover ml-3 rounded-md "
+          >
+            <FaYoutube />
+            {/* <Image src="/youtube.svg" alt="youtube" width={28} height={28} /> */}
+          </a>
+        </div>
+        <div>
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href={"mailto:akintayolanre2019@gmail.com"}
+            className="object-cover ml-3 rounded-md "
+          >
+            <MdOutlineEmail />
+            {/* <Image src="/email.png" alt="email" width={28} height={28} /> */}
+          </a>
         </div>
       </div>
+      <p className="mt-4 text-sm">© 2023 Made by LarryCodes</p>
     </footer>
   );
 }
-
-
