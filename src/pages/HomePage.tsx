@@ -4,6 +4,7 @@ import useWallet from "../hooks/useWallet";
 import MultiStepProgressBar from "../components/MultiStepProgressBar";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
+import Header from "../components/Header";
 
 export default function HomePage() {
   const { signerAddress } = useWallet();
@@ -12,51 +13,42 @@ export default function HomePage() {
 
   return (
     <>
-      <section className="relative h-screen">
-        {/* Background Picture */}
-        <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center"
-          style={{
-            backgroundImage: 'url("./background2.jpg")',
-          }}
-        ></div>
-
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-black to-black opacity-70"></div>
-
-        {/* Text (Above Gradient) */}
-        <div className="w-full px-4 flex flex-col items-center justify-center md:grid md:grid-cols-12  absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white">
-          <div className="flex flex-col md:mt-0 space-y-4 items-start px-4 ssm:px-8 justify-center md:col-span-6">
-            <div className="text-gray-300 text-xl ss:text-2xl ssm:text-4xl xl:text-5xl  font-medium">
-              <p>Decentralized</p>
-              <p>
-                <span className="text-orange-700">Lending</span> And{" "}
-                <span className="text-orange-700">Borrowing</span>
+      <section className="bg-black">
+        <Header className="bg-gradient-to-r from-black via-black via-black to-black"/>
+        <section className="w-full flex-1">
+          <div className=" bg-gradient-to-tr from-gray-950 pt-24 md:pt-16 via-gray-950 to-red-950 w-full h-full px-4 flex flex-col items-center justify-center md:grid md:grid-cols-12 text-white">
+            <div className="flex flex-col md:mt-0 items-start px-4 ssm:px-8 justify-center md:col-span-6 space-y-4">
+              <div className="text-gray-300 text-xl ss:text-2xl ssm:text-4xl xl:text-5xl font-medium ">
+                <p>Decentralized</p>
+                <p>
+                  <span className="text-orange-700">Lending</span> And{" "}
+                  <span className="text-orange-700">Borrowing</span>
+                </p>
+              </div>
+              <p className="text-gray-300 text-sm ssm:text-lg lg:text-xl leading-relaxed">
+                The core purpose of this project is to showcase my adept
+                undestanding of lending and borrowing strategies in the context
+                of blockchain technology.
               </p>
-            </div>
-            <p className="text-gray-300 text-sm ssm:text-lg lg:text-xl leading-relaxed">
-              The core purpose of this project is to showcase my adept
-              undestanding of lending and borrowing strategies in the context of
-              blockchain technology.
-            </p>
 
-            <Link
-              to="/dashboard"
-              className="flex items-center space-x-2 ssm:space-x-4 border border-orange-800 border-2 rounded-full hover:border-orange-900 py-3 px-4 ssm:px-8 text-sm ssm:text-base text-white "
-            >
-              <p>Go to Dashboard</p>
-              <FaChevronRight className="text-white w-5 h-5 bg-orange-800 rounded-full p-1" />
-            </Link>
+              <Link
+                to="/dashboard"
+                className="flex items-center space-x-2 ssm:space-x-4 border border-orange-800 border-2 rounded-full hover:border-orange-900 py-3 px-4 ssm:px-8 text-sm ssm:text-base text-white "
+              >
+                <p>Go to Dashboard</p>
+                <FaChevronRight className="text-white w-5 h-5 bg-orange-800 rounded-full p-1" />
+              </Link>
+            </div>
+            <div className="md:col-span-6 ">
+              <img
+                src="./animation.svg"
+                width={10}
+                height={10}
+                className="object-cover w-full md:w-10/12"
+              />
+            </div>
           </div>
-          <div className="md:col-span-6 hidden md:block">
-            <img
-              src="./animation.svg"
-              width={10}
-              height={10}
-              className="object-contain w-10/12"
-            />
-          </div>
-        </div>
+        </section>
       </section>
       <section className="bg-black h-full w-full flex flex-col  text-white py-8  items-center justify-center">
         <h1 className="text-center text-4xl sm:text-5xl text-gray-400 pb-5">

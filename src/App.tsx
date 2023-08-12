@@ -18,8 +18,10 @@ function App() {
           <Route index path="/dashboard" element={<Dashboard />} />
           <Route path="/reserve_overview/:slug" element={<ReserveOverview />} />
           <Route path="/*" element={<NotFound />} />
-          <Route index path="/" element={<HomePage />} />
         </Route>
+
+        <Route index path="/" element={<HomePage />} />
+        
       </Routes>
     </BrowserRouter>
   );
