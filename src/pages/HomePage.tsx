@@ -1,6 +1,7 @@
 import { FaChevronRight } from "react-icons/fa";
 import YourBorrows from "../components/YourBorrows";
 import useWallet from "../hooks/useWallet";
+import MultiStepProgressBar from "../components/MultiStepProgressBar";
 
 export default function HomePage() {
   const { signerAddress } = useWallet();
@@ -9,7 +10,7 @@ export default function HomePage() {
 
   return (
     <>
-      <div className="relative h-screen w-screen">
+      <div className="relative h-screen">
         {/* Background Picture */}
         <div
           className="absolute inset-0 w-full h-full bg-cover bg-center"
@@ -19,7 +20,7 @@ export default function HomePage() {
         ></div>
 
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-black to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-tr from-black to-black opacity-70"></div>
 
         {/* Text (Above Gradient) */}
         <div className="w-full px-4 flex flex-col items-center justify-center md:grid md:grid-cols-12  absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white">
@@ -51,8 +52,9 @@ export default function HomePage() {
           </div>
         </div>
       </div>
-      <div className="bg-black h-full w-full text-white py-2">
-          <p>This is another section</p>
+      <div className="bg-black h-full w-full text-white py-8  items-center justify-center">
+        <h1 className="text-center text-5xl text-gray-400">How It Works</h1>
+        <MultiStepProgressBar/>
       </div>
     </>
   );

@@ -139,7 +139,7 @@ export default function Layout({
         <Header
           className={`${
             currentUrl == "/"
-              ? "bg-transparent"
+              ? "bg-gradient-to-r from-black via-black via-black to-black"
               : "bg-gradient-to-tr from-slate-900 to-gray-900 "
           }`}
         />
