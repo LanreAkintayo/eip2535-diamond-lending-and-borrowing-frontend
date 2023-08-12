@@ -19,7 +19,7 @@ export default function HomePage() {
         ></div>
 
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-black to-black opacity-30"></div>
+        <div className="absolute inset-0 bg-gradient-to-tr from-black to-transparent"></div>
 
         {/* Text (Above Gradient) */}
         <div className="w-full px-4 flex flex-col items-center justify-center md:grid md:grid-cols-12  absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white">
