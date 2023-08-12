@@ -3,6 +3,7 @@ import YourBorrows from "../components/YourBorrows";
 import useWallet from "../hooks/useWallet";
 import MultiStepProgressBar from "../components/MultiStepProgressBar";
 import Footer from "../components/Footer";
+import { Link } from "react-router-dom";
 
 export default function HomePage() {
   const { signerAddress } = useWallet();
@@ -34,14 +35,18 @@ export default function HomePage() {
               </p>
             </div>
             <p className="text-gray-300 text-sm ssm:text-lg lg:text-xl leading-relaxed">
-              The aim of this project is to showcase how well I understand the
-              lending and borrowing techniques in the blockchain ecosystem
+              The core purpose of this project is to showcase my adept
+              undestanding of lending and borrowing strategies in the context of
+              blockchain technology.
             </p>
 
-            <button className="flex items-center space-x-2 ssm:space-x-4 border border-orange-800 border-2  py-3 px-4 ssm:px-8 text-sm ssm:text-base text-white ">
+            <Link
+              to="/dashboard"
+              className="flex items-center space-x-2 ssm:space-x-4 border border-orange-800 border-2 rounded-full hover:border-orange-900 py-3 px-4 ssm:px-8 text-sm ssm:text-base text-white "
+            >
               <p>Go to Dashboard</p>
               <FaChevronRight className="text-white w-5 h-5 bg-orange-800 rounded-full p-1" />
-            </button>
+            </Link>
           </div>
           <div className="md:col-span-6 hidden md:block">
             <img
@@ -74,7 +79,9 @@ export default function HomePage() {
         </p>
       </section>
       <section className="bg-black h-full w-full text-white py-8  items-center justify-center">
-        <h1 className="text-center text-4xl sm:text-5xl text-gray-400">How It Works</h1>
+        <h1 className="text-center text-4xl sm:text-5xl text-gray-400">
+          How It Works
+        </h1>
         <MultiStepProgressBar />
       </section>
       <Footer />
