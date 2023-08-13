@@ -1,164 +1,58 @@
-# Getting Started with Create React App
+# defi-lending-and-borrowing
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full stack, fully-onchain DEFI app that enables users to supply tokens to the platform and are rewarded with some customly made ERC20 token (LAR) based on the amount of token they supply and also allows users to borrow tokens from it.
 
-## Available Scripts
+The motivation behind this platform's creation stemmed from [AAVE](https://aave.com/), a real-life lending and borrowing platform and it is important to note that none of AAVE's code was incorporated into the app.
 
-In the project directory, you can run:
+It is deployed on the Polygon Mumbai testnet.
 
-### `yarn start`
+# Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+1. The paltform currently supports 5 test tokens; DAI, LINK, WMATIC, USDC and JEUR 😎. Faucets can be obtained [here](https://app.aave.com/faucet/)
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+2. Prior to gaining borrowing privileges on the platform, users are required to provide collateral. Upon depositing collateral, you receive LAR tokens, the quantity of which is determined by the USD value of the tokens you contributed. The LAR token will be burnt when you withdraw the collateral you provided.
 
-### `yarn test`
+3. Keep note that the collateral must be greater in value than the token you want to borrow from the platform. Also, the collateral is influenced greatly by the LTV (Loan To Value) ratio of that particular token you put down as collateral.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+4. For all tokens accessible for borrowing, the platform maintains a stable APY rate that remains constant. This guarantees that the interest due at the end of the day does not fluctuate.
 
-### `yarn build`
+5. Upon the user's readiness to repay the debt, both the borrowed tokens and the accrued interest are deducted from the user. The interest is calculated in accordance with the constant stable APY rate
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+6. After settling the debt, users are granted the ability to retrieve the tokens they initially placed as collateral from the pool.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+7. When a user initiates a withdrawal from the pool, the platform employs the burning process to eliminate a portion of the LAR tokens awarded to the user. The quantity of LAR tokens collected from the user matches the value of the tokens they intend to withdraw
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Technologies
 
-### `yarn eject`
+1. **Diamond Standard**: This is a pattern of writing smart contracts which enables you to partition your smart contract functionalities into distinct segments known as **facets**. This approach enhances adaptability and guarantees the capability to integrate numerous functionalities within your smart contract without being constrained by the typical smart contract size limit (usually around 24kb).
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+2. **Open Zeppelin**: The contract utilizes OpenZeppelin's IERC20 interface to instantiate a token, and additionally incorporates OpenZeppelin's Ownable contract to establish contract security measures.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+3. **Chainlink**: The contract employs Chainlink's AggregatorV3Interface to retrieve up-to-date real-time price feeds.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+4. **Hardhat**: The project's smart contract framework of choice is Hardhat. Hardhat offers a high degree of flexibility that facilitates the streamlined creation of tests, deployment scripts, and various other functionalities.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+5. **React JS**: React JS serves as the front-end framework in use, ensuring versatile user interaction capabilities.
 
-## Learn More
+6. **Tailwind CSS**: Tailwind CSS framework employed is known for providing an exceptionally adaptable approach to project design. Moreover, it excels in managing responsiveness, ensuring an effective display across various devices
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+7. **Wagmi && Viems**: Wagmi is a collection of React Hooks that made it very easy to integrate different types of wallets into the project . Wagmi and Viem work hand in hand
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+8. **ethers.js**
+9. **WalletConnectV2 and many more**
+10. **Vercel**
 
+# Programming/Scripting Languages
 
+1. Solidity
+2. Typescrpit
 
+# Developer
 
+Let's Connect! 👋 👋
 
-What's left for me to do.
-switch on and off collateral.
+Akintayo Lanre -
 
-Add some tooltip to explain what some features do.
-
-Clean the code up
-Write a README.md
-Write an article.
-
-
-
-
-import { FaChevronRight } from "react-icons/fa";
-import YourBorrows from "../components/YourBorrows";
-import useWallet from "../hooks/useWallet";
-import MultiStepProgressBar from "../components/MultiStepProgressBar";
-import Footer from "../components/Footer";
-import { Link } from "react-router-dom";
-
-export default function HomePage() {
-  const { signerAddress } = useWallet();
-
-  console.log("Signer address: ", signerAddress);
-
-  return (
-    <>
-      <section className="relative h-screen">
-        {/* Background Picture */}
-        <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center"
-          style={{
-            backgroundImage: 'url("./background2.jpg")',
-          }}
-        ></div>
-
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-black to-black opacity-70"></div>
-
-        {/* Text (Above Gradient) */}
-        <div className="w-full px-4 flex flex-col items-center justify-center md:grid md:grid-cols-12  absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white">
-          <div className="flex flex-col md:mt-0 space-y-4 items-start px-4 ssm:px-8 justify-center md:col-span-6">
-            <div className="text-gray-300 text-xl ss:text-2xl ssm:text-4xl xl:text-5xl  font-medium">
-              <p>Decentralized</p>
-              <p>
-                <span className="text-orange-700">Lending</span> And{" "}
-                <span className="text-orange-700">Borrowing</span>
-              </p>
-            </div>
-            <p className="text-gray-300 text-sm ssm:text-lg lg:text-xl leading-relaxed">
-              The core purpose of this project is to showcase my adept
-              undestanding of lending and borrowing strategies in the context of
-              blockchain technology.
-            </p>
-
-            <Link
-              to="/dashboard"
-              className="flex items-center space-x-2 ssm:space-x-4 border border-orange-800 border-2 rounded-full hover:border-orange-900 py-3 px-4 ssm:px-8 text-sm ssm:text-base text-white "
-            >
-              <p>Go to Dashboard</p>
-              <FaChevronRight className="text-white w-5 h-5 bg-orange-800 rounded-full p-1" />
-            </Link>
-          </div>
-          <div className="md:col-span-6 hidden md:block">
-            <img
-              src="./animation.svg"
-              width={10}
-              height={10}
-              className="object-contain w-10/12"
-            />
-          </div>
-        </div>
-      </section>
-      <section className="bg-black h-full w-full flex flex-col  text-white py-8  items-center justify-center">
-        <h1 className="text-center text-4xl sm:text-5xl text-gray-400 pb-5">
-          About the App
-        </h1>
-        <p className="w-9/12 sm:w-8/12 text-gray-400 text-sm sm:text-base text-center leading-relaxed">
-          The application serves as a decentralized platform for lending and
-          borrowing, creating an avenue where users can engage in lending
-          activities while also facilitating the borrowing process. A
-          distinctive feature of this platform is its decentralized nature,
-          meaning that it operates without a central authority or intermediary.
-          Instead, it relies on a network of participants who collectively
-          contribute to its functioning.
-          <p className="py-4">
-            This project development process extensively delved into the DEFI
-            platform, AAVE, as a critical source of insights and guidance.
-            Notably, it's crucial to emphasize that the project code is entirely
-            independent and doesn't encompass any code originating from AAVE.
-          </p>
-        </p>
-      </section>
-      <section className="bg-black h-full w-full text-white py-8  items-center justify-center">
-        <h1 className="text-center text-4xl sm:text-5xl text-gray-400">
-          How It Works
-        </h1>
-        <MultiStepProgressBar />
-      </section>
-      <Footer />
-    </>
-  );
-}
-
-
-
-
-
-
-
-
-
-
-      
+1. Reach out to me on my [Email](akintayolanre2019@gmail.com)
+2. Follow me on [LinkedIn](https://www.linkedin.com/in/lanre-akintayo-b6462b238/)
+3. Follow me on [Twitter](https://twitter.com/larry_codes?t=jJbdbfqX_BmTP_WFa5dosQ&s=08)
