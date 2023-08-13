@@ -53,6 +53,6 @@ Let's Connect! 👋 👋
 
 Akintayo Lanre -
 
-1. Reach out to me on my [Email](akintayolanre2019@gmail.com)
+1. Reach out to me on my email --> akintayolanre2019@gmail.com
 2. Follow me on [LinkedIn](https://www.linkedin.com/in/lanre-akintayo-b6462b238/)
 3. Follow me on [Twitter](https://twitter.com/larry_codes?t=jJbdbfqX_BmTP_WFa5dosQ&s=08)
