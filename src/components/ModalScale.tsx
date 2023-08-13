@@ -83,7 +83,7 @@ export default function ModalScale({ closeModal }: IModalScale) {
       <p className="text-white text-[12px] px-6 pb-2">
         Your health factor and loan to value determine the assurance of your
         collateral. To avoid liquidations you can supply more collateral or
-        repay borrow positions. Learn more
+        repay borrow positions.
       </p>
 
       <div>
