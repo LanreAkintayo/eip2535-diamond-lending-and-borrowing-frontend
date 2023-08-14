@@ -81,7 +81,7 @@ export default function Header({ className }: { className: string }) {
   };
 
   return (
-    <div className={`${className} fixed z-50 top-0 left-0 w-screen `}>
+    <div className={`${className} fixed z-50 top-0 left-0 w-screen px-4 py-2 `}>
       {!collapsed && isBreakpoint && (
         <div className={`z-80 h-screen ${!collapsed && "fixed inset-0"}`}>
           <Sidebar
