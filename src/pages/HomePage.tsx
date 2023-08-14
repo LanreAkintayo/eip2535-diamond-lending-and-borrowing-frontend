@@ -15,7 +15,7 @@ export default function HomePage() {
     <>
       <section className="bg-black">
         {/* <Header className="bg-gradient-to-r from-black via-black via-black to-black"/> */}
-        <section className="w-full flex-1 h-screen">
+        <section className="w-full flex-1">
           <div className=" bg-gradient-to-tr from-gray-950 pt-24 md:pt-16 via-gray-950 to-red-950 w-full h-full px-4 flex flex-col items-center justify-center md:grid md:grid-cols-12 text-white">
             <div className="flex flex-col md:mt-0 items-start px-4 ssm:px-8 justify-center md:col-span-6 space-y-4">
               <div className="text-gray-300 text-xl ss:text-2xl ssm:text-4xl xl:text-5xl font-medium ">
@@ -41,7 +41,7 @@ export default function HomePage() {
             </div>
             <div className="md:col-span-6 ">
               <img
-                src="./animation.svg"
+                src="./animation.png"
                 className="object-cover w-full w-12/12 md:w-10/12"
               />
             </div>
