@@ -17,7 +17,7 @@ export default function HomePage() {
       <section className="bg-gray-900">
         {/* <Header className="bg-gradient-to-r from-black via-black via-black to-black"/> */}
         <section className="w-full flex-1 md:h-screen">
-          <div className="pt-24 md:pt-16 w-full h-full px-4 flex flex-col items-center justify-center md:grid md:grid-cols-12 text-white">
+          <div className="bg-gradient-to-bl from-neutral-900 via-gray-900 to-gray-900 pt-24 md:pt-16 w-full h-full px-4 flex flex-col items-center justify-center md:grid md:grid-cols-12 text-white">
             <div className="flex flex-col md:mt-0 items-start px-4 ssm:px-8 justify-center md:col-span-6 space-y-4">
               <div className="animate__animated animate__backInDown  text-gray-300 text-xl ss:text-2xl ssm:text-4xl xl:text-5xl font-medium ">
                 <p>Decentralized</p>
