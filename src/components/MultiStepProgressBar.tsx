@@ -75,7 +75,7 @@ const StepProgressBar: React.FC = () => {
           <div
             className={`z-10 w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center rounded-full cursor-pointer ${
               currentStep == 1
-                ? "bg-orange-800 text-white"
+                ? "bg-red-800 text-white"
                 : "bg-gray-400 text-gray-800"
             }`}
             onClick={() => setCurrentStep(1)}
@@ -85,7 +85,7 @@ const StepProgressBar: React.FC = () => {
           <div
             className={`z-10 w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center rounded-full cursor-pointer ${
               currentStep == 2
-                ? "bg-orange-800 text-white"
+                ? "bg-red-800 text-white"
                 : "bg-gray-400 text-gray-800"
             }`}
             onClick={() => setCurrentStep(2)}
@@ -95,7 +95,7 @@ const StepProgressBar: React.FC = () => {
           <div
             className={`z-10 w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center rounded-full cursor-pointer ${
               currentStep === 3
-                ? "bg-orange-800 text-white"
+                ? "bg-red-800 text-white"
                 : "bg-gray-400 text-gray-800"
             }`}
             onClick={() => setCurrentStep(3)}
@@ -105,7 +105,7 @@ const StepProgressBar: React.FC = () => {
           <div
             className={`z-10 w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center rounded-full cursor-pointer ${
               currentStep === 4
-                ? "bg-orange-800 text-white"
+                ? "bg-red-800 text-white"
                 : "bg-gray-400 text-gray-800"
             }`}
             onClick={() => setCurrentStep(4)}

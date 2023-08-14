@@ -99,16 +99,16 @@ export default function Header({ className }: { className: string }) {
             <Menu className="">
               <div
                 className={`mx-3 mb-4 text-xl flex items-center space-x-3 text-white font-semibold ${
-                  currentUrl == "/" && "text-orange-800"
-                } hover:text-orange-600`}
+                  currentUrl == "/" && "text-red-800"
+                } hover:text-red-600`}
               >
                 <ImHome />
                 <Link to="/">Home</Link>
               </div>
               <div
                 className={`mx-3 text-xl flex items-center space-x-3 text-white font-semibold ${
-                  currentUrl == "/dashboard" && "text-orange-800"
-                } hover:text-orange-600`}
+                  currentUrl == "/dashboard" && "text-red-800"
+                } hover:text-red-600`}
               >
                 <MdDashboard />
                 <Link to="/dashboard">Dashboard</Link>
@@ -120,9 +120,9 @@ export default function Header({ className }: { className: string }) {
 
       <nav className="flex items-center flex-row w-full justify-between px-2 py-2 sm:px-4 h-full">
         <p className="font-logo hidden sc:block px-2 text-white text-2xl ssm:text-3xl self-start ss:self-auto">
-          <span className="text-orange-700">{"<"}L</span>arry
-          <span className="text-orange-700">C</span>odes
-          <span className="text-orange-700">{"/>"}</span>
+          <span className="text-red-700">{"<"}L</span>arry
+          <span className="text-red-700">C</span>odes
+          <span className="text-red-700">{"/>"}</span>
         </p>
         <div className="flex justify-center items-center w-80 rounded-full py-2">
           {!isBreakpoint && (
@@ -130,16 +130,16 @@ export default function Header({ className }: { className: string }) {
               <Link
                 to="/"
                 className={`w-full text-white font-semibold ${
-                  currentUrl == "/" && "border-b-2 border-orange-700"
-                } hover:text-orange-600`}
+                  currentUrl == "/" && "border-b-2 border-red-700"
+                } hover:text-red-600`}
               >
                 Home
               </Link>
               <Link
                 to="/dashboard"
                 className={`ml-3 text-white font-semibold ${
-                  currentUrl == "/dashboard" && "border-b-2 border-orange-700"
-                } hover:text-orange-600`}
+                  currentUrl == "/dashboard" && "border-b-2 border-red-700"
+                } hover:text-red-600`}
               >
                 Dashboard
               </Link>
@@ -151,7 +151,7 @@ export default function Header({ className }: { className: string }) {
             <WalletConnect />
             {isBreakpoint && (
               <div
-                className="text-white rounded-full hover:text-orange-500 cursor-pointer"
+                className="text-white rounded-full hover:text-red-500 cursor-pointer"
                 onClick={handleSidebar}
               >
                 <FaBars className="ml-3 w-9 h-9 border border-slate-600  rounded-full text-white p-2" />

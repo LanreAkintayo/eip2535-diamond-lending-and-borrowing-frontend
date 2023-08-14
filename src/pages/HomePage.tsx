@@ -17,13 +17,13 @@ export default function HomePage() {
       <section className="bg-gray-900">
         {/* <Header className="bg-gradient-to-r from-black via-black via-black to-black"/> */}
         <section className="w-full flex-1 md:h-screen">
-          <div className="bg-gradient-to-bl from-neutral-900 via-gray-900 to-gray-900 pt-24 md:pt-16 w-full h-full px-4 flex flex-col items-center justify-center md:grid md:grid-cols-12 text-white">
+          <div className="bg-gradient-to-tr from-[#0D1321] via-[#0D1321] to-red-950 pt-24 md:pt-16 w-full h-full px-4 flex flex-col items-center justify-center md:grid md:grid-cols-12 text-white">
             <div className="flex flex-col md:mt-0 items-start px-4 ssm:px-8 justify-center md:col-span-6 space-y-4">
               <div className="animate__animated animate__backInDown  text-gray-300 text-xl ss:text-2xl ssm:text-4xl xl:text-5xl font-medium ">
                 <p>Decentralized</p>
                 <p>
-                  <span className="text-orange-700">Lending</span> And{" "}
-                  <span className="text-orange-700">Borrowing</span>
+                  <span className="text-red-800">Lending</span> And{" "}
+                  <span className="text-red-800">Borrowing</span>
                 </p>
               </div>
               <p className="text-gray-300 text-sm ssm:text-lg lg:text-xl leading-relaxed">
@@ -34,10 +34,10 @@ export default function HomePage() {
 
               <Link
                 to="/dashboard"
-                className="flex items-center space-x-2 ssm:space-x-4 border border-orange-800 border-2 rounded-full hover:border-orange-900 py-3 px-4 ssm:px-8 text-sm ssm:text-base text-white "
+                className="flex items-center space-x-2 ssm:space-x-4 bg-red-800 rounded-full hover:border-orange-900 py-3 px-4 ssm:px-8 text-sm ssm:text-base text-white "
               >
                 <p>Go to Dashboard</p>
-                <FaChevronRight className="text-white w-5 h-5 bg-orange-800 rounded-full p-1" />
+                <FaChevronRight className="text-orange-800 w-5 h-5 bg-white rounded-full p-1" />
               </Link>
             </div>
             <div className="md:col-span-6 ">
