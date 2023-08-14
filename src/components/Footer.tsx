@@ -5,7 +5,7 @@ import {MdOutlineEmail} from "react-icons/md"
 
 export default function Footer() {
   return (
-    <footer className="border border-b-0 border-r-0 border-l-0 border-gray-300 bg-black py-4  text-gray-400 flex justify-between items-center flex-col">
+    <footer className="border border-b-0 border-r-0 border-l-0 border-gray-300 bg-gray-900 py-4  text-gray-400 flex justify-between items-center flex-col">
       <h1 className="text-xl pb-2 pt-1 ">
         <u>Get in Touch</u>
       </h1>

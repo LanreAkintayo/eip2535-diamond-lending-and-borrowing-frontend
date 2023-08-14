@@ -13,10 +13,10 @@ export default function HomePage() {
 
   return (
     <>
-      <section className="bg-black">
+      <section className="bg-gray-900">
         {/* <Header className="bg-gradient-to-r from-black via-black via-black to-black"/> */}
         <section className="w-full flex-1">
-          <div className=" bg-gradient-to-tr from-gray-950 pt-24 md:pt-16 via-gray-950 to-red-950 w-full h-full px-4 flex flex-col items-center justify-center md:grid md:grid-cols-12 text-white">
+          <div className="bg-gray-900 pt-24 md:pt-16 w-full h-full px-4 flex flex-col items-center justify-center md:grid md:grid-cols-12 text-white">
             <div className="flex flex-col md:mt-0 items-start px-4 ssm:px-8 justify-center md:col-span-6 space-y-4">
               <div className="text-gray-300 text-xl ss:text-2xl ssm:text-4xl xl:text-5xl font-medium ">
                 <p>Decentralized</p>
@@ -48,7 +48,7 @@ export default function HomePage() {
           </div>
         </section>
       </section>
-      <section className="bg-black h-full w-full flex flex-col  text-white py-8  items-center justify-center">
+      <section className="bg-gray-900 h-full w-full flex flex-col  text-white py-8  items-center justify-center">
         <h1 className="text-center text-4xl sm:text-5xl text-gray-400 pb-5">
           About the App
         </h1>
@@ -68,7 +68,7 @@ export default function HomePage() {
           </p>
         </p>
       </section>
-      <section className="bg-black h-full w-full text-white py-8  items-center justify-center">
+      <section className="bg-gray-900 h-full w-full text-white py-8  items-center justify-center">
         <h1 className="text-center text-4xl sm:text-5xl text-gray-400">
           How It Works
         </h1>
