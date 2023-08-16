@@ -1,6 +1,6 @@
 // import { CryptoCards, Button } from "@web3uikit/core";
 // import { ConnectButton } from "web3uikit";
-import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
+// import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
 // import "react-pro-sidebar/dist/css/styles.css";
 // import NavigationDropdown from "./NavigationDropdown";
 import { useEffect, useState, useCallback } from "react";
@@ -16,6 +16,7 @@ import useWallet from "../hooks/useWallet";
 import { useLocation, Link, NavLink } from "react-router-dom";
 import { ImHome } from "react-icons/im";
 import { MdDashboard } from "react-icons/md";
+import Sidebar2 from "./Sidebar2";
 
 const useMediaQuery = (width: number) => {
   const [targetReached, setTargetReached] = useState(false);
@@ -46,6 +47,9 @@ const useMediaQuery = (width: number) => {
 export default function Header({ className }: { className: string }) {
   const [collapsed, setCollapsed] = useState(true);
   const isBreakpoint = useMediaQuery(912);
+
+  const [showSidebar, setShowSidebar] = useState(false);
+
   // const { isWeb3Enabled, chainId: chainIdHex, enableWeb3 } = useMoralis();
   // const { switchNetwork, chain, account } = useChain();
 
@@ -82,7 +86,7 @@ export default function Header({ className }: { className: string }) {
 
   return (
     <div className={`${className} fixed z-50 top-0 left-0 w-screen px-4 py-2 `}>
-      {!collapsed && isBreakpoint && (
+      {/* {!collapsed && isBreakpoint && (
         <div className={`z-80 h-screen ${!collapsed && "fixed inset-0"}`}>
           <Sidebar
             className="h-screen"
@@ -116,6 +120,13 @@ export default function Header({ className }: { className: string }) {
             </Menu>
           </Sidebar>
         </div>
+      )} */}
+
+      {showSidebar && isBreakpoint && (
+        <Sidebar2
+          showSidebar={showSidebar}
+          closeSidebar={() => setShowSidebar(false)}
+        />
       )}
 
       <nav className="flex items-center flex-row w-full justify-between px-2 py-2 sm:px-4 h-full">
@@ -152,7 +163,7 @@ export default function Header({ className }: { className: string }) {
             {isBreakpoint && (
               <div
                 className="text-white rounded-full hover:text-red-500 cursor-pointer"
-                onClick={handleSidebar}
+                onClick={() => setShowSidebar(!showSidebar)}
               >
                 <FaBars className="ml-3 w-9 h-9 border border-slate-600  rounded-full text-white p-2" />
               </div>
