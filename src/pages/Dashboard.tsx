@@ -169,10 +169,10 @@ export default function Dashboard2() {
               </button>
             </div>
             <div className="sm:mt-4 flex flex-wrap">
-              <div className="w-full xl:w-6/12 xl:mb-0 px-2 sm:block hidden">
+              <div className="w-full lg:w-6/12 xl:mb-0 px-2 sm:block hidden">
                 <YourSupply tokens={userSupplies} />
               </div>
-              <div className="w-full xl:w-6/12 px-2 sm:block hidden">
+              <div className="w-full lg:w-6/12 px-2 sm:block hidden">
                 <YourBorrows tokens={userBorrows} />
               </div>
             </div>
@@ -192,10 +192,10 @@ export default function Dashboard2() {
             </div>
 
             <div className="flex flex-wrap mt-4">
-              <div className="w-full xl:w-6/12  xl:mb-0 px-2 sm:block hidden">
+              <div className="w-full lg:w-6/12  xl:mb-0 px-2 sm:block hidden">
                 <SupplyAssets tokens={supplyAssets!} />
               </div>
-              <div className="w-full xl:w-6/12 px-2 sm:block hidden">
+              <div className="w-full lg:w-6/12 px-2 sm:block hidden">
                 <BorrowAssets tokens={borrowAssets!} />
               </div>
             </div>

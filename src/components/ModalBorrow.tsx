@@ -406,10 +406,10 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
                   name="text"
                   id="text"
                   placeholder="0.00"
-                  className="bg-slate-800 w-full block pl-2 p-1 font-medium sm:text-lg focus:outline-none rounded-md"
+                  className="bg-slate-800 w-full pr-8 block pl-2 p-1 font-medium sm:text-lg focus:outline-none rounded-md"
                 />
 
-                <div className="w-full flex items-center space-x-3 justify-end">
+                <div className="w-auto flex items-center space-x-3 justify-end">
                   <img
                     src={token.tokenImage}
                     width={30}

@@ -488,9 +488,9 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
                     );
 
                     const { value } = event.target;
-                    // if (isNaN(value)) {
-                    //   return;
-                    // }
+                    if (isNaN(Number(value))) {
+                      return;
+                    }
 
                     console.log("Latest Health factor: ", latestHealthFactor);
 
@@ -542,9 +542,9 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
                   name="text"
                   id="text"
                   placeholder="0.00"
-                  className="bg-slate-800 w-full  block pl-2 p-1 font-medium sm:text-lg focus:outline-none rounded-md"
+                  className="bg-slate-800 w-full pr-8  block pl-2 p-1 font-medium sm:text-lg focus:outline-none rounded-md"
                 />
-                <div className="w-full justify-end flex space-x-3">
+                <div className="w-auto justify-end flex space-x-3">
                   <img
                     src={token.tokenImage}
                     width={30}

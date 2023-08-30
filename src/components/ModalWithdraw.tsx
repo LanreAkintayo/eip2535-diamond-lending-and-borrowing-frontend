@@ -366,10 +366,10 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
                   name="text"
                   id="text"
                   placeholder="0.00"
-                  className="w-full bg-slate-800 block pl-2 p-1 font-medium sm:text-lg focus:outline-none rounded-md"
+                  className="w-full pr-8 bg-slate-800 block pl-2 p-1 font-medium sm:text-lg focus:outline-none rounded-md"
                 />
 
-                <div className="flex w-full justify-end items-center space-x-3">
+                <div className="flex w-auto justify-end items-center space-x-3">
                   <img
                     src={token.tokenImage}
                     width={30}
@@ -385,7 +385,7 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
                 </div>
               </div>
 
-              <div className="w-full justify-between flex items-center">
+              <div className="w-full  justify-between flex items-center">
                 <p className="pl-2 pt-0 mt-0 font-medium text-sm text-gray-400">
                   ${valueInUsd}
                 </p>

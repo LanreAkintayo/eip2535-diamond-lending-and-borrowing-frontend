@@ -571,10 +571,10 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
                   name="text"
                   id="text"
                   placeholder="0.00"
-                  className="w-full bg-slate-800  block pl-2 p-1 font-medium sm:text-lg focus:outline-none rounded-md"
+                  className="w-full pr-8 bg-slate-800  block pl-2 p-1 font-medium sm:text-lg focus:outline-none rounded-md"
                 />
 
-                <div className="w-full flex items-center space-x-3 justify-end">
+                <div className="w-auto flex items-center space-x-3 justify-end">
                   <img
                     src={token.tokenImage}
                     width={30}
