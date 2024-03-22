@@ -684,7 +684,7 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
                   mouseLeaveDelay={300}
                   mouseEnterDelay={0}
                   contentStyle={{
-                    padding: "0px",
+                    padding: "3px",
                     border: "1px solid #29293d",
                     background: "#29293d",
                   }}

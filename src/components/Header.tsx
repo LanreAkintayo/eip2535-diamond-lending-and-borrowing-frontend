@@ -130,8 +130,16 @@ export default function Header({ className }: { className: string }) {
       )}
 
       <nav className="flex items-center flex-row w-full justify-between px-2 py-2 sm:px-4 h-full">
-        <img src="./my_logo.svg" width={200} height={30} className="object-cover p-0 ssm:block hidden"/>
-        <img src="./my_icon.svg" width={40} height={10} className="object-cover p-0 ssm:hidden block"/>
+        {/* <img src="./my_logo.svg" width={200} height={30} className="object-cover p-0 ssm:block hidden"/>
+        <img src="./my_icon.svg" width={40} height={10} className="object-cover p-0 ssm:hidden block"/> */}
+
+        <div className="w-40 text-white text-2xl font-bold">
+          <h1>
+            <span className="text-red-500">G</span>roup{" "}
+            <span className="text-red-500">T</span>wo
+          </h1>
+        </div>
+
         <div className="flex justify-center items-center w-80 rounded-full py-2">
           {!isBreakpoint && (
             <div className="flex">

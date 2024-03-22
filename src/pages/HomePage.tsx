@@ -5,7 +5,7 @@ import MultiStepProgressBar from "../components/MultiStepProgressBar";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
-import "animate.css"
+import "animate.css";
 
 export default function HomePage() {
   const { signerAddress } = useWallet();
@@ -27,9 +27,12 @@ export default function HomePage() {
                 </p>
               </div>
               <p className="text-gray-300 text-sm ssm:text-lg lg:text-xl leading-relaxed">
-                The core purpose of this project is to showcase my adept
+                {/* The core purpose of this project is to showcase my adept
                 undestanding of lending and borrowing strategies in the context
-                of blockchain technology.
+                of blockchain technology. */}
+                A system that enables individuals to lend or borrow digital
+                assets without intermediaries offering greater accessibility,
+                efficiency, and security.
               </p>
 
               <Link
@@ -61,12 +64,12 @@ export default function HomePage() {
           meaning that it operates without a central authority or intermediary.
           Instead, it relies on a network of participants who collectively
           contribute to its functioning.
-          <p className="py-4">
+          {/* <p className="py-4">
             This project development process extensively delved into the DEFI
             platform, AAVE, as a critical source of insights and guidance.
             Notably, it's crucial to emphasize that the project code is entirely
             independent and doesn't encompass any code originating from AAVE.
-          </p>
+          </p> */}
         </p>
       </section>
       <section className="bg-gray-900 h-full w-full text-white py-8  items-center justify-center">
