@@ -24,6 +24,6 @@ export const appSettings:AppSettings = {
     /* THE NATIVE CURRENCY THAT YOUR APP WILL USE FOR GAS FEES */
     nativeCurrency: 'MATIC',
 
-    chainName: "Polygon Mumbai"
+    chainName: "Sepolia Testnet"
 
 };

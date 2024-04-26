@@ -83,7 +83,7 @@ export default function ReserveOverview() {
 
                 <div className="flex items-center ssm:justify-center">
                   <img
-                    src={IMAGES.MATIC}
+                    src={IMAGES.WETH}
                     width={32}
                     height={28}
                     // layout="fixed"
@@ -91,7 +91,7 @@ export default function ReserveOverview() {
                     alt="coinimage"
                   />
                   <p className="text-base ssm:text-2xl text-white ml-2">
-                    Polygon Mumbai Market
+                    Sepolia Market
                   </p>
                 </div>
               </div>

@@ -17,7 +17,7 @@ import YourBorrows from "../components/YourBorrows";
 import YourSupply from "../components/YourSupplies";
 import { inCurrencyFormat, todp } from "../utils/helper";
 import useDefi from "../hooks/useDefi";
-import { IMAGES } from "../constants";
+import { IMAGES, supportedChainId } from "../constants";
 import SupplyAssets from "../components/SupplyAssets";
 import HealthFactorBar from "../components/HealthFactorBar";
 import LTVBar from "../components/LTVBar";
@@ -81,14 +81,14 @@ export default function Dashboard2() {
 
   return (
     <div>
-      {chainId == 80001 && signerAddress ? (
+      {chainId == supportedChainId && signerAddress ? (
         <div>text-5xl sm:
           <div className="bg-gradient-to-tr from-slate-900 to-gray-900 h-[250px] sm:h-[320px]">
             <div className="w-full h-full flex flex-col justify-center px-5 sm:px-10 ">
               <div className="flex items-center">
                 <div>
                   <img
-                    src={IMAGES.MATIC}
+                    src={IMAGES.WETH}
                     width={35}
                     height={30}
                     // layout="fixed"
@@ -98,7 +98,7 @@ export default function Dashboard2() {
                 </div>
                 <div className="mx-2">
                   <p className="text-xl ssm:text-3xl text-white">
-                    Polygon Market
+                    Sepolia Market
                   </p>
                 </div>
               </div>
@@ -224,7 +224,7 @@ export default function Dashboard2() {
               <div className="flex items-center">
                 <div>
                   <img
-                    src={IMAGES.MATIC}
+                    src={IMAGES.WETH}
                     width={35}
                     height={30}
                     // layout="fixed"
@@ -234,7 +234,7 @@ export default function Dashboard2() {
                 </div>
                 <div className="mx-2">
                   <p className="text-xl sm:text-3xl text-white">
-                    Polygon Market
+                    Sepolia Market
                   </p>
                 </div>
               </div>
@@ -256,7 +256,7 @@ export default function Dashboard2() {
                 Please, connect your wallet{" "}
               </p>
               <p className="w-9/12 sm:w-7/12 text-sm sm:text-base text-center">
-                Please, make sure you are connected to Polygon Mumbai testnet to
+                Please, make sure you are connected to Sepolia testnet to
                 see your supplies, borrowings and open positions
               </p>
 

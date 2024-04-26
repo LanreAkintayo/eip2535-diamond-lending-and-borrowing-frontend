@@ -25,6 +25,7 @@ import {
   diamondAddress,
   erc20Abi,
   getterAbi,
+  supportedChainId,
 } from "../constants";
 import {
   DetailedBorrowedToken,
@@ -187,6 +188,7 @@ const DefiProvider = (props: any) => {
     
 
     const userSupplies = (await readContract({
+      chainId: supportedChainId,
       address: diamondAddress,
       abi: getterAbi,
       functionName: "getAllSupplies",
@@ -199,18 +201,21 @@ const DefiProvider = (props: any) => {
       async (eachSupply: ContractSuppliedToken) => {
         const tokenAddress = eachSupply.tokenAddress;
         const tokenName = (await readContract({
+          chainId:supportedChainId,
           address: tokenAddress as `0x${string}`,
           abi: erc20ABI,
           functionName: "name",
         })) as string;
 
-        const decimals = await readContract({
+        const decimals = (await readContract({
+          chainId: supportedChainId,
           address: tokenAddress as `0x${string}`,
           abi: erc20ABI,
           functionName: "decimals",
-        }) as number
+        })) as number;
 
         const amountSuppliedInUsd = (await readContract({
+          chainId: supportedChainId,
           address: diamondAddress as `0x${string}`,
           abi: getterAbi,
           functionName: "getUsdEquivalence",
@@ -218,6 +223,7 @@ const DefiProvider = (props: any) => {
         })) as bigint;
 
         const oraclePrice = (await readContract({
+          chainId: supportedChainId,
           address: diamondAddress as `0x${string}`,
           abi: getterAbi,
           functionName: "getUsdEquivalence",
@@ -225,6 +231,7 @@ const DefiProvider = (props: any) => {
         })) as bigint;
 
         const walletBalance = await readContract({
+          chainId: supportedChainId,
           address: tokenAddress as `0x${string}`,
           abi: erc20ABI,
           functionName: "balanceOf",
@@ -232,6 +239,7 @@ const DefiProvider = (props: any) => {
         });
 
         const walletBalanceInUsd = (await readContract({
+          chainId: supportedChainId,
           address: diamondAddress as `0x${string}`,
           abi: getterAbi,
           functionName: "getUsdEquivalence",
@@ -241,6 +249,7 @@ const DefiProvider = (props: any) => {
         const tokenImage = addressToImage[tokenAddress];
 
         const tokenDetails = (await readContract({
+          chainId: supportedChainId,
           address: diamondAddress as `0x${string}`,
           abi: getterAbi,
           functionName: "getTokenDetails",
@@ -273,28 +282,34 @@ const DefiProvider = (props: any) => {
   };
   const loadUserBorrowsHandler = async (signerAddress: string) => {
     const userBorrows = (await readContract({
+      chainId: supportedChainId,
       address: diamondAddress,
       abi: getterAbi,
       functionName: "getAllBorrows",
       args: [signerAddress],
     })) as ContractBorrowedToken[];
 
+    console.log("User Borrows: ", userBorrows)
+
     const detailedBorrows = userBorrows.map(
       async (eachBorrow: ContractBorrowedToken) => {
         const tokenAddress = eachBorrow.tokenAddress;
         const tokenName = (await readContract({
+          chainId: supportedChainId,
           address: tokenAddress as `0x${string}`,
           abi: erc20ABI,
           functionName: "name",
         })) as string;
 
         const decimals = await readContract({
+          chainId: supportedChainId,
           address: tokenAddress as `0x${string}`,
           abi: erc20ABI,
           functionName: "decimals",
         });
 
         const amountBorrowedInUsd = (await readContract({
+          chainId: supportedChainId,
           address: diamondAddress as `0x${string}`,
           abi: getterAbi,
           functionName: "getUsdEquivalence",
@@ -309,6 +324,7 @@ const DefiProvider = (props: any) => {
         })) as bigint;
 
         const availableToBorrowInUsd = (await readContract({
+          chainId: supportedChainId,
           address: diamondAddress as `0x${string}`,
           abi: getterAbi,
           functionName: "getMaxAvailableToBorrowInUsd",
@@ -316,32 +332,36 @@ const DefiProvider = (props: any) => {
         })) as bigint;
 
         const availableToBorrow = (await readContract({
+          chainId: supportedChainId,
           address: diamondAddress as `0x${string}`,
           abi: getterAbi,
           functionName: "convertUsdToToken",
           args: [tokenAddress, availableToBorrowInUsd],
         })) as bigint;
 
-         const walletBalance = await readContract({
-           address: tokenAddress as `0x${string}`,
-           abi: erc20ABI,
-           functionName: "balanceOf",
-           args: [signerAddress as `0x${string}`],
-         });
+        const walletBalance = await readContract({
+          chainId: supportedChainId,
+          address: tokenAddress as `0x${string}`,
+          abi: erc20ABI,
+          functionName: "balanceOf",
+          args: [signerAddress as `0x${string}`],
+        });
 
-         const walletBalanceInUsd = (await readContract({
-           address: diamondAddress as `0x${string}`,
-           abi: getterAbi,
-           functionName: "getUsdEquivalence",
-           args: [tokenAddress, walletBalance],
-         })) as bigint;
+        const walletBalanceInUsd = (await readContract({
+          chainId: supportedChainId,
+          address: diamondAddress as `0x${string}`,
+          abi: getterAbi,
+          functionName: "getUsdEquivalence",
+          args: [tokenAddress, walletBalance],
+        })) as bigint;
         
-         const tokenDetails = (await readContract({
-           address: diamondAddress as `0x${string}`,
-           abi: getterAbi,
-           functionName: "getTokenDetails",
-           args: [tokenAddress],
-         })) as TokenDetails;
+        const tokenDetails = (await readContract({
+          chainId: supportedChainId,
+          address: diamondAddress as `0x${string}`,
+          abi: getterAbi,
+          functionName: "getTokenDetails",
+          args: [tokenAddress],
+        })) as TokenDetails;
 
         const tokenImage = addressToImage[tokenAddress];
 
@@ -375,13 +395,16 @@ const DefiProvider = (props: any) => {
     // let supplyAssets;
 
     const supportedTokens = (await readContract({
+      chainId: supportedChainId,
       address: diamondAddress as `0x${string}`,
       abi: getterAbi,
       functionName: "getAllSupportedTokens",
     })) as string[];
 
     const supplyAssets = supportedTokens.map(async (tokenAddress: string) => {
+      
       const tokenName = await readContract({
+        chainId: supportedChainId,
         address: tokenAddress as `0x${string}`,
         abi: erc20ABI,
         functionName: "name",
@@ -390,12 +413,14 @@ const DefiProvider = (props: any) => {
       const tokenImage = addressToImage[tokenAddress];
 
       const decimals = await readContract({
+        chainId: supportedChainId,
         address: tokenAddress as `0x${string}`,
         abi: erc20ABI,
         functionName: "decimals",
       });
 
       const oraclePrice = (await readContract({
+        chainId: supportedChainId,
         address: diamondAddress,
         abi: getterAbi,
         functionName: "getUsdEquivalence",
@@ -403,6 +428,7 @@ const DefiProvider = (props: any) => {
       })) as bigint;
 
       const tokenDetails = (await readContract({
+        chainId: supportedChainId,
         address: diamondAddress as `0x${string}`,
         abi: getterAbi,
         functionName: "getTokenDetails",
@@ -410,6 +436,7 @@ const DefiProvider = (props: any) => {
       })) as TokenDetails;
 
       const walletBalance = await readContract({
+        chainId: supportedChainId,
         address: tokenAddress as `0x${string}`,
         abi: erc20ABI,
         functionName: "balanceOf",
@@ -417,6 +444,7 @@ const DefiProvider = (props: any) => {
       });
 
       const walletBalanceInUsd = (await readContract({
+        chainId: supportedChainId,
         address: diamondAddress as `0x${string}`,
         abi: getterAbi,
         functionName: "getUsdEquivalence",
@@ -424,6 +452,7 @@ const DefiProvider = (props: any) => {
       })) as bigint;
 
       const availableToBorrowInUsd = (await readContract({
+        chainId: supportedChainId,
         address: diamondAddress as `0x${string}`,
         abi: getterAbi,
         functionName: "getMaxAvailableToBorrowInUsd",
@@ -431,6 +460,7 @@ const DefiProvider = (props: any) => {
       })) as bigint;
 
       const availableToBorrow = (await readContract({
+        chainId:supportedChainId,
         address: diamondAddress as `0x${string}`,
         abi: getterAbi,
         functionName: "convertUsdToToken",
@@ -438,6 +468,7 @@ const DefiProvider = (props: any) => {
       })) as bigint;
 
       const totalSupplied = (await readContract({
+        chainId:supportedChainId,
         address: diamondAddress as `0x${string}`,
         abi: getterAbi,
         functionName: "getTokenTotalSupplied",
@@ -445,6 +476,7 @@ const DefiProvider = (props: any) => {
       })) as bigint;
 
       const totalSuppliedInUsd = (await readContract({
+        chainId:supportedChainId,
         address: diamondAddress as `0x${string}`,
         abi: getterAbi,
         functionName: "getUsdEquivalence",
@@ -452,6 +484,7 @@ const DefiProvider = (props: any) => {
       })) as bigint;
 
       const totalBorrowed = (await readContract({
+        chainId:supportedChainId,
         address: diamondAddress as `0x${string}`,
         abi: getterAbi,
         functionName: "getTokenTotalBorrowed",
@@ -459,6 +492,7 @@ const DefiProvider = (props: any) => {
       })) as bigint;
 
       const totalBorrowedInUsd = (await readContract({
+        chainId:supportedChainId,
         address: diamondAddress as `0x${string}`,
         abi: getterAbi,
         functionName: "getUsdEquivalence",
@@ -507,13 +541,19 @@ const DefiProvider = (props: any) => {
 
   const loadBorrowAssetsHandler = async (signerAddress: string) => {
     const supportedTokens = (await readContract({
+      chainId:supportedChainId,
       address: diamondAddress as `0x${string}`,
       abi: getterAbi,
       functionName: "getAllSupportedTokens",
     })) as string[];
 
+    console.log("Supported tokens: ", supportedTokens)
+
     const borrowAssets = supportedTokens.map(async (tokenAddress: string) => {
+
+      console.log("Chain ID", supportedChainId)
       const tokenName = await readContract({
+        chainId:supportedChainId,
         address: tokenAddress as `0x${string}`,
         abi: erc20ABI,
         functionName: "name",
@@ -522,12 +562,14 @@ const DefiProvider = (props: any) => {
       const tokenImage = addressToImage[tokenAddress];
 
       const decimals = await readContract({
+        chainId:supportedChainId,
         address: tokenAddress as `0x${string}`,
         abi: erc20ABI,
         functionName: "decimals",
       });
 
       const oraclePrice = (await readContract({
+        chainId:supportedChainId,
         address: diamondAddress,
         abi: getterAbi,
         functionName: "getUsdEquivalence",
@@ -535,6 +577,7 @@ const DefiProvider = (props: any) => {
       })) as bigint;
 
       const tokenDetails = (await readContract({
+        chainId: supportedChainId,
         address: diamondAddress as `0x${string}`,
         abi: getterAbi,
         functionName: "getTokenDetails",
@@ -542,6 +585,7 @@ const DefiProvider = (props: any) => {
       })) as TokenDetails;
 
       const walletBalance = await readContract({
+        chainId:supportedChainId,
         address: tokenAddress as `0x${string}`,
         abi: erc20ABI,
         functionName: "balanceOf",
@@ -549,6 +593,7 @@ const DefiProvider = (props: any) => {
       });
 
       const walletBalanceInUsd = (await readContract({
+        chainId:supportedChainId,
         address: diamondAddress as `0x${string}`,
         abi: getterAbi,
         functionName: "getUsdEquivalence",
@@ -556,6 +601,7 @@ const DefiProvider = (props: any) => {
       })) as bigint;
 
       const availableToBorrowInUsd = (await readContract({
+        chainId:supportedChainId,
         address: diamondAddress as `0x${string}`,
         abi: getterAbi,
         functionName: "getMaxAvailableToBorrowInUsd",
@@ -563,6 +609,7 @@ const DefiProvider = (props: any) => {
       })) as bigint;
 
       const availableToBorrow = (await readContract({
+        chainId:supportedChainId,
         address: diamondAddress as `0x${string}`,
         abi: getterAbi,
         functionName: "convertUsdToToken",
@@ -570,6 +617,7 @@ const DefiProvider = (props: any) => {
       })) as bigint;
 
       const totalSupplied = (await readContract({
+        chainId:supportedChainId,
         address: diamondAddress as `0x${string}`,
         abi: getterAbi,
         functionName: "getTokenTotalSupplied",
@@ -577,6 +625,7 @@ const DefiProvider = (props: any) => {
       })) as bigint;
 
       const totalSuppliedInUsd = (await readContract({
+        chainId:supportedChainId,
         address: diamondAddress as `0x${string}`,
         abi: getterAbi,
         functionName: "getUsdEquivalence",
@@ -584,6 +633,7 @@ const DefiProvider = (props: any) => {
       })) as bigint;
 
       const totalBorrowed = (await readContract({
+        chainId:supportedChainId,
         address: diamondAddress as `0x${string}`,
         abi: getterAbi,
         functionName: "getTokenTotalBorrowed",
@@ -591,6 +641,7 @@ const DefiProvider = (props: any) => {
       })) as bigint;
 
       const totalBorrowedInUsd = (await readContract({
+        chainId:supportedChainId,
         address: diamondAddress as `0x${string}`,
         abi: getterAbi,
         functionName: "getUsdEquivalence",
@@ -637,6 +688,7 @@ const DefiProvider = (props: any) => {
   };
   const loadHealthFactorHandler = async (signerAddress: string) => {
     const healthFactor = (await readContract({
+      chainId:supportedChainId,
       address: diamondAddress,
       abi: getterAbi,
       functionName: "getHealthFactor",
@@ -651,6 +703,7 @@ const DefiProvider = (props: any) => {
   };
   const loadUserTotalCollateralInUsdHandler = async (signerAddress: string) => {
     const userTotalCollateralInUsd = (await readContract({
+      chainId:supportedChainId,
       address: diamondAddress,
       abi: getterAbi,
       functionName: "getUserTotalCollateralInUsd",
@@ -665,6 +718,7 @@ const DefiProvider = (props: any) => {
   };
   const loadUserTotalBorrowedInUsdHandler = async (signerAddress: string) => {
     const userTotalBorrowedInUsd = (await readContract({
+      chainId: supportedChainId,
       address: diamondAddress,
       abi: getterAbi,
       functionName: "getUserTotalBorrowedInUsd",
@@ -679,6 +733,7 @@ const DefiProvider = (props: any) => {
   };
   const loadBorrowPowerHandler = async (signerAddress: string) => {
     const borrowPower = (await readContract({
+      chainId: supportedChainId,
       address: diamondAddress,
       abi: getterAbi,
       functionName: "getBorrowPower",
@@ -693,6 +748,7 @@ const DefiProvider = (props: any) => {
   };
   const loadMaxLTVHandler = async (signerAddress: string) => {
     const maxLTV = (await readContract({
+      chainId: supportedChainId,
       address: diamondAddress,
       abi: getterAbi,
       functionName: "getMaxLTV",
@@ -707,6 +763,7 @@ const DefiProvider = (props: any) => {
   };
   const loadCurrentLTVHandler = async (signerAddress: string) => {
     const currentLTV = (await readContract({
+      chainId: supportedChainId,
       address: diamondAddress,
       abi: getterAbi,
       functionName: "getCurrentLTV",
@@ -723,6 +780,7 @@ const DefiProvider = (props: any) => {
     signerAddress: string
   ) => {
     const liquidationThresholdWeighted = (await readContract({
+      chainId: supportedChainId,
       address: diamondAddress,
       abi: getterAbi,
       functionName: "getLiquidationThreshold",
@@ -741,6 +799,7 @@ const DefiProvider = (props: any) => {
     tokenAddress: string
   ): Promise<TokenData> => {
     const tokenName = await readContract({
+      chainId: supportedChainId,
       address: tokenAddress as `0x${string}`,
       abi: erc20ABI,
       functionName: "name",
@@ -749,12 +808,14 @@ const DefiProvider = (props: any) => {
     const tokenImage = addressToImage[tokenAddress];
 
     const decimals = await readContract({
+      chainId:supportedChainId,
       address: tokenAddress as `0x${string}`,
       abi: erc20ABI,
       functionName: "decimals",
     });
 
     const oraclePrice = (await readContract({
+      chainId:supportedChainId,
       address: diamondAddress,
       abi: getterAbi,
       functionName: "getUsdEquivalence",
@@ -762,6 +823,7 @@ const DefiProvider = (props: any) => {
     })) as bigint;
 
     const tokenDetails = (await readContract({
+      chainId:supportedChainId,
       address: diamondAddress as `0x${string}`,
       abi: getterAbi,
       functionName: "getTokenDetails",
@@ -769,6 +831,7 @@ const DefiProvider = (props: any) => {
     })) as TokenDetails;
 
     const walletBalance = await readContract({
+      chainId:supportedChainId,
       address: tokenAddress as `0x${string}`,
       abi: erc20ABI,
       functionName: "balanceOf",
@@ -776,6 +839,7 @@ const DefiProvider = (props: any) => {
     });
 
     const walletBalanceInUsd = (await readContract({
+      chainId:supportedChainId,
       address: diamondAddress as `0x${string}`,
       abi: getterAbi,
       functionName: "getUsdEquivalence",
@@ -783,6 +847,7 @@ const DefiProvider = (props: any) => {
     })) as bigint;
 
     const availableToBorrowInUsd = (await readContract({
+      chainId:supportedChainId,
       address: diamondAddress as `0x${string}`,
       abi: getterAbi,
       functionName: "getMaxAvailableToBorrowInUsd",
@@ -790,6 +855,7 @@ const DefiProvider = (props: any) => {
     })) as bigint;
 
     const availableToBorrow = (await readContract({
+      chainId:supportedChainId,
       address: diamondAddress as `0x${string}`,
       abi: getterAbi,
       functionName: "convertUsdToToken",
@@ -797,6 +863,7 @@ const DefiProvider = (props: any) => {
     })) as bigint;
 
     const totalSupplied = (await readContract({
+      chainId:supportedChainId,
       address: diamondAddress as `0x${string}`,
       abi: getterAbi,
       functionName: "getTokenTotalSupplied",
@@ -804,6 +871,7 @@ const DefiProvider = (props: any) => {
     })) as bigint;
 
     const totalSuppliedInUsd = (await readContract({
+      chainId:supportedChainId,
       address: diamondAddress as `0x${string}`,
       abi: getterAbi,
       functionName: "getUsdEquivalence",
@@ -811,6 +879,7 @@ const DefiProvider = (props: any) => {
     })) as bigint;
 
     const totalBorrowed = (await readContract({
+      chainId:supportedChainId,
       address: diamondAddress as `0x${string}`,
       abi: getterAbi,
       functionName: "getTokenTotalBorrowed",
@@ -818,6 +887,7 @@ const DefiProvider = (props: any) => {
     })) as bigint;
 
     const totalBorrowedInUsd = (await readContract({
+      chainId:supportedChainId,
       address: diamondAddress as `0x${string}`,
       abi: getterAbi,
       functionName: "getUsdEquivalence",

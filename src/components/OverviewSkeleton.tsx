@@ -19,14 +19,14 @@ export default function OverviewSkeleton() {
 
               <div className="flex items-center justify-center">
                 <img
-                  src={IMAGES.MATIC}
+                  src={IMAGES.WETH}
                   width={32}
                   height={28}
                   // layout="fixed"
                   className="card-img-top"
                   alt="coinimage"
                 />
-                <p className="text-2xl text-white ml-2">Polygon Market</p>
+                <p className="text-2xl text-white ml-2">Sepolia Market</p>
               </div>
             </div>
             <div className="flex mt-4">
