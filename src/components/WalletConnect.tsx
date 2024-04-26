@@ -49,7 +49,7 @@ export default function WalletConnect() {
                   <button
                     onClick={openConnectModal}
                     type="button"
-                    className="mr-5 px-3 py-1 bg-red-800 hover:bg-red-700  rounded-md hover:bg-amber-800 hover:text-white"
+                    className="w-[140px] flex-nowrap mr-5 px-3 py-1 bg-red-800 hover:bg-red-700  rounded-md hover:bg-amber-800 hover:text-white"
                   >
                     Connect Wallet
                   </button>
@@ -60,7 +60,7 @@ export default function WalletConnect() {
                   <button
                     onClick={openChainModal}
                     type="button"
-                    className="mr-5 px-3 py-1 bg-red-800 hover:bg-red-700  rounded-md hover:bg-amber-800 hover:text-white"
+                    className="w-[170px] mr-5 px-3 py-1 bg-red-800 hover:bg-red-700  rounded-md hover:bg-amber-800 hover:text-white"
                   >
                     Switch To Sepolia
                   </button>
@@ -69,7 +69,7 @@ export default function WalletConnect() {
               return (
                 <div
                   style={{ display: "flex", gap: 5 }}
-                  className="mr-5 px-3 py-1 bg-red-800 hover:bg-red-700  rounded-md hover:bg-amber-800 hover:text-white "
+                  className="w-[135px] mr-5 px-3 py-1 bg-red-800 hover:bg-red-700  rounded-md hover:bg-amber-800 hover:text-white "
                 >
                   <button
                     onClick={openChainModal}
