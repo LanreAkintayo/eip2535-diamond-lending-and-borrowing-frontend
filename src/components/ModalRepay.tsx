@@ -449,7 +449,7 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
             <button
               onClick={() => {
                 window.open(
-                  `https://mumbai.polygonscan.com/tx/${transactionHash}`,
+                  `https://sepolia.etherscan.io/tx/${transactionHash}`,
                   "_blank"
                 );
               }}
@@ -584,7 +584,9 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
                     alt="coinimage"
                   />
 
-                  <p className="font-medium text-base ssm:text-lg ml-2">{token.tokenName}</p>
+                  <p className="font-medium text-base ssm:text-lg ml-2">
+                    {token.tokenName}
+                  </p>
                 </div>
               </div>
 

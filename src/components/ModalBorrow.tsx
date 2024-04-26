@@ -35,7 +35,7 @@ import { ClipLoader } from "react-spinners";
 import useDefi from "../hooks/useDefi";
 import { BsArrowRight } from "react-icons/bs";
 import { displayToast } from "./Toast";
-import {IoMdInfinite} from "react-icons/io"
+import { IoMdInfinite } from "react-icons/io";
 
 interface IModalBorrow {
   token: TokenData;
@@ -146,13 +146,13 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
   }, []);
   const updateBorrow = async () => {
     await loadHealthFactor(signerAddress);
-    await loadMaxLTV(signerAddress)
-    await loadCurrentLTV(signerAddress)
+    await loadMaxLTV(signerAddress);
+    await loadCurrentLTV(signerAddress);
     await loadBorrowAssets(signerAddress);
     await loadUserBorrows(signerAddress);
     await loadUserTotalBorrowedInUsd(signerAddress);
     await loadLiquidationThresholdWeighted(signerAddress);
-    await loadBorrowPower(signerAddress)
+    await loadBorrowPower(signerAddress);
   };
 
   const borrowToken = async () => {
@@ -300,7 +300,7 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
             <button
               onClick={() => {
                 window.open(
-                  `https://mumbai.polygonscan.com/tx/${transactionHash}`,
+                  `https://sepolia.etherscan.io/tx/${transactionHash}`,
                   "_blank"
                 );
               }}

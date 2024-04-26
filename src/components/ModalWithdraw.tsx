@@ -149,7 +149,7 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
     await loadSupplyAssets(signerAddress);
     await loadUserSupplies(signerAddress);
     await loadUserTotalCollateralInUsd(signerAddress);
-    await loadUserTotalBorrowedInUsd(signerAddress)
+    await loadUserTotalBorrowedInUsd(signerAddress);
     await loadLiquidationThresholdWeighted(signerAddress);
   };
 
@@ -250,7 +250,7 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
             <button
               onClick={() => {
                 window.open(
-                  `https://mumbai.polygonscan.com/tx/${transactionHash}`,
+                  `https://sepolia.etherscan.io/tx/${transactionHash}`,
                   "_blank"
                 );
               }}
@@ -458,7 +458,6 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
                 </div>
               </div>
             </div>
-
           </div>
           <div className="p-6 w-full pt-1 space-y-2">
             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">

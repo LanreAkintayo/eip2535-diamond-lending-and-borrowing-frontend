@@ -443,7 +443,7 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
             <button
               onClick={() => {
                 window.open(
-                  `https://mumbai.polygonscan.com/tx/${transactionHash}`,
+                  `https://sepolia.etherscan.io/tx/${transactionHash}`,
                   "_blank"
                 );
               }}
