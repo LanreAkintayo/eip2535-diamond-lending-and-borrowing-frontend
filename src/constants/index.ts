@@ -11,12 +11,12 @@ const getterAddress = "0xFA80Da1CABb54aF57F36F7AFde1aD5D7dF8E1091";
 
 export const IMAGES = {
   DAI: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSllrF9PNBf88kIx9USP5g73XDYjkMyRBaDig&usqp=CAU",
-  WETH: "https://staging.aave.com/icons/tokens/weth.svg",
-  LINK: "https://staging.aave.com/icons/tokens/link.svg",
+  WETH: "https://app.aave.com/icons/tokens/weth.svg",
+  LINK: "https://app.aave.com/icons/tokens/link.svg",
   FAU: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5qUPi3Ar2dQZ2m9K5opr_h9QaQz4_G5HVYA&usqp=CAU",
-  LAR: "https://staging.aave.com/icons/tokens/wbtc.svg",
-  WMATIC: "https://staging.aave.com/icons/tokens/wmatic.svg",
-  MATIC: "https://staging.aave.com/icons/tokens/matic.svg ",
+  LAR: "https://app.aave.com/icons/tokens/wbtc.svg",
+  WMATIC: "https://app.aave.com/icons/tokens/wmatic.svg",
+  MATIC: "https://app.aave.com/icons/tokens/matic.svg ",
 };
 
 export const dai = "0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357"; // 18
@@ -27,13 +27,13 @@ export const usdc = "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8"; // 6
 export const jeur = "0x6d906e526a4e2Ca02097BA9d0caA3c382F52278E"; //18
 
 export const addressToImage: { [key: string]: string } = {
-  [dai]: "https://staging.aave.com/icons/tokens/dai.svg",
-  [wMatic]: "https://staging.aave.com/icons/tokens/wmatic.svg",
-  [weth]: "https://staging.aave.com/icons/tokens/weth.svg",
-  [link]: "https://staging.aave.com/icons/tokens/link.svg",
-  [usdc]: "https://staging.aave.com/icons/tokens/usdc.svg",
-  [jeur]: "https://staging.aave.com/icons/tokens/jeur.svg",
-  [larAddress]: "https://staging.aave.com/icons/tokens/matic.svg",
+  [dai]: "https://app.aave.com/icons/tokens/dai.svg",
+  [wMatic]: "https://app.aave.com/icons/tokens/wmatic.svg",
+  [weth]: "https://app.aave.com/icons/tokens/weth.svg",
+  [link]: "https://app.aave.com/icons/tokens/link.svg",
+  [usdc]: "https://app.aave.com/icons/tokens/usdc.svg",
+  [jeur]: "https://app.aave.com/icons/tokens/jeur.svg",
+  [larAddress]: "https://app.aave.com/icons/tokens/matic.svg",
 };
 
 // set the Permit type parameters

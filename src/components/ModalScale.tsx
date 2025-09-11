@@ -56,7 +56,7 @@ export default function ModalScale({ closeModal }: IModalScale) {
             Liquidation Risk Parameters
           </h3>
           <button
-            placeholder="0.00"
+            // placeholder="0.00"
             onClick={() => {
               closeModal();
             }}

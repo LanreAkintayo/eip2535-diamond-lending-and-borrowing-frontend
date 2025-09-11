@@ -202,7 +202,7 @@ export default function ModalWithdraw({ token, closeModal }: IModalWithdraw) {
             {isSuccess ? `Sucessful` : `Withdraw ${token.tokenName}`}
           </h3>
           <button
-            placeholder="0.00"
+            // placeholder="0.00"
             onClick={() => {
               setValue("");
               setValueInUsd("0.00");

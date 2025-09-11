@@ -209,7 +209,7 @@ export default function ModalBorrow({ token, closeModal }: IModalBorrow) {
             {isSuccess ? `Sucessful` : `Borrow ${token.tokenName}`}
           </h3>
           <button
-            placeholder="0.00"
+            // placeholder="0.00"
             onClick={() => {
               setValue("");
               setValueInUsd("0.00");

@@ -401,7 +401,7 @@ export default function ModalRepay({ token, closeModal }: IModalRepay) {
             {isSuccess ? `Sucessful` : `Repay ${token.tokenName}`}
           </h3>
           <button
-            placeholder="0.00"
+            // placeholder="0.00"
             onClick={() => {
               setValue("");
               setValueInUsd("0.00");

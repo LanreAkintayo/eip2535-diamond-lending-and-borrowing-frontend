@@ -356,7 +356,7 @@ export default function ModalSupply({ token, closeModal }: IModalSupply) {
             {isSuccess ? `Sucessful` : `Supply ${token.tokenName}`}
           </h3>
           <button
-            placeholder="0.00"
+            // placeholder="0.00"
             onClick={() => {
               setValue("");
               setValueInUsd("0.00");
