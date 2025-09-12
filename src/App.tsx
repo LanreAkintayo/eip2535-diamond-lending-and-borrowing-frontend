@@ -2,9 +2,12 @@ import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
 import HomePage from "./pages/HomePage";
+// import HomePage2 from "./pages/HomePage2";
 import NotFound from "./components/NotFound";
 import Dashboard from "./pages/Dashboard";
 import ReserveOverview from "./pages/ReserveOverview";
+import HomePage2 from "./pages/HomePage2";
+import HomePage3 from "./pages/HomePage3";
 
 
 
