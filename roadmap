@@ -1,0 +1,360 @@
+# Track 2 — Intelligent Well Archive: RAG Pipeline Roadmap
+
+> **Last updated:** 7 November 2026  
+> **Purpose:** Complete logic and architecture for our RAG pipeline — from raw files to final `predictions.csv`.  
+> **Principle:** Every decision in this document is optimized for accuracy, speed, token efficiency, and judge clarity.
+
+---
+
+## 1. What We Are Building
+
+A **Retrieval-Augmented Generation (RAG)** system that:
+1. Ingests every document in the archive
+2. Breaks each document into labelled chunks
+3. Embeds and indexes all chunks locally (no cloud, no cost, done once)
+4. At query time — retrieves the most relevant chunks, feeds them to an LLM
+5. The LLM generates a grounded answer with an exact file + section citation
+
+**Evaluation reality:**
+- 40% → scores our `predictions.csv` against 32 reference answers (human reviewed)
+- 40% → presentation: how well we explain and demonstrate the system
+- 20% → NAPE runs our notebook, checks it finishes within 30 minutes without crashing
+
+---
+
+## 2. The Archive — What We Have
+
+The archive lives at `data/track_2/documents/` and has two top-level folders:
+
+```
+documents/
+├── daily_drilling_reports/      ← DDRs for 8 wells, in 3 formats each
+│   ├── Daily_Drilling_Report___HTML_Version/     (32 files)
+│   ├── Daily_Drilling_Report___XML_Version/      (32 files, same content)
+│   └── Daily_Drilling_report___PDF_Version/      (32 files, same content)
+│
+└── wellbore_files/              ← Survey and summary docs for all Volve wells
+    ├── 15_9-19/
+    ├── 15_9-F-1/ through 15_9-F-15/
+    └── Relief well location 1/ through 5/
+```
+
+Inside each wellbore folder, files are one of:
+- **Well Summary PDF** — prose narrative about the well (objectives, casing programme, slot)
+- **Standard Survey Report PDF** — 10+ page document: metadata header + coordinate number table
+- **Raw text file (no extension)** — identical structure: header + coordinate number table (plain text version of the survey PDF). Status is `_ACTUAL`, `_PLAN`, or `_PROTOTYPE`.
+- **`.txt` files** — same structure as raw text files, just with a `.txt` extension (rare)
+
+---
+
+## 3. Document Classification Decision Table
+
+This is the most important decision in the pipeline. Every file in the archive falls into one of two content types:
+
+| Content Type | Description | Files |
+|---|---|---|
+| **Type A — Narrative Text** | English prose sentences. An LLM can read and answer from these. | Well Summary PDFs |
+| **Type B — Number Tables** | Header metadata + columns of depth/angle/coordinate numbers. Only the header is useful text. | All Survey Report PDFs, all no-extension raw files (`_ACTUAL`, `_PLAN`, `_PROTOTYPE`), all `.txt` survey files |
+
+### What We Index From Each File Type
+
+| File | Content Type | What to Index | What to Discard |
+|---|---|---|---|
+| **DDR HTML** (32 files) | Narrative + structured tables | **Everything** — chunked by named section | Nothing |
+| **DDR XML** (32 files) | Same as HTML | **Skip entirely** | Everything |
+| **DDR PDF** (32 files) | Same as HTML | **Skip entirely** | Everything |
+| **Well Summary PDFs** (21 files) | Type A — narrative | **Full content**, chunked by page | Nothing |
+| **Standard Survey Report PDFs** | Type B — number tables | **Page 1 header only** (metadata) | Pages 2+ (pure number rows) |
+| **Raw text files** `_ACTUAL`, `_PLAN`, `_PROTOTYPE` (109 files) | Type B — number tables | **Header only** (lines 1 → up to `SURVEY LIST` column headers) | Everything below the column headers |
+| **`.txt` survey files** (rare) | Type B — number tables | **Header only** (same rule as raw text) | Everything below the column headers |
+| **Relief well PDF summaries** (5 files) | Type A — narrative | **Full content**, chunked by page | Nothing |
+
+### Why We Skip DDR XML and DDR PDF
+
+The 32 DDR reports exist in HTML, XML, and PDF — all with identical content. HTML is the cleanest and most structured format (named CSS classes per section). Indexing all three would triple our chunk count with zero benefit. We pick one format and stick with it: **HTML**.
+
+### Why We Only Index the Header of Survey Files
+
+The header of every survey/prototype/plan/actual file contains all the meaningful text:
+```
+COMPANY: Statoil Norway
+WELL NAME: F-12
+WELLBORE NAME: F-12
+Kick Off Depth: 145.90m
+Survey Name: F12 Rev0.11 CC 240707
+Survey Date: 05.08.2008
+Surface EW: 435050.210m
+Surface NS: 6478566.220m
+Bottom Hole MD: 3441.29m
+Bottom Hole TVD: 3073.84m
+Water Depth: 91.00m
+```
+
+The 120+ rows below the header are columns of coordinate numbers that an LLM cannot answer questions from. The header alone can answer questions like "what was the bottom hole depth of F-12?" — which is all we ever need.
+
+**Rule:** Index all lines from line 1 up to (but not including) the row that starts with `MD` or `SURVEY LIST` (the column headers line). This is typically lines 1–38.
+
+---
+
+## 4. Chunking Strategy (Per Document Type)
+
+### 4a. DDR HTML Files — Chunk By Named Section
+
+The HTML DDRs are structured into clearly named sections using CSS class `TextHeader`. Each section becomes **one chunk**.
+
+Sections in a typical DDR:
+1. **Wellbore Info** (the metadata tables — kick-off depth, water depth, hole diameter, etc.)
+2. **Summary of Activities (24 Hours)**
+3. **Summary of Planned Activities (24 Hours)**
+4. **Survey Station** (table of depth/inclination/azimuth readings)
+5. **Operations** (time-stamped activity log table)
+6. **Drilling Fluid** (fluid properties table)
+7. **Pore Pressure** (pore pressure vs depth table)
+8. **Log Information** (wireline logging run details)
+9. **Gas Reading Information**
+10. **Casing Table** (if present)
+11. **Cost / Spread Cost** (if present)
+12. **Personnel / POB** (if present)
+
+**Each section = 1 chunk.** A DDR with 10 sections produces 10 chunks.
+
+Metadata attached to every DDR chunk:
+```python
+{
+    "file_name":  "15_9_F_11_B_2013_05_29.html",
+    "file_path":  "documents/daily_drilling_reports/Daily_Drilling_Report___HTML_Version/15_9_F_11_B_2013_05_29.html",
+    "file_type":  "DDR_HTML",
+    "well":       "15/9-F-11 B",
+    "date":       "2013-05-29",
+    "section":    "Operations"
+}
+```
+
+### 4b. Well Summary PDFs — Chunk By Page
+
+These are 2–3 pages of narrative text. Each page = 1 chunk.
+
+Metadata:
+```python
+{
+    "file_name":  "WellSummary F-1.pdf",
+    "file_path":  "documents/wellbore_files/15_9-F-1/WellSummary F-1.pdf",
+    "file_type":  "WELL_SUMMARY_PDF",
+    "well":       "F-1",
+    "page":       2
+}
+```
+
+### 4c. Survey / Prototype / Plan / Actual Files — Header Only, 1 Chunk Per File
+
+Extract only the header (everything before the survey data table begins). The whole header is one chunk.
+
+Metadata:
+```python
+{
+    "file_name":  "Volve F_F-12_F-12_F12 Rev011 CC 240707_PLAN",
+    "file_path":  "documents/wellbore_files/15_9-F-12/15_9-F-12/Volve F_F-12_F-12_F12 Rev011 CC 240707_PLAN",
+    "file_type":  "SURVEY_RAW_TEXT",
+    "well":       "F-12",
+    "status":     "PLAN",
+    "section":    "Header"
+}
+```
+
+---
+
+## 5. Chunk Size Estimates and Token Economics
+
+| Document Type | Chunks Per File | Words Per Chunk | Tokens Per Chunk |
+|---|---|---|---|
+| DDR HTML | 8–12 sections | 100–400 words | 130–500 tokens |
+| Well Summary PDF | 2–3 pages | 200–350 words | 260–450 tokens |
+| Survey header (all types) | 1 | 60–100 words | 80–130 tokens |
+
+**Total estimated chunks in the whole archive:**
+- 32 DDR HTML × 10 sections avg = **~320 chunks**
+- 21 Well Summary PDFs × 2.5 pages avg = **~52 chunks**
+- 5 Relief Well Summary PDFs × 2 pages avg = **~10 chunks**
+- 109 raw text survey headers × 1 = **~109 chunks**
+- Total: **~491 chunks** across the entire archive
+
+**Token cost at query time:**  
+We retrieve top 3 chunks per question → 3 × ~400 tokens = ~1,200 tokens context  
+Add question (~50 tokens) + answer (~200 tokens) = **~1,450 tokens per question**  
+32 questions × 1,450 = **~46,400 tokens total for all 32 questions**
+
+At Gemini Flash pricing: approximately **\$0.03–0.05** for the entire 32-question run.
+
+---
+
+## 6. The Full Pipeline Architecture
+
+```
+PHASE 1 — INGESTION (run once, results saved to disk)
+                     ↓
+         Step 1: Discover all files
+         Walk the archive. Classify each file by type.
+         (HTML, PDF, raw text, skip)
+                     ↓
+         Step 2: Extract text from each file
+         HTML  → BeautifulSoup, extract by named section
+         PDF   → pdfplumber, extract page by page
+         Text  → read_text(), take header only (before SURVEY LIST line)
+                     ↓
+         Step 3: Attach metadata to every chunk
+         file_name, file_path, file_type, well, date, section/page
+                     ↓
+         Step 4: Embed all chunks
+         Use Google Gemini embedding API
+         (or sentence-transformers locally if API unavailable)
+                     ↓
+         Step 5: Save index to disk
+         FAISS index + metadata list as JSON → saved as files
+         (so the notebook doesn't re-embed on every run)
+
+PHASE 2 — QUERY (run once per question at notebook execution time)
+                     ↓
+         For each of the 32 questions:
+                     ↓
+         Step 6: Pre-filter by well + date
+         Parse the question text. If it mentions a specific well
+         (e.g. "15/9-F-11 B") and a specific date ("2013-05-29"),
+         filter the chunk list to only those matching chunks FIRST.
+         This narrows the search space dramatically.
+                     ↓
+         Step 7: Semantic search
+         Embed the question. Find top 3 most similar chunks
+         from the filtered set using FAISS.
+                     ↓
+         Step 8: Build LLM prompt
+         System: "Answer ONLY from the provided document context.
+                  If the archive does not support an answer, say so.
+                  Always cite the source file and section."
+         Context: top 3 retrieved chunks (with their metadata)
+         Question: the question text
+                     ↓
+         Step 9: Call LLM (Gemini API)
+         Temperature = 0 (deterministic answers)
+                     ↓
+         Step 10: Extract answer, evidence, confidence
+         Parse LLM response.
+         Evidence = file_name + section/page from chunk metadata.
+         Confidence = 1.0 if direct match, 0.5 if inferred, blank if abstaining.
+                     ↓
+         Step 11: Write row to predictions.csv
+         question_id, answer, evidence, confidence
+```
+
+---
+
+## 7. The Retrieval Filter Strategy
+
+This is the key optimization that separates a good system from a great one.
+
+**Most of the 32 questions explicitly name a well and a date.** For example:
+
+> *"On well 15/9-F-11 B, what was the density of the NaCl brine sampled at the flowline at 18:00 on 2013-06-28?"*
+
+We already know:
+- Well: `15/9-F-11 B`
+- Date: `2013-06-28`
+- Section most likely: `Drilling Fluid`
+
+Before doing any embedding-based search, **filter chunks** to only those where:
+- `metadata["well"]` matches `15/9-F-11 B`
+- `metadata["date"]` matches `2013-06-28`
+
+This reduces the search space from ~491 chunks down to ~10 chunks (just the sections of that one DDR). The semantic search then runs on 10 chunks, not 491. Result: faster, more accurate, no noise.
+
+**For questions without a specific date** (e.g. multi-document or cross-well questions), skip the date filter and filter only by well or just do full-archive search.
+
+---
+
+## 8. Handling Special Cases
+
+### T2-027 — The Abstention Question
+> *"What did the daily drilling report for well 15/9-F-14 on 2013-06-10 say about operations?"*
+
+There is no DDR for well 15/9-F-14 in the archive. When the pre-filter step finds zero matching chunks for this well + date combination, the system should:
+- Return: `answer = "No daily drilling report for well 15/9-F-14 on 2013-06-10 exists in the supplied archive."
+- `confidence = 1.0` (a correct abstention earns full marks under the rubric)
+- `evidence = "document_manifest.csv — no document found for this well/date"`
+
+### Multi-document Questions (e.g. T2-017, T2-019, T2-022)
+Some questions ask you to compare or sequence across multiple wells/dates. For these:
+- Run the retrieval separately for each well/date mentioned
+- Concatenate the top chunks from each
+- Let the LLM synthesise the combined answer
+
+### Questions About Personnel/Cost (e.g. T2-025, T2-026, T2-030)
+These fields are present in DDR HTML files in sections like "Cost Summary", "Spread Cost", or "Personnel". The section-based chunking ensures these are captured as their own chunks with clear labels.
+
+---
+
+## 9. Tools and Libraries
+
+| Task | Tool | Why |
+|---|---|---|
+| HTML parsing | `BeautifulSoup4` + `lxml` | Structured extraction by CSS class |
+| PDF text extraction | `pdfplumber` | Clean text from digital PDFs (not scanned) |
+| Embeddings | `Google Gemini API` (`models/text-embedding-004`) | We have an API key; high quality |
+| Vector index | `FAISS` (via `faiss-cpu`) | Local, fast, no server, saves to disk |
+| LLM generation | `Google Gemini API` (`gemini-1.5-flash` or `gemini-2.0-flash`) | Temperature=0 for deterministic answers |
+| Metadata storage | `JSON` file on disk | Paired with FAISS index |
+| Output | `pandas` + `csv` | Write `predictions.csv` |
+
+**Why FAISS over ChromaDB or Pinecone?**  
+FAISS is local, requires no server or internet connection during the notebook run, and easily handles 491 chunks in milliseconds. The judges run our notebook offline — FAISS is the safest choice.
+
+---
+
+## 10. Output Format
+
+Every row in `predictions.csv` follows this format:
+
+```
+question_id, answer, evidence, confidence
+T2-003, "The deepest survey station on 15/9-F-11 B on 2013-05-29 showed an inclination of 42.17° at a depth of 3,850 mMD.", "15_9_F_11_B_2013_05_29.html; Section: Survey Station", 0.95
+T2-027, "No daily drilling report for well 15/9-F-14 on 2013-06-10 exists in the supplied archive.", "document_manifest.csv — well 15/9-F-14 not present", 1.0
+```
+
+Evidence always includes:
+1. The **exact filename**
+2. The **section name** (for DDR HTML) or **page number** (for PDFs) or **"Header"** (for survey files)
+
+---
+
+## 11. Notebook Structure (Submission)
+
+The submitted `solution.ipynb` should have these clearly labelled cells:
+
+1. **Setup & Imports** — install/import all libraries
+2. **Config** — set `DATA_ROOT`, `API_KEY`, paths. All configurable in one place.
+3. **Phase 1: Ingestion** — parse all files, build chunks with metadata
+4. **Phase 2: Embedding & Indexing** — embed chunks, build FAISS index, save to disk
+5. **Phase 3: Load Index** — load pre-saved index (fast path for judges running the notebook)
+6. **Phase 4: Query Loop** — for each of 32 questions: filter → retrieve → generate → write answer
+7. **Phase 5: Output** — save `predictions.csv`, validate format
+8. **Validation** — run the official `validate_submission.py` checker
+
+> **Important:** The notebook must check if the saved index already exists before re-embedding.  
+> If index exists → skip Phase 2, go straight to Phase 3.  
+> This ensures the judge's 30-minute clock is not spent re-embedding.
+
+---
+
+## 12. Summary of Key Decisions
+
+| Decision | Choice | Reason |
+|---|---|---|
+| DDR format | HTML only | Cleanest, structured, one format is enough |
+| Survey file indexing | Header only (~38 lines) | Numbers below header have no Q&A value |
+| Prototype files | Header indexed, number table discarded | Same structure as PLAN/ACTUAL; header has useful metadata |
+| Embedding model | Gemini `text-embedding-004` | We have the API key; high quality |
+| Vector store | FAISS (local) | No server needed; fast; judges can run offline |
+| Retrieval | Filter by well+date first, then semantic search | Reduces noise; much more precise |
+| LLM | Gemini Flash, temperature=0 | Deterministic; affordable; fast |
+| Token budget per query | ~1,450 tokens | 3 chunks + question + answer |
+| Total token budget (32 Qs) | ~46,400 tokens | Practically free at Flash pricing |
+| Abstention handling | Explicit "not in archive" response | Earns full 1.0 mark under rubric |
+
